@@ -249,11 +249,11 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
       # Noise threshold achieved
       return( noise_table[noise_table$noise >= noise_th, ][1, ] )
     } else {
-      print("Not enought noise. Consider a higher value of MinPts or eps.")
+      message(paste0("Not enought noise (", noise_table$noise[nrow(noise_table)] ," %). Consider a lower value of MinPts."))
       return(NULL)
     }
   } else {
-    print("Too much nosie. Consider a lower value of MinPts.")
+    message(paste0("Too much nosie (", noise_table$noise[1] ," %). Consider a higher eps0."))
     return(NULL)
   }
 }
