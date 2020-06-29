@@ -1,0 +1,520 @@
+---
+title: "Introduction to {evprof}"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{evprof}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(evprof)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(purrr)
+```
+
+
+# Introduction
+
+An EV user profile can be defined basically for two variables:
+
+- Connection start time
+- Connection duration
+
+Based on these two variables this package aims to provide tools to analyse and define different user profiles with similar flexibility potential.
+
+
+The workflow of this analysis should be:
+
+1. Data exploratory analysis
+  1.1. Data set visualization
+  1.2. Data summary
+  1.3. Data distributions (histograms)
+  1.4. Density plots
+2. Preprocessing
+  2.1. Data division
+  2.2. Ouliers detection
+3. Clustering
+4. Profiling
+5. Modelling
+
+
+# Data preparation
+
+Original data set:
+
+```{r dataset head}
+head(evprof::sessions)
+```
+
+Functions in `{evprof}` package use a standard format for sessions dataset. The features names used in this standard format are defined in `evprof::sessions_feature_names` object:
+
+```{r standard names}
+evprof::sessions_feature_names
+```
+
+Thus, it is necessary to standardize the data set adding the missing variables and renaming the rest with the standard feature names. Moreover, the datetime variables must be in the local timezone of the study case.
+
+```{r standardize}
+# Standardize the data set
+
+sessions <- evprof::sessions %>% 
+  # Rename existing variables
+  rename(
+    ConnectionStartDateTime = StartTime,
+    ConnectionEndDateTime = EndTime,
+    Energy = EnergyCharged,
+    ChargingHours = ChargingTime
+  ) %>% 
+  # Adapt datetime variables to timezone
+  mutate(
+    ConnectionStartDateTime = lubridate::with_tz(ConnectionStartDateTime, tzone = getOption("evprof.tzone")),
+    ConnectionEndDateTime = lubridate::with_tz(ConnectionEndDateTime, tzone = getOption("evprof.tzone"))
+  ) %>% 
+  # Add missing features
+  mutate(
+    ConnectionHours = as.numeric(ConnectionEndDateTime - ConnectionStartDateTime, units = "hours"),
+    ChargingStartDateTime = ConnectionStartDateTime,
+    ChargingEndDateTime = ChargingStartDateTime + evprof:::convert_time_num_to_period(ChargingHours),
+    Power = Energy/ChargingHours,
+    FlexibilityHours = ConnectionHours - ChargingHours
+  ) %>% 
+  # Select only the standard features
+  select(evprof::sessions_feature_names)
+
+# Check resulting data set
+head(sessions)
+
+```
+
+
+# Data exploratory analysis
+
+Sessions overview:
+
+```{r exploration-points start 0}
+
+evprof::plot_points(sessions, start = 0)
+
+```
+
+For the analysis, the datetime variables are modified:
+
+- Hour 0 of the day is 6:00 AM
+
+
+```{r exploration-points}
+
+plot_points(sessions, start = 6)
+
+```
+
+
+Statistic summary:
+
+```{r statistic summary}
+
+summarise_sessions(sessions, mean) %>%
+  knitr::kable(digits = 2) # For a nice table
+
+```
+
+
+Features histograms:
+
+```{r histograms}
+
+plot_histogram_grid(sessions)
+
+```
+
+Conclusion: there's a variability in all features, so EV users have different behaviours (user profiles).
+
+
+# Data preprocessing
+
+## Divide the data
+
+For applying Gaussian Mixture Models it is important to divide the data in smaller groups since the different density distributions result more accentuated and easy to model.
+
+The division is performed in two steps:
+
+1. Disconnection day
+2. Time-cycle behaviours
+
+The different data points groups that stand out from overview plot correspond to sessions disconnection day. We will set the division line from 3:00 AM, so sessions below division line disconnect before 3:00 AM of that day, each line corresponding to a different day.
+
+```{r division lines}
+
+plot_points(sessions) %>% 
+  plot_division_lines(n_lines = 4, start_hour = 3)
+
+```
+
+Only 3% of sessions are disconnected 2, 3 or 4 days after the connection. Thus, for obtaining generic user profiles these sessions will be discarded. The two groups that we will analyse are ones that are disconnected the same day or the day after the connection.
+
+At the same time, it is also important to consider the time-cycles or periods when users change their behaviours. A clear example is the daily timetable difference between weekdays (working days) and weekends. We could analyse also analyse seasonality here but not in this example. Therefore, using `evprof::divide_by_timecycle` function we specify a division between weekdays and weekends.
+
+So, the following functions add extra columns (`DisconnectionDay` and `TimeCycle`) in our dataset to classify each data point within each group, where the value of these columns correspond to the configuration defined with parameters `days`, `wdays_cycles` and `months_cycles`.
+
+```{r divisions}
+sessions_divided <- sessions %>% 
+  divide_by_disconnection(days = c(1, 2), start_hour = 3) %>% 
+  divide_by_timecycle(wdays_cycles = list(1:5, 6:7), months_cycles = list(1:12))
+
+head(sessions_divided)
+
+```
+
+Here it is useful to rename these variables in order to easily identify each sub-set:
+
+```{r recode groups}
+
+sessions_divided <- sessions_divided %>% 
+  mutate(
+    Timecycle = plyr::mapvalues(Timecycle, c("1", "2"), c("Weekdays", "Weekends"), warn_missing = F),
+    Disconnection = plyr::mapvalues(Disconnection, c("1", "2"), c("City", "Home"), warn_missing = F)
+  )
+
+```
+
+
+Density plots are a useful method to verify that a real behavior difference exists between each subset and therefore it is convenient to obtain different models:
+
+```{r divisions density plot}
+plot_density_2D(sessions_divided) + facet_wrap(vars(Disconnection, Timecycle))
+```
+
+
+Since all density plots show a difference distribution for each subset, we will consider these 4 different models so the clustering process will be applied to each group separately
+
+
+## Outliers detection
+
+We want to discard around 2% of noise with DBSCAN clustering. DBSCAN needs two arguments: `MinPts` and `eps`.
+An heuristic method to determine the right value of `MinPts` for our data is computing `ln(n)`, where `n` is the number of data points.
+
+
+```{r kNN dist plots}
+purrr::pmap(
+  tibble(
+    Timecycle = c("Weekdays", "Weekdays", "Weekends", "Weekends"), 
+    Disconnection = c("City", "Home", "City", "Home")
+  ),
+  ~ sessions_divided %>% 
+    filter(Timecycle == ..1, Disconnection == ..2) %>% 
+    plot_kNNdist(MinPts_pct = 0.01) + 
+    ggtitle(paste(..1, "-", ..2))
+) %>% 
+  cowplot::plot_grid(plotlist = .)
+```
+
+From that plot, we extract the initial values of `MinPts` and `eps`:
+
+- Sessions weekdays city: `MinPts = 99`, `eps = 1.5`
+- Sessions weekdays home: `MinPts = 108`, `eps = 2.5`
+- Sessions weekends city: `MinPts = 42`, `eps = 1.5`
+- Sessions weekends home: `MinPts = 37`, `eps = 2`
+
+With these values now we can start an iteration to find the specific `eps` value to discard only a 2% of noise.
+
+```{r dbscan parameters}
+dbscan_parameters <- purrr::pmap_dfr(
+  tibble(
+    Timecycle = c("Weekdays", "Weekdays", "Weekends", "Weekends"), 
+    Disconnection = c("City", "Home", "City", "Home"),
+    MinPts = c(99, 108, 42, 37), 
+    eps = c(1.5, 2.5, 1.5, 2),
+    noise_th = c(2, 2, 2, 2)
+  ),
+  ~ bind_cols(
+    Timecycle = ..1, 
+    Disconnection = ..2, 
+    sessions_divided %>% 
+      filter(Timecycle == ..1, Disconnection == ..2) %>% 
+      get_dbscan_params(MinPts = ..3, eps0 = ..4, noise_th = ..5)
+  )
+)
+
+print(dbscan_parameters)
+```
+
+With these parameters, we create a new column `Outlier` in the sessions data set in order to obtain the data points that stand out from each sub set density distribution:
+
+```{r detect outliers}
+sessions_divided_noise <- purrr::pmap_dfr(
+  dbscan_parameters,
+  ~ sessions_divided %>% 
+    filter(Timecycle == ..1, Disconnection == ..2) %>% 
+    detect_outliers(MinPts = ..3, eps = ..4)
+)
+
+head(sessions_divided_noise)
+```
+
+Finally, it is convenient to make a visual inspection of the sessions that we will discard and check if the noise threshold considered for each group is reasonable:
+
+```{r dbscan plots}
+sessions_divided_noise %>% 
+  plot_outliers() +
+  facet_wrap(vars(Timecycle, Disconnection))
+```
+
+Finally, clean and sub-set the data:
+
+```{r data division}
+sessions_weekdays_city <- sessions_divided_noise %>% filter(Disconnection == "City", Timecycle == "Weekdays", !Outlier)
+sessions_weekdays_home <- sessions_divided_noise %>% filter(Disconnection == "Home", Timecycle == "Weekdays", !Outlier)
+sessions_weekends_city <- sessions_divided_noise %>% filter(Disconnection == "City", Timecycle == "Weekends", !Outlier)
+sessions_weekends_home <- sessions_divided_noise %>% filter(Disconnection == "Home", Timecycle == "Weekends", !Outlier)
+```
+
+
+
+# Clustering
+
+Find the optimal number of clusters considering the BIC indicator from 1 to 10 clusters:
+
+```{r number of clusters}
+purrr::map(
+  list(sessions_weekdays_city, sessions_weekdays_home, sessions_weekends_city, sessions_weekends_home),
+  ~ choose_k_GMM(.x, k = 1:10)
+)
+```
+
+From these plots we choose the following k values:
+
+- Sessions weekdays city: `k = 6`
+- Sessions weekdays home: `k = 4`
+- Sessions weekends city: `k = 6`
+- Sessions weekends home: `k = 4`
+
+
+Then, since Gaussian Mixture Modelling depends on the random seed of the operation, we will repeat the clustering process for each data set 6 times and we will chose the optimal seed according to BIC indicator afterwards.
+The iterations results will be saved as a PDF file for each subset.
+
+```{r clustering iteration}
+# save_clustering_iterations(sessions_weekdays_city, k=6, it=6, filename = "weekdays_city_k-6.pdf")
+# save_clustering_iterations(sessions_weekdays_home, k=4, it=6, filename = "weekdays_home_k-4.pdf")
+# save_clustering_iterations(sessions_weekends_city, k=6, it=6, filename = "weekends_city_k-6.pdf")
+# save_clustering_iterations(sessions_weekends_home, k=4, it=6, filename = "weekends_home_k-4.pdf")
+```
+
+From these files we have obtained the following optimal seeds:
+
+- Sessions weekdays city: `seed = 122`
+- Sessions weekdays home: `seed = 154`
+- Sessions weekends city: `seed = 94`
+- Sessions weekends home: `seed = 119`
+
+Finally, we can cluster and plot each sub-set:
+
+```{r clustering}
+
+weekdays_city_bivarGMM <- cluster_sessions(sessions_weekdays_city, k = 6, seed = 122)
+weekdays_home_bivarGMM <- cluster_sessions(sessions_weekdays_home, k = 4, seed = 154)
+weekends_city_bivarGMM <- cluster_sessions(sessions_weekends_city, k = 6, seed = 94)
+weekends_home_bivarGMM <- cluster_sessions(sessions_weekends_home, k = 4, seed = 119)
+
+purrr::map2(
+  list(sessions_weekdays_city, sessions_weekdays_home, sessions_weekends_city, sessions_weekends_home),
+  list(weekdays_city_bivarGMM$models, weekdays_home_bivarGMM$models, weekends_city_bivarGMM$models, weekends_home_bivarGMM$models),
+  ~ plot_bivarGMM(.x, .y)
+)
+```
+
+
+
+# Profiling
+
+Clusters obtained from GMM don't give a lot of information themselves and separately may have an unclear meaning. However, combining different clusters into the same "user profile" can result in a daily generic behavior of EV users.
+
+## Weekdays city
+
+```{r weekdays city profiling}
+
+weekdays_city_clusters_profiles <- tibble(
+  cluster = weekdays_city_bivarGMM$models$cluster,
+  mean_start_time = map_dbl(weekdays_city_bivarGMM$models$mu, ~.x[1]) %>% evprof:::convert_time_num_to_chr(),
+  mean_conn_time = map_dbl(weekdays_city_bivarGMM$models$mu, ~.x[2])
+)
+
+interp <- tibble(
+  cluster = weekdays_city_bivarGMM$models$cluster,
+  interpretation = c(
+    "They work during the afternoon",
+    "They work during the morning",
+    "Full-day workers",
+    "They go out to have dinner",
+    "They go shopping, visiting someone, or deliver something",
+    "Super short visits or shopping"
+  ),
+  profile = c("Worktime", "Worktime", "Worktime", "Dinner", "Shortstay", "Shortstay")
+)
+
+weekdays_city_clusters_profiles <- weekdays_city_clusters_profiles %>% 
+  left_join(interp, by = "cluster") 
+
+weekdays_city_clusters_profiles %>% 
+  knitr::kable(digits = 2, col.names = c("Cluster", "Controid Start time", "Centroid Connection hours", "Interpretation", "Profile"))
+
+```
+
+## Weekdays home
+
+```{r weekdays home profiling}
+weekdays_home_clusters_profiles <- tibble(
+  cluster = weekdays_home_bivarGMM$models$cluster,
+  mean_start_time = map_dbl(weekdays_home_bivarGMM$models$mu, ~.x[1]) %>% evprof:::convert_time_num_to_chr(),
+  mean_conn_time = map_dbl(weekdays_home_bivarGMM$models$mu, ~.x[2])
+)
+
+interp <- tibble(
+  cluster = weekdays_home_bivarGMM$models$cluster,
+  interpretation = c(
+    "They go home at night, leaving always next morning",
+    "They go home always after work, leaving always next morning",
+    "They go home during the afternoon or night, leaving always next morning",
+    "They go home during the afternoon or night, not necessarily leaving next morning"
+  ),
+  profile = c("Pillow", "Home", "Home", "Home")
+)
+
+weekdays_home_clusters_profiles <- weekdays_home_clusters_profiles %>% 
+  left_join(interp, by = "cluster") 
+
+weekdays_home_clusters_profiles %>% 
+  knitr::kable(digits = 2, col.names = c("Cluster", "Controid Start time", "Centroid Connection hours", "Interpretation", "Profile"))
+```
+
+
+## Weekends city
+
+```{r weekends city profiling}
+weekends_city_clusters_profiles <- tibble(
+  cluster = weekends_city_bivarGMM$models$cluster,
+  mean_start_time = map_dbl(weekends_city_bivarGMM$models$mu, ~.x[1]) %>% evprof:::convert_time_num_to_chr(),
+  mean_conn_time = map_dbl(weekends_city_bivarGMM$models$mu, ~.x[2])
+)
+
+interp <- tibble(
+  cluster = weekends_city_bivarGMM$models$cluster,
+  interpretation = c(
+    "They go out during afternoon and probably dinner",
+    "They visit the city during the morning",
+    "They visit the city during the afternoon",
+    "They visit the city the whole day",
+    "Super short visits or shopping",
+    "They go shopping, visiting someone, or deliver something"
+  ),
+  profile = c("Dinner", "Visit", "Visit", "Visit", "Shortstay", "Shortstay")
+)
+
+weekends_city_clusters_profiles <- weekends_city_clusters_profiles %>% 
+  left_join(interp, by = "cluster") 
+
+weekends_city_clusters_profiles %>% 
+  knitr::kable(digits = 2, col.names = c("Cluster", "Controid Start time", "Centroid Connection hours", "Interpretation", "Profile"))
+```
+
+## Weekends home
+
+```{r weekends home profiling}
+weekends_home_clusters_profiles <- tibble(
+  cluster = weekends_home_bivarGMM$models$cluster,
+  mean_start_time = map_dbl(weekends_home_bivarGMM$models$mu, ~.x[1]) %>% evprof:::convert_time_num_to_chr(),
+  mean_conn_time = map_dbl(weekends_home_bivarGMM$models$mu, ~.x[2])
+)
+
+interp <- tibble(
+  cluster = weekends_home_bivarGMM$models$cluster,
+  interpretation = c(
+    "They go home at night, leaving always next morning",
+    "They go home always after work, leaving always next morning",
+    "They go home during the afternoon or night, not necessarily leaving next morning",
+    "They go home during the afternoon or night, leaving always next morning"
+  ),
+  profile = c("Pillow", "Home", "Home", "Home")
+)
+
+weekends_home_clusters_profiles <- weekends_home_clusters_profiles %>% 
+  left_join(interp, by = "cluster") 
+
+weekends_home_clusters_profiles %>% 
+  knitr::kable(digits = 2, col.names = c("Cluster", "Controid Start time", "Centroid Connection hours", "Interpretation", "Profile"))
+
+```
+
+
+# Results
+
+## Sessions data set with user profiles
+
+```{r sessions result}
+sessions_profiles <- purrr::map2_dfr(
+  list(weekdays_city_bivarGMM$sessions, weekdays_home_bivarGMM$sessions, weekends_city_bivarGMM$sessions, weekends_home_bivarGMM$sessions),
+  list(weekdays_city_clusters_profiles, weekdays_home_clusters_profiles, weekends_city_clusters_profiles, weekends_home_clusters_profiles),
+  ~ left_join(
+    .x, 
+    .y %>% select(cluster, profile) %>% rename(Cluster = cluster, Profile = profile),
+    by = "Cluster"
+  )
+) %>% 
+  select(c(evprof::sessions_feature_names, "Profile"))
+
+head(sessions_profiles)
+```
+
+
+## User profiles models
+
+## Weekdays sessions
+
+Charging profiles' models: Bivariate Gaussian Mixture Models
+
+```{r weekdays charging profiles models}
+profiles_names_weekdays <- c(weekdays_city_clusters_profiles$profile, weekdays_home_clusters_profiles$profile)
+models_weekdays <- bind_rows(weekdays_city_bivarGMM$models, weekdays_home_bivarGMM$models)
+plot_bivarGMM(
+  bind_rows(weekdays_city_bivarGMM$sessions, weekdays_home_bivarGMM$sessions), 
+  models_weekdays, 
+  profiles_names_weekdays
+) + 
+  labs(title = "Weekdays charging profiles", color = "Profile") +
+  scale_color_discrete(labels = paste0(
+    unique(profiles_names_weekdays),
+    " (", 
+    round(models_weekdays$ratio[match(unique(profiles_names_weekdays), models_weekdays$profile)]*100),
+    "%)"
+  ))
+```
+
+## Weekends sessions
+
+Charging profiles' models: Bivariate Gaussian Mixture Models
+
+```{r weekends charging profiles models}
+profiles_names_weekends <- c(weekends_city_clusters_profiles$profile, weekends_home_clusters_profiles$profile)
+models_weekends <- bind_rows(weekends_city_bivarGMM$models, weekends_home_bivarGMM$models)
+plot_bivarGMM(
+  bind_rows(weekends_city_bivarGMM$sessions, weekends_home_bivarGMM$sessions), 
+  models_weekends, 
+  profiles_names_weekends
+) + 
+  labs(title = "weekends charging profiles", color = "Profile") +
+  scale_color_discrete(labels = paste0(
+    unique(profiles_names_weekends),
+    " (", 
+    round(models_weekends$ratio[match(unique(profiles_names_weekends), models_weekends$profile)]*100),
+    "%)"
+  ))
+```

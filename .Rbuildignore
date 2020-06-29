@@ -1,0 +1,6 @@
+^renv$
+^renv\.lock$
+^evprof\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^data-raw$

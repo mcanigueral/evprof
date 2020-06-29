@@ -1,0 +1,42 @@
+Package: evprof
+Title: Characterizing EV charging sessions into generic user profiles
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Marc",
+           family = "Cañigueral",
+           role = c("aut", "cre"),
+           email = "marc.canigueral@udg.edu",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package aims to provide tools for classifying EV charging sessions into smaller groups with
+    similar flexibility potential (i.e. user profiles). The goal of obtaining these user profiles is to, in a 
+    later step, define a specific smart charging strategy to each group, considering its flexbility potential
+    and constraints.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Imports: 
+    devtools,
+    tidyr,
+    plyr,
+    purrr,
+    lubridate,
+    zoo,
+    ggplot2,
+    dygraphs,
+    cowplot,
+    plotly,
+    rlang,
+    dbscan,
+    mclust,
+    mixtools,
+    dplyr,
+    MASS,
+    ecp
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
