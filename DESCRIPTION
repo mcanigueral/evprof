@@ -33,7 +33,8 @@ Imports:
     mixtools,
     dplyr,
     MASS,
-    ecp
+    ecp,
+    xts
 Suggests: 
     knitr,
     rmarkdown

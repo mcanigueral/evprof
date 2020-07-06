@@ -1,4 +1,28 @@
 
+
+# Numeric operations ------------------------------------------------------
+
+#' Round numeric time value to half hour basis.
+#'
+#' @param time_num Numeric time value (hour-based)
+#'
+round_to_half <- function(time_num) {
+  round(time_num*2)/2
+}
+
+#' Round to nearest interval
+#'
+#' @param dbl number to round
+#' @param interval rounding interval
+#'
+#' @return numeric value
+#' @noRd
+#'
+round_to_interval <- function(dbl, interval) {
+  round(dbl/interval)*interval
+}
+
+
 # Time conversion functions -----------------------------------------------
 
 #' Convert datetime value to numeric (hour-based)
@@ -112,14 +136,6 @@ convert_time_dt_to_plot_factor <- function(time_dt, interval=0.5, start=getOptio
 #'
 convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.hour")) {
   convert_time_num_to_plot_num(convert_time_dt_to_num(time_dt), start)
-}
-
-#' Round numeric time value to half hour basis.
-#'
-#' @param time_num Numeric time value (hour-based)
-#'
-round_to_half <- function(time_num) {
-  round(time_num*2)/2
 }
 
 # convert_datetime_dt_to_num <- function(time_dt, date_0) {
