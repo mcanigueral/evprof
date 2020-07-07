@@ -249,9 +249,9 @@ get_profile_day_sessions <- function(profile_name, day, ev_models) {
   day_models <- ev_models[["models"]][models_month_idx*models_wday_idx][[1]]
   n_sessions <- ev_models[["n_sessions"]][models_month_idx*models_wday_idx][[1]]
 
-  print(paste0("Profile: ", profile_name))
-  print(paste0("Day models: ", day_models))
-  print(paste0("N sessions: ", n_sessions))
+  message(paste0("Profile: ", profile_name))
+  message(paste0("Day models: ", day_models))
+  message(paste0("N sessions: ", n_sessions))
 
   if (profile_name %in% day_models[["profile"]]) {
     estimate_sessions(profile_name, n_sessions, day_models) %>%
@@ -319,7 +319,7 @@ simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
     sessions_estimated[limit_idx, "Power"]*sessions_estimated[limit_idx, "ConnectionHours"]
 
   # Increase energy resulting in 0kWh due to power rate round
-  e0_idx <- sessions_estimated$Energy == 0
+  e0_idx <- sessions_estimated$Energy <= 0
   sessions_estimated[e0_idx, "Energy"] <- sessions_estimated[e0_idx, "Power"]*interval_mins/60
 
   # Calculate charging time according to power and energy
