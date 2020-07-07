@@ -249,6 +249,10 @@ get_profile_day_sessions <- function(profile_name, day, ev_models) {
   day_models <- ev_models[["models"]][models_month_idx*models_wday_idx][[1]]
   n_sessions <- ev_models[["n_sessions"]][models_month_idx*models_wday_idx][[1]]
 
+  print(paste0("Profile: ", profile_name))
+  print(paste0("Day models: ", day_models))
+  print(paste0("N sessions: ", n_sessions))
+
   if (profile_name %in% day_models[["profile"]]) {
     estimate_sessions(profile_name, n_sessions, day_models) %>%
       mutate("start_dt" = day + convert_time_num_to_period(.data$start)) %>%
@@ -292,7 +296,6 @@ get_profile_sessions <- function(profile_name, dates, ev_models) {
 #'
 simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
   # Obtain sessions from all profiles in models
-
   profiles <- unique(unlist(map(ev_models[["models"]], ~ .x[["profile"]])))
 
   sessions_estimated <- map_dfr(
