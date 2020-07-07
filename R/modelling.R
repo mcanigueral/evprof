@@ -246,12 +246,8 @@ get_profile_day_sessions <- function(profile_name, day, ev_models) {
   models_month_idx <- purrr::map_lgl(ev_models[["months"]], ~ month_day %in% .x)
   models_wday_idx <- purrr::map_lgl(ev_models[["wdays"]], ~ wday_day %in% .x)
 
-  day_models <- ev_models[["models"]][models_month_idx*models_wday_idx][[1]]
-  n_sessions <- ev_models[["n_sessions"]][models_month_idx*models_wday_idx][[1]]
-
-  message(paste0("Profile: ", profile_name))
-  message(paste0("Day models: ", day_models))
-  message(paste0("N sessions: ", n_sessions))
+  day_models <- ev_models[["models"]][models_month_idx & models_wday_idx][[1]]
+  n_sessions <- ev_models[["n_sessions"]][models_month_idx & models_wday_idx][[1]]
 
   if (profile_name %in% day_models[["profile"]]) {
     estimate_sessions(profile_name, n_sessions, day_models) %>%
@@ -328,7 +324,7 @@ simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
       ChargingHours = .data$Energy/.data$Power,
       ChargingEndDateTime = .data$ConnectionStartDateTime + convert_time_num_to_period(.data$ChargingHours)
     ) %>%
-    select(any_of(c("Profile", sessions_feature_names)))
+    select(any_of(c("Profile", evprof::sessions_feature_names)))
 
   return( sessions_estimated )
 }
