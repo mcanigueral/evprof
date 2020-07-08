@@ -94,7 +94,6 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @importFrom ggplot2 ggtitle scale_color_discrete ggsave
 #' @importFrom cowplot plot_grid
 #' @importFrom stats runif
-# #' @importFrom gridExtra marrangeGrob
 #'
 save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),
                                     filename = paste0("iteration_", k, "_clusters.pdf"), plot_scale = 2,

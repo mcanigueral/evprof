@@ -4,16 +4,19 @@
 \alias{simulate_sessions}
 \title{Simualte sessions given datetime sequence and models}
 \usage{
-simulate_sessions(dates, ev_models, charging_rates, interval_mins)
+simulate_sessions(ev_models, charging_rates, dates, interval_mins)
 }
 \arguments{
+\item{ev_models}{tibble with columns: \code{model_name}, \code{months}, \code{wdays}, \code{models}, \code{n_sessions}
+The column \code{models} must be a list of tibbles, while each tibble must have the columns
+\code{profile}, \code{profile_ratio} (between 0 and 1), \code{connection_models} and \code{energy_models}}
+
+\item{charging_rates}{charging rates proportions (tibble) with two columns: \code{rate} and \code{ratio}.
+The rates must be in kW and the ratios between 0 and 1.}
+
 \item{dates}{datetime vector with dates to simualte (datetime values with hour set to 00:00)}
 
-\item{ev_models}{profiles models}
-
-\item{charging_rates}{charging rates proportions (tibble)}
-
-\item{interval_mins}{interval of time to round the sessions datetime parameters}
+\item{interval_mins}{interval of minutes (integer) to round the sessions datetime variables}
 }
 \value{
 tibble

@@ -43,7 +43,6 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' @param n_models number of models
 #'
 #' @return tibble
-#' @export
 #'
 #' @importFrom mixtools normalmixEM
 #' @importFrom dplyr tibble
@@ -54,40 +53,74 @@ get_energy_model <- function(energy_vct, n_models) {
 }
 
 
-#' Plot estimated energy density
+#' Title
 #'
-#' @param profile profile name
-#' @param energy_vct energy numeric vector
-#' @param estimated_energy estimated energy numeric vector
+#' @param sessions_profiles sessions data set with user profile attribute
+#' @param k number of univariate Gaussian Mixture Models
 #'
-#' @return ggplot
+#' @return tibble
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_density labs theme_light
-#' @importFrom dplyr tibble
+#' @importFrom dplyr %>%
+#' @importFrom rlang .data
 #'
-plot_estimated_energy_density <- function(profile, energy_vct, estimated_energy) {
-  return(
-    ggplot(data = tibble(x = energy_vct), aes_string(x = "x")) +
-      geom_density(fill = 'navy', alpha = 0.7) +
-      geom_density(
-        data = tibble(x = unlist(estimated_energy)),
-        aes_string(x = "x"), size = 1.2, color = "navy"
-      ) +
-      labs(x = "Energy charged", y = "Density", title = profile) +
-      theme_light()
-  )
+get_energy_models <- function(sessions_profiles, k) {
+  sessions_profiles %>%
+    group_by(.data$Profile) %>%
+    summarise(
+      energy_models = list(get_energy_model(.data$Energy, k))
+    ) %>%
+    rename(profile = .data$Profile)
 }
 
 
-#' Plot estimated energy models
+#' Compare density of estimated energy with density of real energy vector
+#'
+#' @param sessions_profiles sessions data set with user profile attribute
+#' @param energy_models energy models returned by function `get_energy_models`
+#'
+#' @return list of ggplots
+#' @export
+#'
+#' @importFrom ggplot2 ggplot aes_string geom_density labs theme_light
+#' @importFrom dplyr tibble rename
+#' @importFrom rlang .data
+#' @importFrom cowplot plot_grid
+#'
+plot_energy_models_density <- function(sessions_profiles, energy_models) {
+  plot_list <- energy_models %>%
+    left_join(
+      sessions_profiles %>%
+        group_by(.data$Profile) %>%
+        summarise(energy = list(.data$Energy)) %>%
+        rename(profile = .data$Profile),
+      by = 'profile'
+    ) %>%
+    mutate(
+      estimated_energy = map2(.data$energy, .data$energy_models, ~ get_estimated_energy(length(.x), .y))
+    ) %>%
+    select("profile", "energy", "estimated_energy") %>%
+    pmap(
+      ~ ggplot(data = tibble(x = ..2), aes_string(x = "x")) +
+        geom_density(fill = 'navy', alpha = 0.7, show.legend = T) +
+        geom_density(
+          data = tibble(x = unlist(..3)),
+          aes_string(x = "x"), size = 1.2, color = "navy", show.legend = T
+        ) +
+        labs(x = "Energy charged", y = "Density", title = ..1) +
+        theme_light()
+    )
+  plot_grid(plotlist = plot_list)
+}
+
+
+#' DEPRECATED: Compare Gaussian Mixture Models of estimated energy with density of real energy vector
 #'
 #' @param profile profile name
 #' @param energy_vct energy numeric vector
 #' @param estimated_energy estimated energy numeric vector
 #'
 #' @return ggplot
-#' @export
 #'
 #' @importFrom ggplot2 ggplot aes_string geom_density labs theme_light
 #' @importFrom dplyr tibble
@@ -109,6 +142,40 @@ plot_estimated_energy_models <- function(profile, energy_vct, estimated_energy) 
 
 
 
+# Plot all clusters of the models -----------------------------------------
+
+#' Aggregate clusters GMM into profiles GMM
+#'
+#' @param subsets_clustering list with clustering results of each subset to aggregate
+#' @param clusters_interpretations list with clusters interpretations of each subset
+#' @param profiles_ratios tibble with columns `profile` and `profile_ratio`
+#'
+#' @return ggplot2
+#' @export
+#'
+#' @importFrom purrr map_dbl pmap_dfr
+#' @importFrom dplyr tibble arrange mutate select group_by summarise
+#' @importFrom rlang .data
+#'
+plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios) {
+
+  cluster_profiles_names <- unlist(map(clusters_interpretations, ~ .x[["profile"]]))
+
+  plot_bivarGMM(
+    map_dfr(subsets_clustering, ~ .x[["sessions"]]),
+    map_dfr(subsets_clustering, ~ .x[["models"]]),
+    cluster_profiles_names
+  ) +
+    labs(color = "Profile") +
+    scale_color_discrete(labels = paste0(
+      unique(cluster_profiles_names),
+      " (",
+      round(profiles_ratios[["profile_ratio"]][match(unique(cluster_profiles_names), profiles_ratios[["profile"]])]*100),
+      "%)"
+    ))
+}
+
+
 # Simulate sessions -------------------------------------------------------
 
 #' Estimate sessions energy values
@@ -118,10 +185,9 @@ plot_estimated_energy_models <- function(profile, energy_vct, estimated_energy) 
 #' @param sigma covariance matrix of univariate GMM
 #'
 #' @return numeric vector
+#' @noRd
 #'
 #' @importFrom stats rnorm
-#'
-#' @noRd
 #'
 estimate_energy <- function(n, mu, sigma) {
   # if (n == 0) return(0)
@@ -277,20 +343,23 @@ get_profile_sessions <- function(profile_name, dates, ev_models) {
 
 #' Simualte sessions given datetime sequence and models
 #'
+#' @param ev_models tibble with columns: `model_name`, `months`, `wdays`, `models`, `n_sessions`
+#' The column `models` must be a list of tibbles, while each tibble must have the columns
+#'  `profile`, `profile_ratio` (between 0 and 1), `connection_models` and `energy_models`
+#' @param charging_rates charging rates proportions (tibble) with two columns: `rate` and `ratio`.
+#' The rates must be in kW and the ratios between 0 and 1.
 #' @param dates datetime vector with dates to simualte (datetime values with hour set to 00:00)
-#' @param ev_models profiles models
-#' @param charging_rates charging rates proportions (tibble)
-#' @param interval_mins interval of time to round the sessions datetime parameters
+#' @param interval_mins interval of minutes (integer) to round the sessions datetime variables
 #'
 #' @return tibble
 #' @export
 #'
 #' @importFrom purrr map map_dfr set_names
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate any_of
 #' @importFrom rlang .data
 #' @importFrom xts align.time
 #'
-simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
+simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
   # Obtain sessions from all profiles in models
   profiles <- unique(unlist(map(ev_models[["models"]], ~ .x[["profile"]])))
 
@@ -303,10 +372,10 @@ simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
   # Standardize the variables
   sessions_estimated <- sessions_estimated %>%
     mutate(
-      ConnectionStartDateTime = xts::align.time(start_dt, n=60*interval_mins),
-      ConnectionHours = round_to_interval(period, interval = interval_mins/60),
-      Power = sample(charging_rates[["rate"]], size = nrow(.), prob = charging_rates[["ratio"]], replace = T),
-      Energy = round_to_interval(energy, interval = Power*interval_mins/60)
+      ConnectionStartDateTime = xts::align.time(.data$start_dt, n=60*interval_mins),
+      ConnectionHours = round_to_interval(.data$period, interval_mins/60),
+      Power = sample(charging_rates[["rate"]], size = nrow(sessions_estimated), prob = charging_rates[["ratio"]], replace = T),
+      Energy = round_to_interval(.data$energy, .data$Power*interval_mins/60)
     )
 
   # Limit energy charged according to power
@@ -328,3 +397,35 @@ simulate_sessions <- function(dates, ev_models, charging_rates, interval_mins) {
 
   return( sessions_estimated )
 }
+
+
+#' Update the ratios of the user profiles
+#'
+#' @param ev_models tibble with columns: `model_name`, `months`, `wdays`, `models`, `n_sessions`
+#' @param new_ratios tibble with columns: `model_name`, `profile`, `profile_ratio.`
+#' It must have all profiles from every model, including the ones with `profile_ratio = 0`.
+#' The ratios must be between 0 and 1.
+#'
+#' @return tibble
+#' @export
+#'
+#' @importFrom purrr map_dbl
+#'
+update_profiles_ratios <- function(ev_models, new_ratios) {
+
+  for (m in nrow(ev_models)) {
+    model <- ev_models[["models"]][[m]]
+    model_name <- ev_models[["model_name"]][[m]]
+    model[["profile_ratio"]] <- map_dbl(
+      model[["profile"]],
+      ~ new_ratios[["profile_ratio"]][ (new_ratios[["model_name"]] == model_name) & (new_ratios[["profile"]] = .x) ]
+    )
+
+    ev_models[["models"]][[m]] <- model
+  }
+
+  return(ev_models)
+
+}
+
+

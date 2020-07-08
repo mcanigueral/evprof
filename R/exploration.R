@@ -272,3 +272,61 @@ plot_histogram_grid <- function(sessions, vars=evprof::sessions_summary_feature_
   hist_list <- purrr::map2(vars, binwidths, ~ plot_histogram(sessions, .x, .y))
   cowplot::plot_grid(plotlist = hist_list, nrow = nrow, ncol = ncol)
 }
+
+
+
+# Charging rates distribution --------------------------------------------
+
+
+#' Get charging rates distribution in percentages
+#'
+#' @param sessions sessions data set in standard format
+#' @param unit lubridate `floor_date` unit parameter
+#'
+#' @return tibble
+#' @export
+#'
+#' @importFrom dplyr %>% tibble select mutate group_by ungroup summarise
+#' @importFrom tidyr drop_na
+#' @importFrom purrr map2 pmap
+#' @importFrom plyr mapvalues
+#' @importFrom lubridate floor_date
+#' @importFrom rlang .data
+#'
+get_charging_rates_distribution <- function(sessions, unit="year") {
+  if (max(sessions[["Power"]]) <= 24.5) {
+    max_power <- 25
+  } else {
+    max_power <- max(sessions[["Power"]])
+  }
+  power_ranges <- tibble(
+    rate = c("1ph-16A (3.7kW)", "1ph-32A (7.3kW)", "3ph-16A (11kW)", "3ph-32A (22kW)", "Fast charging (>22kW)"),
+    start = c(0, 4.5, 8.5, 12.5, 24.5),
+    end = c(4, 8, 12, 24, max_power),
+    seq = map2(.data$start, .data$end, ~ seq(.x, .y, by = 0.5))
+  )
+  sessions %>%
+    select(.data$ConnectionStartDateTime, .data$Power) %>%
+    mutate(
+      ChargingPower_round = round_to_half(.data$Power),
+      ChargingPower_rate = plyr::mapvalues(
+        .data$ChargingPower_round,
+        pmap(power_ranges, ~ ..4) %>% unlist,
+        pmap(power_ranges, ~ rep(..1, length(..4))) %>% unlist,
+        warn_missing = F
+      )
+    ) %>%
+    group_by(
+      datetime = floor_date(.data$ConnectionStartDateTime, unit = unit),
+      power = factor(.data$ChargingPower_rate, levels = power_ranges$rate)
+    ) %>%
+    summarise(n = n()) %>%
+    ungroup() %>%
+    mutate(ratio = .data$n/sum(.data$n)) %>%
+    tidyr::drop_na()
+}
+
+
+
+
+

@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelling.R
 \name{plot_estimated_energy_models}
 \alias{plot_estimated_energy_models}
-\title{Plot estimated energy models}
+\title{DEPRECATED: Compare Gaussian Mixture Models of estimated energy with density of real energy vector}
 \usage{
 plot_estimated_energy_models(profile, energy_vct, estimated_energy)
 }
@@ -17,5 +17,5 @@ plot_estimated_energy_models(profile, energy_vct, estimated_energy)
 ggplot
 }
 \description{
-Plot estimated energy models
+DEPRECATED: Compare Gaussian Mixture Models of estimated energy with density of real energy vector
 }
