@@ -328,5 +328,51 @@ get_charging_rates_distribution <- function(sessions, unit="year") {
 
 
 
+# Sessions features -------------------------------------------------------
+
+#' Get daily number of sessions given a range of years, months and weekdays
+#'
+#' @param sessions sessions data set in standard format
+#' @param years range of years to consider (int)
+#' @param months range of months to consider (int)
+#' @param wdays range of weekdays to consider (int)
+#'
+#' @return tibble with the number of sessions of each date in the given time period
+#' @export
+#'
+#' @importFrom dplyr %>% filter group_by summarise n
+#' @importFrom lubridate year month wday
+#' @importFrom rlang .data
+#'
+get_daily_n_sessions <- function(sessions, years, months, wdays) {
+  sessions %>%
+    filter(
+      year(.data$ConnectionStartDateTime) %in% c(years),
+      month(.data$ConnectionStartDateTime) %in% c(months),
+      wday(.data$ConnectionStartDateTime, week_start = 1) %in% c(wdays)
+    ) %>%
+    group_by(date = date(.data$ConnectionStartDateTime)) %>%
+    summarise(n_sessions = n())
+}
+
+#' Get the daily average number of sessions given a range of years, months and weekdays
+#'
+#' @param sessions sessions data set in standard format
+#' @param years range of years to consider (int)
+#' @param months range of months to consider (int)
+#' @param wdays range of weekdays to consider (int)
+#'
+#' @return tibble with the number of sessions of each date in the given time period
+#' @export
+#'
+#' @importFrom dplyr %>% pull
+#' @importFrom rlang .data
+#'
+get_daily_avg_n_sessions <- function(sessions, years, months, wdays) {
+  get_daily_n_sessions(sessions, years, months, wdays) %>%
+    pull(.data$n_sessions) %>%
+    mean %>%
+    round
+}
 
 
