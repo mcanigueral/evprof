@@ -4,7 +4,7 @@
 \alias{update_profiles_ratios}
 \title{Update the ratios of the user profiles}
 \usage{
-update_profiles_ratios(ev_models, new_ratios)
+update_profiles_ratios(ev_models, new_ratios, discard = FALSE)
 }
 \arguments{
 \item{ev_models}{tibble with columns: \code{model_name}, \code{months}, \code{wdays}, \code{models}, \code{n_sessions}}
@@ -12,6 +12,8 @@ update_profiles_ratios(ev_models, new_ratios)
 \item{new_ratios}{tibble with columns: \code{model_name}, \code{profile}, \code{profile_ratio.}
 It must have all profiles from every model, including the ones with \code{profile_ratio = 0}.
 The ratios must be between 0 and 1.}
+
+\item{discard}{If TRUE, profiles with \code{profile_ratio == 0} will be discarded from the \code{ev_models} object}
 }
 \value{
 tibble

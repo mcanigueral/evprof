@@ -267,8 +267,9 @@ get_estimated_profiles <- function(n, profile_models) {
 #' Estimate sessions parameters of a specific profile
 #'
 #' @param profile_name profile name
-#' @param n number of sessions
-#' @param models bivariate GMM of the profile
+#' @param n_sessions total number of sessions per day
+#' @param connection_models bivariate GMM of the profile
+#' @param energy_models univariate GMM of the profile
 #'
 #' @return tibble
 #' @noRd
@@ -276,27 +277,18 @@ get_estimated_profiles <- function(n, profile_models) {
 #' @importFrom dplyr tibble
 #' @importFrom purrr simplify
 #'
-estimate_sessions <- function(profile_name, n, models) {
-  profile_idx <- which(models[["profile"]] == profile_name)
-  n_sessions <- round(n*models[["profile_ratio"]][[profile_idx]])
-  if (n_sessions == 0) {
-    return(tibble(
-      start = 0,
-      period = 0,
-      energy = 0
-    ))
-  }
-  estimated_profiles <- do.call(
+estimate_sessions <- function(profile_name, n_sessions, connection_models, energy_models) {
+  estimated_connections <- do.call(
     rbind,
-    get_estimated_profiles(n_sessions, models[["connection_models"]][[profile_idx]])
+    get_estimated_profiles(n_sessions, connection_models)
   )
   estimated_energy <- simplify(
-    get_estimated_energy(n_sessions, models[["energy_models"]][[profile_idx]])
+    get_estimated_energy(n_sessions, energy_models)
   )
   return(tibble(
-    start = round(estimated_profiles[,1], 2),
-    period = round(estimated_profiles[,2], 2),
-    energy = round(estimated_energy[1:nrow(estimated_profiles)], 2)
+    start = round(estimated_connections[,1], 2),
+    duration = round(estimated_connections[,2], 2),
+    energy = round(estimated_energy[1:nrow(estimated_connections)], 2)
   ))
 }
 
@@ -324,16 +316,28 @@ get_profile_day_sessions <- function(profile_name, day, ev_models) {
   models_wday_idx <- purrr::map_lgl(ev_models[["wdays"]], ~ wday_day %in% .x)
 
   day_models <- ev_models[["models"]][models_month_idx & models_wday_idx][[1]]
-  n_sessions <- ev_models[["n_sessions"]][models_month_idx & models_wday_idx][[1]]
+  day_n_sessions <- ev_models[["n_sessions"]][models_month_idx & models_wday_idx][[1]]
 
-  if (profile_name %in% day_models[["profile"]]) {
-    estimate_sessions(profile_name, n_sessions, day_models) %>%
-      mutate("start_dt" = day + convert_time_num_to_period(.data$start)) %>%
-      select(- "start") %>%
-      drop_na()
-  } else {
+  if (!(profile_name %in% day_models[["profile"]])) {
     return( NULL )
   }
+
+  profile_idx <- which(day_models[["profile"]] == profile_name)
+  profile_n_sessions <- round(day_n_sessions*day_models[["profile_ratio"]][[profile_idx]])
+
+  if (profile_n_sessions == 0) {
+    return( NULL )
+  }
+
+  estimate_sessions(
+    profile_name,
+    profile_n_sessions,
+    connection_models = models[["connection_models"]][[profile_idx]],
+    energy_models = models[["energy_models"]][[profile_idx]]
+  ) %>%
+    mutate("start_dt" = day + convert_time_num_to_period(.data$start)) %>%
+    select(- "start") %>%
+    drop_na()
 }
 
 #' Get profile sessions
@@ -384,7 +388,7 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
   sessions_estimated <- sessions_estimated %>%
     mutate(
       ConnectionStartDateTime = xts::align.time(.data$start_dt, n=60*interval_mins),
-      ConnectionHours = round_to_interval(.data$period, interval_mins/60),
+      ConnectionHours = round_to_interval(.data$duration, interval_mins/60),
       Power = sample(charging_rates[["rate"]], size = nrow(sessions_estimated), prob = charging_rates[["ratio"]], replace = T),
       Energy = round_to_interval(.data$energy, .data$Power*interval_mins/60)
     )
@@ -416,13 +420,14 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
 #' @param new_ratios tibble with columns: `model_name`, `profile`, `profile_ratio.`
 #' It must have all profiles from every model, including the ones with `profile_ratio = 0`.
 #' The ratios must be between 0 and 1.
+#' @param discard If TRUE, profiles with `profile_ratio == 0` will be discarded from the `ev_models` object
 #'
 #' @return tibble
 #' @export
 #'
 #' @importFrom purrr map_dbl
 #'
-update_profiles_ratios <- function(ev_models, new_ratios, discard=F) {
+update_profiles_ratios <- function(ev_models, new_ratios, discard=FALSE) {
 
   for (m in 1:nrow(ev_models)) {
     model <- ev_models[["models"]][[m]]
