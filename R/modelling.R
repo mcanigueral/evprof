@@ -57,22 +57,29 @@ get_energy_model <- function(energy_vct, k, maxit=5000) {
 #' Title
 #'
 #' @param sessions_profiles sessions data set with user profile attribute
-#' @param k number of univariate Gaussian Mixture Models (int)
+#' @param k named numeric vector with the number of univariate Gaussian Mixture Models for each profile.
+#' The names of the vector should correspond exactly with all user profiles in `sessions_profiles` tibble.
 #' @param maxit maximum number of iterations (int)
 #'
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% group_by arrange summarise mutate select
+#' @importFrom purrr map2
 #' @importFrom rlang .data
 #'
 get_energy_models <- function(sessions_profiles, k, maxit=5000) {
   sessions_profiles %>%
-    group_by(.data$Profile) %>%
+    group_by(profile = .data$Profile) %>%
     summarise(
-      energy_models = list(get_energy_model(.data$Energy, k, maxit))
+      energy = list(.data$Energy)
     ) %>%
-    rename(profile = .data$Profile)
+    arrange(match(.data$profile, names(k))) %>%
+    mutate(
+      k = k[.data$profile],
+      energy_models = map2(.data$energy, .data$k, ~ get_energy_model(.x, .y, maxit))
+    ) %>%
+    select(.data$profile, .data$energy_models)
 }
 
 
