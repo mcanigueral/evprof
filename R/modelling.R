@@ -422,7 +422,7 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
 #'
 #' @importFrom purrr map_dbl
 #'
-update_profiles_ratios <- function(ev_models, new_ratios) {
+update_profiles_ratios <- function(ev_models, new_ratios, discard=F) {
 
   for (m in 1:nrow(ev_models)) {
     model <- ev_models[["models"]][[m]]
@@ -431,6 +431,10 @@ update_profiles_ratios <- function(ev_models, new_ratios) {
       model[["profile"]],
       ~ new_ratios[["profile_ratio"]][ (new_ratios[["model_name"]] == model_name) & (new_ratios[["profile"]] == .x) ]
     )
+
+    if (discard) {
+      model <- model[model[["profile_ratio"]] > 0, ]
+    }
 
     ev_models[["models"]][[m]] <- model
   }
