@@ -4,12 +4,14 @@
 \alias{get_energy_model}
 \title{Get energy univariate Gaussian Mixture Model}
 \usage{
-get_energy_model(energy_vct, n_models)
+get_energy_model(energy_vct, k, maxit = 5000)
 }
 \arguments{
 \item{energy_vct}{energy numeric vector}
 
-\item{n_models}{number of models}
+\item{k}{number of univariate Gaussian Mixture Models (int)}
+
+\item{maxit}{maximum number of iterations (int)}
 }
 \value{
 tibble

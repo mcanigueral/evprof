@@ -4,12 +4,15 @@
 \alias{get_energy_models}
 \title{Title}
 \usage{
-get_energy_models(sessions_profiles, k)
+get_energy_models(sessions_profiles, k, maxit = 5000)
 }
 \arguments{
 \item{sessions_profiles}{sessions data set with user profile attribute}
 
-\item{k}{number of univariate Gaussian Mixture Models}
+\item{k}{named numeric vector with the number of univariate Gaussian Mixture Models for each profile.
+The names of the vector should correspond exactly with all user profiles in \code{sessions_profiles} tibble.}
+
+\item{maxit}{maximum number of iterations (int)}
 }
 \value{
 tibble
