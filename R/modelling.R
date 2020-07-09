@@ -239,7 +239,7 @@ get_estimated_energy <- function(n, energy_models) {
 #'
 #' @importFrom MASS mvrnorm
 #'
-estimate_profile <- function(n, mu, sigma) {
+estimate_connection <- function(n, mu, sigma) {
   # if (n == 0) return(matrix(c(0, 0), ncol = 2))
   if (n == 0) n = 1
   MASS::mvrnorm(n = n, mu = mu, Sigma = sigma)
@@ -256,10 +256,10 @@ estimate_profile <- function(n, mu, sigma) {
 #'
 #' @importFrom purrr pmap
 #'
-get_estimated_profiles <- function(n, profile_models) {
+get_estimated_connections <- function(n, profile_models) {
   return(pmap(
     profile_models,
-    ~ estimate_profile(round(n*..3), ..1, ..2)
+    ~ estimate_connection(round(n*..3), ..1, ..2)
   ))
 }
 
@@ -280,7 +280,7 @@ get_estimated_profiles <- function(n, profile_models) {
 estimate_sessions <- function(profile_name, n_sessions, connection_models, energy_models) {
   estimated_connections <- do.call(
     rbind,
-    get_estimated_profiles(n_sessions, connection_models)
+    get_estimated_connections(n_sessions, connection_models)
   )
   estimated_energy <- simplify(
     get_estimated_energy(n_sessions, energy_models)
@@ -332,8 +332,8 @@ get_profile_day_sessions <- function(profile_name, day, ev_models) {
   estimate_sessions(
     profile_name,
     profile_n_sessions,
-    connection_models = models[["connection_models"]][[profile_idx]],
-    energy_models = models[["energy_models"]][[profile_idx]]
+    connection_models = day_models[["connection_models"]][[profile_idx]],
+    energy_models = day_models[["energy_models"]][[profile_idx]]
   ) %>%
     mutate("start_dt" = day + convert_time_num_to_period(.data$start)) %>%
     select(- "start") %>%
