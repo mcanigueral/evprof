@@ -69,6 +69,7 @@ get_energy_model <- function(energy_vct, k, maxit=5000) {
 #' @importFrom rlang .data
 #'
 get_energy_models <- function(sessions_profiles, k, maxit=5000) {
+
   sessions_profiles %>%
     group_by(profile = .data$Profile) %>%
     summarise(
@@ -80,6 +81,7 @@ get_energy_models <- function(sessions_profiles, k, maxit=5000) {
       energy_models = map2(.data$energy, .data$k, ~ get_energy_model(.x, .y, maxit))
     ) %>%
     select(.data$profile, .data$energy_models)
+
 }
 
 
