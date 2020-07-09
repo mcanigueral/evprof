@@ -424,7 +424,7 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
 #'
 update_profiles_ratios <- function(ev_models, new_ratios) {
 
-  for (m in nrow(ev_models)) {
+  for (m in 1:nrow(ev_models)) {
     model <- ev_models[["models"]][[m]]
     model_name <- ev_models[["model_name"]][[m]]
     model[["profile_ratio"]] <- map_dbl(
