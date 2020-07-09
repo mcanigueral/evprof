@@ -40,15 +40,16 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' Get energy univariate Gaussian Mixture Model
 #'
 #' @param energy_vct energy numeric vector
-#' @param n_models number of models
+#' @param k number of univariate Gaussian Mixture Models (int)
+#' @param maxit maximum number of iterations (int)
 #'
 #' @return tibble
 #'
 #' @importFrom mixtools normalmixEM
 #' @importFrom dplyr tibble
 #'
-get_energy_model <- function(energy_vct, n_models) {
-  mixmdl <- mixtools::normalmixEM(energy_vct, k = n_models, maxit = 5000)
+get_energy_model <- function(energy_vct, k, maxit=5000) {
+  mixmdl <- mixtools::normalmixEM(energy_vct, k = k, maxit = maxit)
   tibble(mu = mixmdl$mu, sigma = mixmdl$sigma, lambda = mixmdl$lambda)
 }
 
@@ -56,7 +57,8 @@ get_energy_model <- function(energy_vct, n_models) {
 #' Title
 #'
 #' @param sessions_profiles sessions data set with user profile attribute
-#' @param k number of univariate Gaussian Mixture Models
+#' @param k number of univariate Gaussian Mixture Models (int)
+#' @param maxit maximum number of iterations (int)
 #'
 #' @return tibble
 #' @export
@@ -64,11 +66,11 @@ get_energy_model <- function(energy_vct, n_models) {
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
 #'
-get_energy_models <- function(sessions_profiles, k) {
+get_energy_models <- function(sessions_profiles, k, maxit=5000) {
   sessions_profiles %>%
     group_by(.data$Profile) %>%
     summarise(
-      energy_models = list(get_energy_model(.data$Energy, k))
+      energy_models = list(get_energy_model(.data$Energy, k, maxit))
     ) %>%
     rename(profile = .data$Profile)
 }
