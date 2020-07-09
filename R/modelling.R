@@ -429,7 +429,7 @@ update_profiles_ratios <- function(ev_models, new_ratios) {
     model_name <- ev_models[["model_name"]][[m]]
     model[["profile_ratio"]] <- map_dbl(
       model[["profile"]],
-      ~ new_ratios[["profile_ratio"]][ (new_ratios[["model_name"]] == model_name) & (new_ratios[["profile"]] = .x) ]
+      ~ new_ratios[["profile_ratio"]][ (new_ratios[["model_name"]] == model_name) & (new_ratios[["profile"]] == .x) ]
     )
 
     ev_models[["models"]][[m]] <- model
