@@ -174,17 +174,35 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), ...) {
 #' @return ggplot2 plot
 #' @export
 #'
-#' @importFrom ggplot2 aes_string stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat
+#' @importFrom lubridate wday month year
+#' @importFrom ggplot2 aes_string stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat facet_wrap
 #' @importFrom rlang .data
 #'
-plot_density_2D <- function(sessions, bins=15, start=getOption("evprof.start.hour")) {
-  sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
-  ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
+plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), start=getOption("evprof.start.hour")) {
+  density_plot <- sessions %>%
+    mutate(
+      wday = factor(wday(.data$ConnectionStartDateTime, week_start = 1)),
+      month = factor(month(.data$ConnectionStartDateTime)),
+      year = factor(year(.data$ConnectionStartDateTime)),
+      ConnectionStartDateTime = convert_time_dt_to_plot_dt(.data$ConnectionStartDateTime, start)
+    ) %>%
+    ggplot(aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
     stat_density2d(geom = "polygon", aes(fill = stat(.data$nlevel)), bins = bins) +
     scale_fill_viridis_c(name = 'Density of \nsessions\n') +
     scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
     xlab('\nSession start time') + ylab('Number of connection hours\n') +
     theme_light()
+
+  if (by == "wday") {
+    return( density_plot + facet_wrap(~ .data$wday) )
+  } else if (by == "month") {
+    return( density_plot + facet_wrap(~ .data$month) )
+  } else if (by == "year") {
+    return( density_plot + facet_wrap(~ .data$year) )
+  } else {
+    return( density_plot )
+  }
+
 }
 
 #' Density plot in 3D, considering Start time and Connection duration as variables
