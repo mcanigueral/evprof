@@ -293,7 +293,7 @@ plot_outliers <- function(sessions) {
 #' @importFrom dbscan dbscan
 #'
 detect_outliers <- function(sessions, MinPts, eps) {
-  if (is.null(MinPts) | is.null(eps)) {
+  if (is.na(MinPts) | is.na(eps)) {
     sessions[["Outlier"]] <- FALSE
     return( sessions )
   }
