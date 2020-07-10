@@ -14,8 +14,11 @@ detect_outliers(sessions, MinPts, eps)
 \item{eps}{eps parameter for DBSCAN clustering}
 }
 \value{
-sessions data set with extra boolean column \code{Outlier}
+sessions tibble with extra boolean column \code{Outlier}
 }
 \description{
 Detect outliers
+}
+\details{
+If MinPts or eps are NULL, no outliers detection is performed.
 }
