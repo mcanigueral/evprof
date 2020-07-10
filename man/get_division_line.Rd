@@ -4,12 +4,12 @@
 \alias{get_division_line}
 \title{{ggplot2} type function to plot a division line}
 \usage{
-get_division_line(day_n, start_hour)
+get_division_line(day_n, division_hour)
 }
 \arguments{
 \item{day_n}{Number of the day below the line}
 
-\item{start_hour}{Starting hour}
+\item{division_hour}{Hour to divide the groups according to disconnection time}
 }
 \value{
 ggplot2 function

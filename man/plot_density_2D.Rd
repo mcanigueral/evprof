@@ -4,12 +4,19 @@
 \alias{plot_density_2D}
 \title{Density plot in 2D, considering Start time and Connection duration as variables}
 \usage{
-plot_density_2D(sessions, bins = 15, start = getOption("evprof.start.hour"))
+plot_density_2D(
+  sessions,
+  bins = 15,
+  by = c("wday", "month", "year"),
+  start = getOption("evprof.start.hour")
+)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
 
 \item{bins}{parameter to pass to \code{ggplot2::stat_density_2d}}
+
+\item{by}{variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.}
 
 \item{start}{start hour (int)}
 }

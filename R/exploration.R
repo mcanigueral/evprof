@@ -170,6 +170,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), ...) {
 #' @param sessions sessions data set in standard format
 #' @param bins parameter to pass to `ggplot2::stat_density_2d`
 #' @param start start hour (int)
+#' @param by variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.
 #'
 #' @return ggplot2 plot
 #' @export
@@ -194,11 +195,22 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
     theme_light()
 
   if (by == "wday") {
-    return( density_plot + facet_wrap(~ .data$wday) )
+    return(
+      density_plot +
+        facet_wrap(~ .data$wday)  +
+        scale_x_datetime(date_labels = '%H:%M', date_breaks = '6 hour')
+    )
   } else if (by == "month") {
-    return( density_plot + facet_wrap(~ .data$month) )
+    return(
+      density_plot +
+        facet_wrap(~ .data$month)  +
+        scale_x_datetime(date_labels = '%H:%M', date_breaks = '8 hour')
+    )
   } else if (by == "year") {
-    return( density_plot + facet_wrap(~ .data$year) )
+    return(
+      density_plot +
+        facet_wrap(~ .data$year)
+    )
   } else {
     return( density_plot )
   }
@@ -244,7 +256,6 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
 #' @importFrom dplyr %>% select summarise_all
 #'
 summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_feature_names) {
-  print(sessions)
   sessions %>%
     select(vars) %>%
     summarise_all(.funs)

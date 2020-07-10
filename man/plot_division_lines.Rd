@@ -4,14 +4,14 @@
 \alias{plot_division_lines}
 \title{Iteration over evprof::plot_division_line function to plot multiple lines}
 \usage{
-plot_division_lines(ggplot_points, n_lines, start_hour)
+plot_division_lines(ggplot_points, n_lines, division_hour)
 }
 \arguments{
 \item{ggplot_points}{ggplot2 returned by evprof::plot_points function}
 
 \item{n_lines}{number of lines to plot}
 
-\item{start_hour}{Starting hour}
+\item{division_hour}{Hour to divide the groups according to disconnection time}
 }
 \value{
 ggplot2 function

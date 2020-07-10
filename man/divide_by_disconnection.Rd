@@ -4,14 +4,14 @@
 \alias{divide_by_disconnection}
 \title{Divide sessions by disconnection day}
 \usage{
-divide_by_disconnection(sessions, days, start_hour)
+divide_by_disconnection(sessions, days, division_hour)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
 
 \item{days}{number of disconnection days to select}
 
-\item{start_hour}{Starting hour}
+\item{division_hour}{Hour to divide the groups according to disconnection time}
 }
 \value{
 same sessions data set with extra column "Disconnection"

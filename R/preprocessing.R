@@ -5,7 +5,7 @@
 #' {ggplot2} type function to plot a division line
 #'
 #' @param day_n Number of the day below the line
-#' @param start_hour Starting hour
+#' @param division_hour Hour to divide the groups according to disconnection time
 #'
 #' @return ggplot2 function
 #' @export
@@ -15,10 +15,10 @@
 #' @importFrom lubridate force_tz hours days
 #' @importFrom rlang .data
 #'
-get_division_line <- function(day_n, start_hour) {
+get_division_line <- function(day_n, division_hour) {
   geom_line(data = tibble(
-    "dt" = seq.POSIXt(from = force_tz(Sys.Date() + hours(start_hour), tzone = getOption("evprof.tzone")), to = force_tz(Sys.Date() + days(1) + hours(start_hour), tzone = getOption("evprof.tzone")), by = "hour"),
-    "line" = as.numeric(difftime(force_tz(Sys.Date()+days(day_n) + hours(start_hour), tzone = getOption("evprof.tzone")), .data$dt, units = "hours"))
+    "dt" = seq.POSIXt(from = force_tz(Sys.Date() + hours(division_hour), tzone = getOption("evprof.tzone")), to = force_tz(Sys.Date() + days(1) + hours(division_hour), tzone = getOption("evprof.tzone")), by = "hour"),
+    "line" = as.numeric(difftime(force_tz(Sys.Date()+days(day_n) + hours(division_hour), tzone = getOption("evprof.tzone")), .data$dt, units = "hours"))
   ), aes_string("dt", "line"), size = 1, color = "red", linetype = "dashed")
 }
 
@@ -26,15 +26,15 @@ get_division_line <- function(day_n, start_hour) {
 #'
 #' @param ggplot_points ggplot2 returned by evprof::plot_points function
 #' @param n_lines number of lines to plot
-#' @param start_hour Starting hour
+#' @param division_hour Hour to divide the groups according to disconnection time
 #'
 #' @return ggplot2 function
 #' @export
 #'
-plot_division_lines <- function(ggplot_points, n_lines, start_hour) {
+plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
   ggplot_points_lines <- ggplot_points
   for (d in 1:n_lines) {
-    ggplot_points_lines <- ggplot_points_lines + get_division_line(d, start_hour)
+    ggplot_points_lines <- ggplot_points_lines + get_division_line(d, division_hour)
   }
   return(ggplot_points_lines)
 }
@@ -43,7 +43,7 @@ plot_division_lines <- function(ggplot_points, n_lines, start_hour) {
 #'
 #' @param sessions sessions data set in standard format
 #' @param days number of disconnection days to select
-#' @param start_hour Starting hour
+#' @param division_hour Hour to divide the groups according to disconnection time
 #'
 #' @return same sessions data set with extra column "Disconnection"
 #' @export
@@ -53,15 +53,17 @@ plot_division_lines <- function(ggplot_points, n_lines, start_hour) {
 #' @importFrom lubridate days hours
 #' @importFrom rlang .data
 #'
-divide_by_disconnection <- function(sessions, days, start_hour) {
+divide_by_disconnection <- function(sessions, days, division_hour) {
   sessions[["StartTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
   sessions[["EndTime"]] <- sessions[["StartTime"]] + convert_time_num_to_period(sessions[["ConnectionHours"]])
 
   purrr::map_dfr(
     days,
-    ~ filter(sessions,
-             .data$EndTime > (Sys.Date() + days(.x-1) + hours(start_hour)),
-             .data$EndTime <= (Sys.Date() + days(.x) + hours(start_hour))),
+    ~ filter(
+      sessions,
+      .data$EndTime > force_tz(Sys.Date() + days(.x-1) + hours(division_hour), tzone = getOption("evprof.tzone")),
+      .data$EndTime <= force_tz(Sys.Date() + days(.x) + hours(division_hour), tzone = getOption("evprof.tzone"))
+    ),
     .id = "Disconnection"
   )
 }
