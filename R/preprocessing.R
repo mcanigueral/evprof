@@ -285,12 +285,18 @@ plot_outliers <- function(sessions) {
 #' @param MinPts MinPts parameter for DBSCAN clustering
 #' @param eps eps parameter for DBSCAN clustering
 #'
-#' @return sessions data set with extra boolean column `Outlier`
+#' @details If MinPts or eps are NULL, no outliers detection is performed.
+#'
+#' @return sessions tibble with extra boolean column `Outlier`
 #' @export
 #'
 #' @importFrom dbscan dbscan
 #'
 detect_outliers <- function(sessions, MinPts, eps) {
+  if (is.null(MinPts) | is.null(eps)) {
+    sessions[["Outlier"]] <- FALSE
+    return( sessions )
+  }
   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
   sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
   dbscan_clusters <- dbscan::dbscan(sessions_cluster, eps, MinPts)
