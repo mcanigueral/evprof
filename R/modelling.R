@@ -361,8 +361,8 @@ get_profile_sessions <- function(profile_name, dates, ev_models) {
 #' @param ev_models tibble with columns: `model_name`, `months`, `wdays`, `models`, `n_sessions`
 #' The column `models` must be a list of tibbles, while each tibble must have the columns
 #'  `profile`, `profile_ratio` (between 0 and 1), `connection_models` and `energy_models`
-#' @param charging_rates charging rates proportions (tibble) with two columns: `rate` and `ratio`.
-#' The rates must be in kW and the ratios between 0 and 1.
+#' @param charging_powers charging powers proportions (tibble) with two columns: `power` and `ratio`.
+#' The powers must be in kW and the ratios between 0 and 1.
 #' @param dates datetime vector with dates to simualte (datetime values with hour set to 00:00)
 #' @param interval_mins interval of minutes (integer) to round the sessions datetime variables
 #'
@@ -374,7 +374,7 @@ get_profile_sessions <- function(profile_name, dates, ev_models) {
 #' @importFrom rlang .data
 #' @importFrom xts align.time
 #'
-simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
+simulate_sessions <- function(ev_models, charging_powers, dates, interval_mins) {
   # Obtain sessions from all profiles in models
   profiles <- unique(unlist(map(ev_models[["models"]], ~ .x[["profile"]])))
 
@@ -389,7 +389,7 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
     mutate(
       ConnectionStartDateTime = xts::align.time(.data$start_dt, n=60*interval_mins),
       ConnectionHours = round_to_interval(.data$duration, interval_mins/60),
-      Power = sample(charging_rates[["rate"]], size = nrow(sessions_estimated), prob = charging_rates[["ratio"]], replace = T),
+      Power = sample(charging_powers[["power"]], size = nrow(sessions_estimated), prob = charging_powers[["ratio"]], replace = T),
       Energy = round_to_interval(.data$energy, .data$Power*interval_mins/60)
     )
 
@@ -398,7 +398,7 @@ simulate_sessions <- function(ev_models, charging_rates, dates, interval_mins) {
   sessions_estimated[limit_idx, "Energy"] <-
     sessions_estimated[limit_idx, "Power"]*sessions_estimated[limit_idx, "ConnectionHours"]
 
-  # Increase energy resulting in 0kWh due to power rate round
+  # Increase energy resulting in 0kWh due to power round
   e0_idx <- sessions_estimated$Energy <= 0
   sessions_estimated[e0_idx, "Energy"] <- sessions_estimated[e0_idx, "Power"]*interval_mins/60
 
