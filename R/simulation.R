@@ -78,7 +78,7 @@ estimate_connection <- function(n, mu, sigma, log) {
 get_estimated_connections <- function(n, profile_models, log) {
   return(pmap(
     profile_models,
-    ~ estimate_connection(round(n*..3), ..1, ..2)
+    ~ estimate_connection(round(n*..3), ..1, ..2, log)
   ))
 }
 
