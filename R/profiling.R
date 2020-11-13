@@ -54,5 +54,3 @@ define_profiles <- function (sessions_clustered = list(), clusters_interpretatio
   ) %>% select("Profile", everything())
 }
 
-
-
