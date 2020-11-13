@@ -42,6 +42,7 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' @param energy_vct energy numeric vector
 #' @param k number of univariate Gaussian Mixture Models (int)
 #' @param maxit maximum number of iterations (int)
+#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return tibble
 #'
@@ -61,6 +62,7 @@ get_energy_model <- function(energy_vct, k, maxit=5000, log = TRUE) {
 #' @param k named numeric vector with the number of univariate Gaussian Mixture Models for each profile.
 #' The names of the vector should correspond exactly with all user profiles in `sessions_profiles` tibble.
 #' @param maxit maximum number of iterations (int)
+#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return tibble
 #' @export
@@ -197,6 +199,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @param wdays integer vector with the corresponding days of the week for each model (week start = 1)
 #' @param connection_log Logical, true if connection models have logarithmic transformations
 #' @param energy_log Logical, true if energy models have logarithmic transformations
+#' @param file character string with the path or name of the .RDS file
 #'
 #' @export
 #'
@@ -230,6 +233,8 @@ save_models <- function(connection_GMM = list(), energy_GMM = list(),
 }
 
 
+
+# Modify the models -------------------------------------------------------
 
 #' Update the ratios of the user profiles
 #'

@@ -4,7 +4,7 @@
 \alias{get_energy_models}
 \title{Title}
 \usage{
-get_energy_models(sessions_profiles, k, maxit = 5000)
+get_energy_models(sessions_profiles, k, maxit = 5000, log = TRUE)
 }
 \arguments{
 \item{sessions_profiles}{sessions data set with user profile attribute}
@@ -13,6 +13,8 @@ get_energy_models(sessions_profiles, k, maxit = 5000)
 The names of the vector should correspond exactly with all user profiles in \code{sessions_profiles} tibble.}
 
 \item{maxit}{maximum number of iterations (int)}
+
+\item{log}{Logical, true to perform logarithmic transformation (base = exp(1))}
 }
 \value{
 tibble

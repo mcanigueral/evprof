@@ -4,12 +4,14 @@
 \alias{plot_points}
 \title{Scatter plot of sessions}
 \usage{
-plot_points(sessions, start = getOption("evprof.start.hour"), ...)
+plot_points(sessions, start = getOption("evprof.start.hour"), log = FALSE, ...)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format.}
 
 \item{start}{start hour (int)}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 
 \item{...}{arguments to \code{ggplot2::geom_point} function}
 }

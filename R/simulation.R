@@ -198,7 +198,7 @@ get_profile_sessions <- function(profile_name, dates, ev_models, connection_log,
 #' @export
 #'
 #' @importFrom purrr map map_dfr set_names
-#' @importFrom dplyr mutate any_of
+#' @importFrom dplyr mutate any_of row_number
 #' @importFrom rlang .data
 #' @importFrom xts align.time
 #'

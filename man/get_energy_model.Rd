@@ -4,7 +4,7 @@
 \alias{get_energy_model}
 \title{Get energy univariate Gaussian Mixture Model}
 \usage{
-get_energy_model(energy_vct, k, maxit = 5000)
+get_energy_model(energy_vct, k, maxit = 5000, log = TRUE)
 }
 \arguments{
 \item{energy_vct}{energy numeric vector}
@@ -12,6 +12,8 @@ get_energy_model(energy_vct, k, maxit = 5000)
 \item{k}{number of univariate Gaussian Mixture Models (int)}
 
 \item{maxit}{maximum number of iterations (int)}
+
+\item{log}{Logical, true to perform logarithmic transformation (base = exp(1))}
 }
 \value{
 tibble

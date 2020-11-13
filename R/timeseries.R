@@ -28,14 +28,15 @@ df_to_ts <- function(df) {
 #'
 #' @return tibble
 #'
-#' @importFrom dplyr %>% filter group_by summarise mutate spread sym
+#' @importFrom dplyr %>% filter group_by summarise mutate sym
+#' @importFrom tidyr spread
 #' @importFrom lubridate minutes
 #' @importFrom rlang .data
 #'
 get_interval_demand <- function(sessions, dttm_start, interval, by = c("Profile", "Session")) {
   sessions %>%
     filter(
-      ConnectionStartDateTime <= dttm_start & ChargingEndDateTime >= (dttm_start + minutes(interval))
+      .data$ConnectionStartDateTime <= dttm_start & .data$ChargingEndDateTime >= (dttm_start + minutes(interval))
     ) %>%
     group_by(!!sym(by)) %>%
     summarise(Power = sum(.data$Power)) %>%
@@ -58,12 +59,13 @@ get_interval_demand <- function(sessions, dttm_start, interval, by = c("Profile"
 #'
 get_demand <- function(sessions, dttm_seq, by = "Profile") {
   time_interval <- as.integer(as.numeric(dttm_seq[2] - dttm_seq[1], unit = 'hours')*60)
-  tibble(datetime = dttm_seq) %>%
+  demand <- tibble(datetime = dttm_seq) %>%
     left_join(
       map_dfr(dttm_seq, ~get_interval_demand(sessions, .x, time_interval, by)),
       by = "datetime"
-    ) %>%
-    replace(is.na(.), 0)
+    )
+  demand <- replace(is.na(demand), 0)
+  return( demand )
 }
 
 

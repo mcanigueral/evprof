@@ -4,7 +4,13 @@
 \alias{get_mclust_object}
 \title{Perform \code{mclust::Mclust} clustering}
 \usage{
-get_mclust_object(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000)
+get_mclust_object(
+  sessions,
+  k,
+  mclust_tol = 1e-08,
+  mclust_itmax = 10000,
+  log = TRUE
+)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
@@ -14,6 +20,8 @@ get_mclust_object(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000)
 \item{mclust_tol}{tolerance parameter for clustering}
 
 \item{mclust_itmax}{maximum number of iterations}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 mclust object

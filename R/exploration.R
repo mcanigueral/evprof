@@ -29,7 +29,7 @@ round_to_interval <- function(dbl, interval) {
 #'
 #' @param time_dt Datetime value
 #'
-#' @importFrom lubridate hour minute
+#' @importFrom lubridate hour minute second
 #'
 convert_time_dt_to_num <- function(time_dt) {
   hour(time_dt) + minute(time_dt)/60 + second(time_dt)/3600

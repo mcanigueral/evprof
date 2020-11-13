@@ -7,7 +7,8 @@
 plot_density_3D(
   sessions,
   start = getOption("evprof.start.hour"),
-  eye = list(x = -0.75, y = -2, z = 0.5)
+  eye = list(x = -1.5, y = -1.5, z = 1.5),
+  log = TRUE
 )
 }
 \arguments{
@@ -15,7 +16,9 @@ plot_density_3D(
 
 \item{start}{start hour (int)}
 
-\item{eye}{list containing x, y and z points of view. Example: \code{list(x = -0.75, y = -2, z = 0.5)}}
+\item{eye}{list containing x, y and z points of view. Example: \code{list(x = -1.5, y = -1.5, z = 1.5)}#'}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 plotly plot (html)

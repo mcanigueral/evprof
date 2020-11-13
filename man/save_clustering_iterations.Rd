@@ -12,7 +12,8 @@ save_clustering_iterations(
   filename = paste0("iteration_", k, "_clusters.pdf"),
   plot_scale = 2,
   mclust_tol = 1e-08,
-  mclust_itmax = 10000
+  mclust_itmax = 10000,
+  log = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ save_clustering_iterations(
 \item{mclust_tol}{tolerance parameter for clustering}
 
 \item{mclust_itmax}{maximum number of iterations}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \description{
 Save iteration plots in PDF file

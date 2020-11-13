@@ -10,7 +10,8 @@ plot_bivarGMM(
   profiles_names = seq(1, nrow(bivarGMM_params)),
   points_size = 0.5,
   lines_size = 1,
-  legend_nrow = 2
+  legend_nrow = 2,
+  log = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ plot_bivarGMM(
 \item{lines_size}{size of lines in the plot}
 
 \item{legend_nrow}{number of rows in legend}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 ggplot2 plot
