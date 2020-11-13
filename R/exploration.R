@@ -32,10 +32,10 @@ round_to_interval <- function(dbl, interval) {
 #' @importFrom lubridate hour minute
 #'
 convert_time_dt_to_num <- function(time_dt) {
-  hour(time_dt) + minute(time_dt)/60
+  hour(time_dt) + minute(time_dt)/60 + second(time_dt)/3600
 }
 
-#' Covnert datetime value to rounded numeric (hour-based)
+#' Convert datetime value to rounded numeric (hour-based)
 #'
 #' @param time_dt Datetime value
 #' @param interval Time interval of the time sequence. It can be 0.5 (30 minutes) or 1 (1 hour).
@@ -144,20 +144,39 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
 # }
 
 
+# Logarithmic scale -------------------------------------------------------
+
+#' Logarithmic transforamtion to ConnectionStartDateTime and ConnectionHours variables
+#'
+#' @param sessions sessions data set in standard format.
+#' @param base logarithmic base
+#'
+mutate_to_log <- function(sessions, base = exp(1)) {
+  sessions["ConnectionStartDateTime"] <- log(convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]]), base = base)
+  sessions["ConnectionHours"] <- log(sessions["ConnectionHours"], base = base)
+  sessions
+}
+
+
 # General sessions' plots -------------------------------------------------
 
 #' Scatter plot of sessions
 #'
 #' @param sessions sessions data set in standard format.
 #' @param start start hour (int)
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #' @param ... arguments to `ggplot2::geom_point` function
 #'
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime labs theme_light
 #'
-plot_points <- function(sessions, start=getOption("evprof.start.hour"), ...) {
-  sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
+plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FALSE, ...) {
+  if (!log) {
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
+  } else {
+    sessions <- mutate_to_log(sessions)
+  }
   ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
     geom_point(...) +
     scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
@@ -221,8 +240,8 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #'
 #' @param sessions sessions data set in standard format
 #' @param start start hour (int)
-#' @param eye list containing x, y and z points of view. Example: `list(x = -0.75, y = -2, z = 0.5)`
-#'
+#' @param eye list containing x, y and z points of view. Example: `list(x = -1.5, y = -1.5, z = 1.5)`#'
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #' @return plotly plot (html)
 #' @export
 #'
@@ -230,7 +249,12 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #' @importFrom plotly plot_ly add_surface layout hide_colorbar
 #' @importFrom dplyr %>%
 #'
-plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye = list(x = -0.75, y = -2, z = 0.5)) {
+plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye = list(x = -1.5, y = -1.5, z = 1.5), log = TRUE) {
+  if (!log) {
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
+  } else {
+    sessions <- mutate_to_log(sessions)
+  }
   density <- MASS::kde2d(convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start), sessions[["ConnectionHours"]])
   plot_ly(x = density$x, y = density$y, z = t(density$z)) %>%
     add_surface() %>%

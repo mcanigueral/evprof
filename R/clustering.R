@@ -7,6 +7,7 @@
 #' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return BIC plot
 #' @export
@@ -14,8 +15,8 @@
 #' @importFrom graphics plot
 #' @importFrom mclust mclustBIC
 #'
-choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4) {
-  mod <- get_mclust_object(sessions, k = 1:10, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax)
+choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+  mod <- get_mclust_object(sessions, k = 1:10, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
   plot(mod, what = "BIC")
 }
 
@@ -26,14 +27,19 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4) {
 #' @param k number of clusters
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return mclust object
 #'
 #' @importFrom mclust Mclust emControl
 #'
-get_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4) {
+get_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+  if (!log) {
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+  } else {
+    sessions <- mutate_to_log(sessions)
+  }
   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
   Mclust(sessions_cluster, G = k, control = emControl(tol = mclust_tol, itmax = mclust_itmax))
 }
 
@@ -63,13 +69,14 @@ get_mclust_params <- function(mclust_obj) {
 #' @param seed random seed
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return list with two attributes: sessions and models
 #' @export
 #'
-cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4) {
+cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
   set.seed(seed)
-  mclust_obj <- get_mclust_object(sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax)
+  mclust_obj <- get_mclust_object(sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
   sessions["Cluster"] <- factor(mclust_obj$classification)
   list(
     sessions = sessions,
@@ -88,6 +95,7 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param plot_scale scale of each iteration plot for a good visualization in pdf file
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @export
 #'
@@ -97,7 +105,7 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #'
 save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),
                                     filename = paste0("iteration_", k, "_clusters.pdf"), plot_scale = 2,
-                                    mclust_tol = 1e-8, mclust_itmax = 1e4) {
+                                    mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
   ellipses_plots <- list()
   IC_values <- tibble(
     seed = seeds,
@@ -105,16 +113,14 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
   )
 
   for (i in 1:length(seeds)) {
-    sessions_cluster <- sessions
     set.seed(seeds[i])
-    mod <- get_mclust_object(sessions_cluster, k = k)
+    mod <- get_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
     mod_params <- get_mclust_params(mod)
-    ellipses_plots[[i]] <- plot_bivarGMM(sessions_cluster, mod_params) +
+    ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params) +
       ggtitle(paste0("Seed: ", seeds[i], ", BIC: ", round(mod$bic))) +
       scale_color_discrete(labels = paste0(
         seq(1, mod$G), " (", round(mod$parameters$pro*100), "%)"
       ))
-
     IC_values$seed[i] <- seeds[i]
     IC_values$BIC[i] <- round(mod$bic)
   }
@@ -124,7 +130,8 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
   message(paste("Optimal seed:", opt_BIC_seed[1], "with BIC =", max(IC_values$BIC)))
 
   # ggsave(filename, plot = gridExtra::marrangeGrob(ellipses_plots, nrow = round(it/3), ncol = 3), scale = plot_scale)
-  ggsave(filename, plot = cowplot::plot_grid(plotlist = ellipses_plots, nrow = round(it/3), ncol = 3), scale = plot_scale)
+  ggsave(filename, plot = cowplot::plot_grid(plotlist = ellipses_plots, nrow = round(it/3), ncol = 3),
+         paper="a4r", width = 49, height = 40)
 
 }
 
@@ -152,6 +159,7 @@ get_ellipse <- function(mu, sigma) {
 #' @param points_size size of scatter points in the plot
 #' @param lines_size size of lines in the plot
 #' @param legend_nrow number of rows in legend
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return ggplot2 plot
 #' @export
@@ -159,23 +167,31 @@ get_ellipse <- function(mu, sigma) {
 #' @importFrom purrr map_dfr set_names
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_path labs theme_light theme guides guide_legend scale_x_continuous scale_y_continuous
 #'
-plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.5, lines_size = 1, legend_nrow = 2) {
+plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.5, lines_size = 1, legend_nrow = 2, log = TRUE) {
   ellipses <- purrr::map_dfr(
     set_names(seq(1, nrow(bivarGMM_params)), nm = profiles_names),
     ~get_ellipse(bivarGMM_params$mu[[.x]], bivarGMM_params$sigma[[.x]]),
     .id = "profile"
   )
   ellipses$profile <- factor(ellipses$profile, levels = unique(profiles_names))
+  if (!log) {
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+  } else {
+    sessions <- mutate_to_log(sessions, base = log)
+  }
   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
-  ggplot(data = sessions_cluster, aes_string(x = "ConnectionStartDateTime", y = "ConnectionHours")) +
+  plot <- ggplot(data = sessions_cluster, aes_string(x = "ConnectionStartDateTime", y = "ConnectionHours")) +
     geom_point(size = points_size) +
     geom_path(data = ellipses, aes_string(x = "x", y = "y", color = "profile"), size = lines_size) +
     labs(x = 'Connection start time', y = 'Connection hours', color = "") +
     theme_light() +
     theme(legend.position = "bottom") +
-    guides(color=guide_legend(nrow=legend_nrow, byrow=TRUE)) +
-    scale_x_continuous(breaks = seq(5, 26, 4), labels = sprintf("%d:00", c(seq(5, 23, 4), 2))) +
-    scale_y_continuous(breaks = seq(0, 24, 4))
+    guides(color=guide_legend(nrow=legend_nrow, byrow=TRUE))
+  if (!log) {
+    plot <- plot +
+      scale_x_continuous(breaks = seq(5, 26, 4), labels = sprintf("%d:00", c(seq(5, 23, 4), 2))) +
+      scale_y_continuous(breaks = seq(0, 24, 4))
+  }
+  return( plot )
 }
 

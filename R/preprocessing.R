@@ -145,165 +145,165 @@ plot_divisions <- function(sessions, by_disconnection = TRUE, by_timecycle = TRU
 }
 
 
-
-# DBSCAN Clustering -------------------------------------------------------
-
-
-#' Get MinPts value according to percentage of sessions data set size (rows)
 #'
-#' @param sessions sessions data set in standard format
-#' @param pct percentage of rows to consider
+#' # DBSCAN Clustering -------------------------------------------------------
 #'
-#' @return integer value
-#' @export
 #'
-get_MinPts <- function(sessions, pct=0.05) {
-  round(pct*nrow(sessions))
-  # round(log(nrow(sessions)))
-}
-
-#' Get optimal value of eps according to MinPts kNNdist
+#' #' Get MinPts value according to percentage of sessions data set size (rows)
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #' @param pct percentage of rows to consider
+#' #'
+#' #' @return integer value
+#' #' @export
+#' #'
+#' get_MinPts <- function(sessions, pct=0.05) {
+#'   round(pct*nrow(sessions))
+#'   # round(log(nrow(sessions)))
+#' }
 #'
-#' @param sessions sessions data set in standard format
-#' @param MinPts MinPts value
+#' #' Get optimal value of eps according to MinPts kNNdist
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #' @param MinPts MinPts value
+#' #'
+#' #' @return numeric value
+#' #' @export
+#' #'
+#' #' @importFrom dbscan kNNdist
+#' #' @importFrom ecp e.divisive
+#' get_eps <- function(sessions, MinPts) {
+#'   sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+#'   kNNdist <- dbscan::kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts)
+#'   elbows <- ecp::e.divisive(diff(matrix(kNNdist)), k = 1, min.size = 2)$estimates
+#'   elbow <- elbows[length(elbows)]
+#'   kNNdist[elbow]
+#' }
 #'
-#' @return numeric value
-#' @export
+#' #' Plot kNNdist
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #' @param MinPts MinPts value
+#' #' @param MinPts_pct MinPts percentage
+#' #'
+#' #' @return plot
+#' #' @export
+#' #'
+#' #' @importFrom dbscan kNNdist
+#' plot_kNNdist <- function(sessions, MinPts = NULL, MinPts_pct = 0.01) {
+#'   if (is.null(MinPts)) {
+#'     MinPts <- get_MinPts(sessions, MinPts_pct)
+#'   }
+#'   sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+#'   ggplot(
+#'     tibble(
+#'       x = 1:nrow(sessions),
+#'       dist = sort(kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
+#'     ), aes_string("x", "dist")
+#'   ) +
+#'     geom_line() +
+#'     labs(x = "Points sorted by distance", y = paste0(MinPts, "-NN distance"))
+#'   # return(dbscan::kNNdistplot(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
+#' }
 #'
-#' @importFrom dbscan kNNdist
-#' @importFrom ecp e.divisive
-get_eps <- function(sessions, MinPts) {
-  sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
-  kNNdist <- dbscan::kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts)
-  elbows <- ecp::e.divisive(diff(matrix(kNNdist)), k = 1, min.size = 2)$estimates
-  elbow <- elbows[length(elbows)]
-  kNNdist[elbow]
-}
-
-#' Plot kNNdist
 #'
-#' @param sessions sessions data set in standard format
-#' @param MinPts MinPts value
-#' @param MinPts_pct MinPts percentage
 #'
-#' @return plot
-#' @export
+#' #' Get the minPts and eps values for DBSCAN to label only a specific percentage as noise
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #' @param MinPts DBSCAN MinPts parameter
+#' #' @param eps0 DBSCAN eps parameter corresponding to the elbow of kNN dist plot
+#' #' @param noise_th noise treshold
+#' #' @param eps_offset_pct eps_offset_pct
+#' #' @param eps_inc_pct eps_inc_pct
+#' #'
+#' #' @return tibble with minPts and eps parameters, and the corresponding noise
+#' #' @export
+#' #'
+#' #' @importFrom dbscan dbscan
+#' #' @importFrom dplyr tibble bind_rows arrange sym
+#' #'
+#' get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_pct = 0.9, eps_inc_pct = 0.02) {
+#'   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
+#'   sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
+#'   noise_table <- tibble()
 #'
-#' @importFrom dbscan kNNdist
-plot_kNNdist <- function(sessions, MinPts = NULL, MinPts_pct = 0.01) {
-  if (is.null(MinPts)) {
-    MinPts <- get_MinPts(sessions, MinPts_pct)
-  }
-  sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
-  ggplot(
-    tibble(
-      x = 1:nrow(sessions),
-      dist = sort(kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
-    ), aes_string("x", "dist")
-  ) +
-    geom_line() +
-    labs(x = "Points sorted by distance", y = paste0(MinPts, "-NN distance"))
-  # return(dbscan::kNNdistplot(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
-}
-
-
-
-#' Get the minPts and eps values for DBSCAN to label only a specific percentage as noise
+#'   # Try to achieve noise threshold decreasing eps
+#'   eps_offset <- round(eps0*eps_offset_pct, 1)
+#'   eps_inc <- round(eps_offset*eps_inc_pct, 3)
 #'
-#' @param sessions sessions data set in standard format
-#' @param MinPts DBSCAN MinPts parameter
-#' @param eps0 DBSCAN eps parameter corresponding to the elbow of kNN dist plot
-#' @param noise_th noise treshold
-#' @param eps_offset_pct eps_offset_pct
-#' @param eps_inc_pct eps_inc_pct
+#'   noise_table <- tibble()
 #'
-#' @return tibble with minPts and eps parameters, and the corresponding noise
-#' @export
+#'   for (eps_rest in seq(0, eps_offset, eps_inc)) {
+#'     eps <- eps0 - eps_rest
+#'     if (eps <= 0) break
+#'     sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
+#'     sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
+#'     dbscan_clusters <- dbscan::dbscan(sessions_cluster, eps, MinPts)
+#'     noise <- round(sum(dbscan_clusters$cluster == 0)/length(dbscan_clusters$cluster)*100, 2)
+#'     noise_table <- bind_rows(noise_table, c(MinPts = MinPts, eps = eps, noise = noise))
+#'     noise_table <- arrange(noise_table, !!sym("noise"))
+#'     if ((noise_table$noise[1] <= noise_th) & (noise_table$noise[nrow(noise_table)] >= noise_th)) break
+#'   }
 #'
-#' @importFrom dbscan dbscan
-#' @importFrom dplyr tibble bind_rows arrange sym
+#'   if (noise_table$noise[1] <= noise_th) {
+#'     if (noise_table$noise[nrow(noise_table)] >= noise_th) {
+#'       # Noise threshold achieved
+#'       return( noise_table[noise_table$noise >= noise_th, ][1, ] )
+#'     } else {
+#'       message(paste0("Not enought noise (", noise_table$noise[nrow(noise_table)] ," %). Consider a lower value of MinPts."))
+#'       return(NULL)
+#'     }
+#'   } else {
+#'     message(paste0("Too much nosie (", noise_table$noise[1] ," %). Consider a higher eps0."))
+#'     return(NULL)
+#'   }
+#' }
 #'
-get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_pct = 0.9, eps_inc_pct = 0.02) {
-  sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
-  noise_table <- tibble()
-
-  # Try to achieve noise threshold decreasing eps
-  eps_offset <- round(eps0*eps_offset_pct, 1)
-  eps_inc <- round(eps_offset*eps_inc_pct, 3)
-
-  noise_table <- tibble()
-
-  for (eps_rest in seq(0, eps_offset, eps_inc)) {
-    eps <- eps0 - eps_rest
-    if (eps <= 0) break
-    sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-    sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
-    dbscan_clusters <- dbscan::dbscan(sessions_cluster, eps, MinPts)
-    noise <- round(sum(dbscan_clusters$cluster == 0)/length(dbscan_clusters$cluster)*100, 2)
-    noise_table <- bind_rows(noise_table, c(MinPts = MinPts, eps = eps, noise = noise))
-    noise_table <- arrange(noise_table, !!sym("noise"))
-    if ((noise_table$noise[1] <= noise_th) & (noise_table$noise[nrow(noise_table)] >= noise_th)) break
-  }
-
-  if (noise_table$noise[1] <= noise_th) {
-    if (noise_table$noise[nrow(noise_table)] >= noise_th) {
-      # Noise threshold achieved
-      return( noise_table[noise_table$noise >= noise_th, ][1, ] )
-    } else {
-      message(paste0("Not enought noise (", noise_table$noise[nrow(noise_table)] ," %). Consider a lower value of MinPts."))
-      return(NULL)
-    }
-  } else {
-    message(paste0("Too much nosie (", noise_table$noise[1] ," %). Consider a higher eps0."))
-    return(NULL)
-  }
-}
-
-#' Plot outlying sessions
+#' #' Plot outlying sessions
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #'
+#' #' @return ggplot2 plot
+#' #' @export
+#' #'
+#' #' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual
+#' #'
+#' plot_outliers <- function(sessions) {
+#'   sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
+#'   ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
+#'     geom_point(size = 0.5) +
+#'     scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
+#'     labs(x='Connection start time', y='Number of connection hours', color = "") +
+#'     theme_light() +
+#'     scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
+#' }
 #'
-#' @param sessions sessions data set in standard format
+#' #' Detect outliers
+#' #'
+#' #' @param sessions sessions data set in standard format
+#' #' @param MinPts MinPts parameter for DBSCAN clustering
+#' #' @param eps eps parameter for DBSCAN clustering
+#' #'
+#' #' @details If MinPts or eps are NULL, no outliers detection is performed.
+#' #'
+#' #' @return sessions tibble with extra boolean column `Outlier`
+#' #' @export
+#' #'
+#' #' @importFrom dbscan dbscan
+#' #'
+#' detect_outliers <- function(sessions, MinPts, eps) {
+#'   if (is.na(MinPts) | is.na(eps)) {
+#'     sessions[["Outlier"]] <- FALSE
+#'     return( sessions )
+#'   }
+#'   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
+#'   sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
+#'   dbscan_clusters <- dbscan::dbscan(sessions_cluster, eps, MinPts)
+#'   sessions[["Outlier"]] <- dbscan_clusters$cluster == 0
+#'   return( sessions )
+#' }
 #'
-#' @return ggplot2 plot
-#' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual
 #'
-plot_outliers <- function(sessions) {
-  sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
-  ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
-    geom_point(size = 0.5) +
-    scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
-    labs(x='Connection start time', y='Number of connection hours', color = "") +
-    theme_light() +
-    scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
-}
-
-#' Detect outliers
 #'
-#' @param sessions sessions data set in standard format
-#' @param MinPts MinPts parameter for DBSCAN clustering
-#' @param eps eps parameter for DBSCAN clustering
-#'
-#' @details If MinPts or eps are NULL, no outliers detection is performed.
-#'
-#' @return sessions tibble with extra boolean column `Outlier`
-#' @export
-#'
-#' @importFrom dbscan dbscan
-#'
-detect_outliers <- function(sessions, MinPts, eps) {
-  if (is.na(MinPts) | is.na(eps)) {
-    sessions[["Outlier"]] <- FALSE
-    return( sessions )
-  }
-  sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  sessions_cluster["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
-  dbscan_clusters <- dbscan::dbscan(sessions_cluster, eps, MinPts)
-  sessions[["Outlier"]] <- dbscan_clusters$cluster == 0
-  return( sessions )
-}
-
-
-
-

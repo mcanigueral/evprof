@@ -405,7 +405,10 @@ simulate_sessions <- function(ev_models, charging_powers, dates, interval_mins) 
   # Calculate charging time according to power and energy
   sessions_estimated <- sessions_estimated %>%
     mutate(
+      Session = paste0('S', row_number()),
       ChargingHours = .data$Energy/.data$Power,
+      ConnectionEndDateTime = .data$ConnectionStartDateTime + convert_time_num_to_period(.data$ConnectionHours),
+      ChargingStartDateTime = .data$ConnectionStartDateTime,
       ChargingEndDateTime = .data$ConnectionStartDateTime + convert_time_num_to_period(.data$ChargingHours)
     ) %>%
     select(any_of(c("Profile", evprof::sessions_feature_names)))
@@ -445,7 +448,6 @@ update_profiles_ratios <- function(ev_models, new_ratios, discard=FALSE) {
   }
 
   return(ev_models)
-
 }
 
 
