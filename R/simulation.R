@@ -198,7 +198,7 @@ get_profile_sessions <- function(profile_name, dates, ev_models, connection_log,
 #' @export
 #'
 #' @importFrom purrr map map_dfr set_names
-#' @importFrom dplyr mutate any_of row_number
+#' @importFrom dplyr mutate any_of row_number arrange
 #' @importFrom rlang .data
 #' @importFrom xts align.time
 #'
@@ -239,7 +239,8 @@ simulate_sessions <- function(ev_models, charging_powers, dates, interval_mins, 
       ChargingStartDateTime = .data$ConnectionStartDateTime,
       ChargingEndDateTime = .data$ConnectionStartDateTime + convert_time_num_to_period(.data$ChargingHours)
     ) %>%
-    select(any_of(c("Profile", evprof::sessions_feature_names)))
+    select(any_of(c("Profile", evprof::sessions_feature_names))) %>%
+    arrange(.data$ConnectionStartDateTime)
 
   return( sessions_estimated )
 }
