@@ -2,14 +2,15 @@
 
 # Data documentation ------------------------------------------------------
 
-#' Sample of EV sessions dataset
-#'
-#' A dataset containing the features of EV sessions in public
-#' charging infrastructura from September to December 2019,
-#' both included.
-#'
-#' @format A tibble
-"sessions"
+#' #' Sample of EV sessions dataset
+#' #'
+#' #' A dataset containing the features of EV sessions in public
+#' #' charging infrastructura from September to December 2019,
+#' #' both included.
+#' #'
+#' #' @format A tibble
+#' #'
+#' "sessions"
 
 
 #' Names of standard features of a sessions dataset
