@@ -165,7 +165,7 @@ plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_
 #' @return ggplot2
 #' @export
 #'
-#' @importFrom purrr map_dbl pmap_dfr
+#' @importFrom purrr map map_dbl pmap_dfr
 #' @importFrom dplyr tibble arrange mutate select group_by summarise
 #' @importFrom rlang .data
 #'
