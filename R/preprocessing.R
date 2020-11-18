@@ -6,7 +6,7 @@
 #'
 #' @param sessions sessions data set in standard format
 #' @param connection_hours_min numeric, minimum of connection hours (duration)
-#' @param connection_hours_min numeric, maximum of connection hours (duration)
+#' @param connection_hours_max numeric, maximum of connection hours (duration)
 #' @param connection_start_min numeric, minimum hour of connection start (hour as numeric)
 #' @param connection_start_max numeric, maximum hour of connection start (hour as numeric)
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).

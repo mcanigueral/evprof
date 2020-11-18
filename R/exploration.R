@@ -194,6 +194,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' @param bins parameter to pass to `ggplot2::stat_density_2d`
 #' @param start start hour (int)
 #' @param by variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return ggplot2 plot
 #' @export

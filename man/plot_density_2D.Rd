@@ -8,7 +8,8 @@ plot_density_2D(
   sessions,
   bins = 15,
   by = c("wday", "month", "year"),
-  start = getOption("evprof.start.hour")
+  start = getOption("evprof.start.hour"),
+  log = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ plot_density_2D(
 \item{by}{variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.}
 
 \item{start}{start hour (int)}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 ggplot2 plot
