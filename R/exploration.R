@@ -177,11 +177,15 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
   } else {
     sessions <- mutate_to_log(sessions)
   }
-  ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
+  plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
     geom_point(...) +
-    # scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
     labs(x='Connection start time', y='Number of connection hours', color='Cluster') +
     theme_light()
+  if (!log) {
+    plot + scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour')
+  } else {
+    plot
+  }
 }
 
 #' Density plot in 2D, considering Start time and Connection duration as variables
@@ -207,7 +211,7 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
   } else {
     sessions <- mutate_to_log(sessions)
   }
-  sessions %>%
+  density_plot <- sessions %>%
     ggplot(aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
     stat_density2d(geom = "polygon", aes(fill = stat(.data$nlevel)), bins = bins) +
     scale_fill_viridis_c(name = 'Density of \nsessions\n') +
@@ -216,21 +220,29 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
     theme_light()
 
   if (by == "wday") {
+    hour_breaks <- 6
+  } else if (by == "month") {
+    hour_breaks <- 8
+  } else {
+    hour_breaks <- 4
+  }
+
+  if (!log) {
+    density_plot <- density_plot +
+      scale_x_datetime(date_labels = '%H:%M', date_breaks = paste(hour_breaks, 'hour'))
+  }
+
+  if (by == "wday") {
     return(
-      density_plot +
-        facet_wrap(~ .data$wday)
-        # scale_x_datetime(date_labels = '%H:%M', date_breaks = '6 hour')
+      density_plot + facet_wrap(~ .data$wday)
     )
   } else if (by == "month") {
     return(
-      density_plot +
-        facet_wrap(~ .data$month)
-        # scale_x_datetime(date_labels = '%H:%M', date_breaks = '8 hour')
+      density_plot + facet_wrap(~ .data$month)
     )
   } else if (by == "year") {
     return(
-      density_plot +
-        facet_wrap(~ .data$year)
+      density_plot + facet_wrap(~ .data$year)
     )
   } else {
     return( density_plot )
