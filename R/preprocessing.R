@@ -1,5 +1,53 @@
 
 
+# Clean outliers ----------------------------------------------------------
+
+#' Clean outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
+#'
+#' @param sessions sessions data set in standard format
+#' @param connection_hours_min numeric, minimum of connection hours (duration)
+#' @param connection_hours_min numeric, maximum of connection hours (duration)
+#' @param connection_start_min numeric, minimum hour of connection start (hour as numeric)
+#' @param connection_start_max numeric, maximum hour of connection start (hour as numeric)
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#'
+#' @return session dataframe
+#' @export
+#'
+#' @importFrom dplyr between
+#'
+filer_sessions <- function(sessions,
+                           connection_hours_min = NA, connection_hours_max = NA,
+                           connection_start_min = NA, connection_start_max = NA,
+                           log = FALSE) {
+
+  if (log) {
+    sessions <- mutate_to_log(sessions)
+    connection_hours <- sessions[['ConnectionHours']]
+    connection_start <- sessions[['ConnectionStartDateTime']]
+  } else {
+    connection_hours <- sessions[['ConnectionHours']]
+    connection_start <- convert_time_dt_to_plot_num(sessions[['ConnectionStartDateTime']])
+  }
+
+  if (is.na(connection_hours_min))
+    connection_hours_min <- min(connection_hours)
+  if (is.na(connection_hours_max))
+    connection_hours_max <- max(connection_hours)
+  if (is.na(connection_start_min))
+    connection_start_min <- min(connection_start)
+  if (is.na(connection_start_max))
+    connection_start_max <- max(connection_start)
+
+  connection_hours_idx <- between(connection_hours, connection_hours_min, connection_hours_max)
+  connection_start_idx <- between(connection_start, connection_start_min, connection_start_max)
+
+  return(
+    sessions[connection_hours_idx & connection_start_idx, ]
+  )
+}
+
+
 # Data division -----------------------------------------------------------
 
 #' {ggplot2} type function to plot a division line
