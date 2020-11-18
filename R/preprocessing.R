@@ -5,10 +5,10 @@
 #' Clean outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
 #'
 #' @param sessions sessions data set in standard format
-#' @param connection_hours_min numeric, minimum of connection hours (duration)
-#' @param connection_hours_max numeric, maximum of connection hours (duration)
-#' @param connection_start_min numeric, minimum hour of connection start (hour as numeric)
-#' @param connection_start_max numeric, maximum hour of connection start (hour as numeric)
+#' @param connection_hours_min numeric, minimum of connection hours (duration). If NA the minimum value is considered.
+#' @param connection_hours_max numeric, maximum of connection hours (duration). If NA the maximum value is considered.
+#' @param connection_start_min numeric, minimum hour of connection start (hour as numeric). If NA the minimum value is considered.
+#' @param connection_start_max numeric, maximum hour of connection start (hour as numeric). If NA the maximum value is considered.
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return session dataframe
@@ -16,7 +16,7 @@
 #'
 #' @importFrom dplyr between
 #'
-filer_sessions <- function(sessions,
+filter_sessions <- function(sessions,
                            connection_hours_min = NA, connection_hours_max = NA,
                            connection_start_min = NA, connection_start_max = NA,
                            log = FALSE) {
