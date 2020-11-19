@@ -116,7 +116,7 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
     set.seed(seeds[i])
     mod <- get_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
     mod_params <- get_mclust_params(mod)
-    ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params) +
+    ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params, log = log) +
       ggtitle(paste0("Seed: ", seeds[i], ", BIC: ", round(mod$bic))) +
       scale_color_discrete(labels = paste0(
         seq(1, mod$G), " (", round(mod$parameters$pro*100), "%)"
@@ -174,13 +174,14 @@ plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nro
     .id = "profile"
   )
   ellipses$profile <- factor(ellipses$profile, levels = unique(profiles_names))
+
   if (!log) {
     sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
   } else {
-    sessions <- mutate_to_log(sessions, base = log)
+    sessions <- mutate_to_log(sessions)
   }
-  sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  plot <- ggplot(data = sessions_cluster, aes_string(x = "ConnectionStartDateTime", y = "ConnectionHours")) +
+
+  plot <- ggplot(data = sessions, aes_string(x = "ConnectionStartDateTime", y = "ConnectionHours")) +
     geom_point(size = points_size) +
     geom_path(data = ellipses, aes_string(x = "x", y = "y", color = "profile"), size = lines_size) +
     labs(x = 'Connection start time', y = 'Connection hours', color = "") +
