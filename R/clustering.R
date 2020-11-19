@@ -16,7 +16,7 @@
 #' @importFrom mclust mclustBIC
 #'
 choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
-  mod <- get_mclust_object(sessions, k = 1:10, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+  mod <- get_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
   plot(mod, what = "BIC")
 }
 
