@@ -22,9 +22,9 @@ filter_sessions <- function(sessions,
                            log = FALSE) {
 
   if (log) {
-    sessions <- mutate_to_log(sessions)
-    connection_hours <- sessions[['ConnectionHours']]
-    connection_start <- sessions[['ConnectionStartDateTime']]
+    sessions_log <- mutate_to_log(sessions)
+    connection_hours <- sessions_log[['ConnectionHours']]
+    connection_start <- sessions_log[['ConnectionStartDateTime']]
   } else {
     connection_hours <- sessions[['ConnectionHours']]
     connection_start <- convert_time_dt_to_plot_num(sessions[['ConnectionStartDateTime']])
