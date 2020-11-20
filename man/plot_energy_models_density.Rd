@@ -4,12 +4,14 @@
 \alias{plot_energy_models_density}
 \title{Compare density of estimated energy with density of real energy vector}
 \usage{
-plot_energy_models_density(sessions_profiles, energy_models)
+plot_energy_models_density(sessions_profiles, energy_models, log = TRUE)
 }
 \arguments{
-\item{sessions_profiles}{sessions data set with user profile attribute}
+\item{sessions_profiles}{sessions data set with user profile attribute in column 'Profile'}
 
 \item{energy_models}{energy models returned by function \code{get_energy_models}}
+
+\item{log}{Logical, true to apply a logarithmic transformation}
 }
 \value{
 list of ggplots

@@ -7,7 +7,8 @@
 plot_model_clusters(
   subsets_clustering = list(),
   clusters_interpretations = list(),
-  profiles_ratios
+  profiles_ratios,
+  log = TRUE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ plot_model_clusters(
 \item{clusters_interpretations}{list with clusters interpretations of each subset}
 
 \item{profiles_ratios}{tibble with columns \code{profile} and \code{profile_ratio}}
+
+\item{log}{Logical, true to perform logarithmic transformation (base = exp(1))}
 }
 \value{
 ggplot2
