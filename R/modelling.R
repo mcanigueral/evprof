@@ -85,11 +85,48 @@ get_energy_models <- function(sessions_profiles, k, maxit=5000, log = TRUE) {
     select(.data$profile, .data$energy_models)
 }
 
+#' Estimate sessions energy values
+#'
+#' @param n number of sessions
+#' @param mu means of univariate GMM
+#' @param sigma covariance matrix of univariate GMM
+#' @param log Logical, true if models have logarithmic transformation and exponential transformation will be performed
+#'
+#' @return numeric vector
+#' @noRd
+#'
+#' @importFrom stats rnorm
+#'
+estimate_energy <- function(n, mu, sigma) {
+  if (n == 0) n = 1
+  energy <- rnorm(n, mu, sigma)
+  if (log) energy <- exp(energy)
+  return( energy )
+}
+
+#' Estimate energy given energy models tibble
+#'
+#' @param n number of sessions
+#' @param energy_models energy models tibble
+#' @param log Logical, true if models have logarithmic transformation and exponential transformation will be performed
+#'
+#' @return list of numeric vectors
+#' @noRd
+#'
+#' @importFrom purrr pmap
+#'
+get_estimated_energy <- function(n, energy_models, log) {
+  return(unlist(pmap(
+    energy_models,
+    ~ estimate_energy(round(n*..3), ..1, ..2, log)
+  )))
+}
 
 #' Compare density of estimated energy with density of real energy vector
 #'
-#' @param sessions_profiles sessions data set with user profile attribute
+#' @param sessions_profiles sessions data set with user profile attribute in column 'Profile'
 #' @param energy_models energy models returned by function `get_energy_models`
+#' @param log Logical, true to apply a logarithmic transformation
 #'
 #' @return list of ggplots
 #' @export
@@ -99,24 +136,26 @@ get_energy_models <- function(sessions_profiles, k, maxit=5000, log = TRUE) {
 #' @importFrom rlang .data
 #' @importFrom cowplot plot_grid
 #'
-plot_energy_models_density <- function(sessions_profiles, energy_models) {
+plot_energy_models_density <- function(sessions_profiles, energy_models, log = TRUE) {
   plot_list <- energy_models %>%
     left_join(
       sessions_profiles %>%
         group_by(.data$Profile) %>%
-        summarise(energy = list(.data$Energy)) %>%
+        summarise(energy = list(
+          if (log) log(.data$Energy) else .data$Energy
+        )) %>%
         rename(profile = .data$Profile),
       by = 'profile'
     ) %>%
     mutate(
-      estimated_energy = map2(.data$energy, .data$energy_models, ~ get_estimated_energy(length(.x), .y))
+      estimated_energy = map2(.data$energy, .data$energy_models, ~ get_estimated_energy(length(.x), .y, log = !log))
     ) %>%
     select("profile", "energy", "estimated_energy") %>%
     pmap(
       ~ ggplot(data = tibble(x = ..2), aes_string(x = "x")) +
         geom_density(fill = 'navy', alpha = 0.7, show.legend = T) +
         geom_density(
-          data = tibble(x = unlist(..3)),
+          data = tibble(x = ..3),
           aes_string(x = "x"), size = 1.2, color = "navy", show.legend = T
         ) +
         labs(x = "Energy charged", y = "Density", title = ..1) +
@@ -170,7 +209,7 @@ plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_
 #' @importFrom dplyr tibble arrange mutate select group_by summarise
 #' @importFrom rlang .data
 #'
-plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios, log = FALSE) {
+plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios, log = TRUE) {
 
   cluster_profiles_names <- unlist(map(clusters_interpretations, ~ .x[["profile"]]))
 
