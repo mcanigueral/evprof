@@ -70,7 +70,9 @@ get_demand <- function(sessions, dttm_seq, by = "Profile") {
       map_dfr(dttm_seq, ~get_interval_demand(sessions, .x, interval_mins, by)),
       by = "datetime"
     )
-  demand <- replace(is.na(demand), 0)
+
+  demand <- replace(demand, is.na(demand), 0)
+
   return( demand )
 }
 
