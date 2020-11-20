@@ -7,7 +7,7 @@
 get_interval_demand(
   sessions,
   dttm_start,
-  interval,
+  interval_mins,
   by = c("Profile", "Session")
 )
 }
@@ -16,7 +16,7 @@ get_interval_demand(
 
 \item{dttm_start}{datetime value starting the demand calculation}
 
-\item{interval}{numeric, duration (in minutes) of the demand interval}
+\item{interval_mins}{numeric, duration (in minutes) of the demand interval}
 
 \item{by}{character, being 'Profile' or 'Session'. When \code{by='Profile'} each column corresponds to an EV user profile.}
 }
