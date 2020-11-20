@@ -97,7 +97,7 @@ get_energy_models <- function(sessions_profiles, k, maxit=5000, log = TRUE) {
 #'
 #' @importFrom stats rnorm
 #'
-estimate_energy <- function(n, mu, sigma) {
+estimate_energy <- function(n, mu, sigma, log) {
   if (n == 0) n = 1
   energy <- rnorm(n, mu, sigma)
   if (log) energy <- exp(energy)
