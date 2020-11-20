@@ -28,7 +28,7 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
       group_by(.data$profile) %>%
       summarise(
         "profile_ratio" = sum(.data$ratio)* ..3,
-        "connection_models" = list(tibble(mu = .data$mu, sigma = .data$sigma, ratio = .data$ratio/sum(.data$ratio)))
+        "connection_models" = list(tibble(mu = !!sym('mu'), sigma = !!sym('sigma'), ratio = !!sym('ratio')/sum(!!sym('ratio'))))
       )
   )
 }
