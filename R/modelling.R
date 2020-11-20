@@ -161,6 +161,7 @@ plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_
 #' @param subsets_clustering list with clustering results of each subset to aggregate
 #' @param clusters_interpretations list with clusters interpretations of each subset
 #' @param profiles_ratios tibble with columns `profile` and `profile_ratio`
+#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return ggplot2
 #' @export
@@ -169,14 +170,15 @@ plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_
 #' @importFrom dplyr tibble arrange mutate select group_by summarise
 #' @importFrom rlang .data
 #'
-plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios) {
+plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios, log = FALSE) {
 
   cluster_profiles_names <- unlist(map(clusters_interpretations, ~ .x[["profile"]]))
 
   plot_bivarGMM(
     map_dfr(subsets_clustering, ~ .x[["sessions"]]),
     map_dfr(subsets_clustering, ~ .x[["models"]]),
-    cluster_profiles_names
+    cluster_profiles_names,
+    log = log
   ) +
     labs(color = "Profile") +
     scale_color_discrete(labels = paste0(
