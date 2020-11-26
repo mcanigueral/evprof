@@ -180,14 +180,14 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #'
 #' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual
 #'
-plot_outliers <- function(sessions, log = FALSE) {
+plot_outliers <- function(sessions, log = FALSE, ...) {
   if (log) {
     sessions <- mutate_to_log(sessions)
   } else {
     sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
   }
   plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
-    geom_point(size = 0.5) +
+    geom_point(...) +
     labs(x='Connection start time', y='Number of connection hours', color = "") +
     theme_light() +
     scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
