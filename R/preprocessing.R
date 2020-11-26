@@ -302,7 +302,9 @@ divide_by_timecycle <- function(sessions, wdays_cycles = list(1:5, 6:7), months_
     months_cycles, wdays_cycles,
     ~ filter(sessions,
              month(.data$ConnectionStartDateTime) %in% .x,
-             wday(.data$ConnectionStartDateTime, week_start = 1) %in% .y),
+             # week_start=7 to shift daybreak sessions to the corresponding day
+             # with convert_time_to_plot_time conversion before clustering
+             wday(.data$ConnectionStartDateTime, week_start = 7) %in% .y),
     .id = "Timecycle"
   )
 }
