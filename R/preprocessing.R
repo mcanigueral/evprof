@@ -337,13 +337,19 @@ divide_by_timecycle <- function(sessions, wdays_cycles = list(1:5, 6:7), months_
   wdays_cycles <- rep(wdays_cycles, (length(wdays_cycles) * length(months_cycles))/length(wdays_cycles))
   months_cycles <- rep(months_cycles, (length(wdays_cycles) * length(months_cycles))/length(months_cycles))
 
+  # shift daybreak sessions to the corresponding weekday for convert_time_to_plot_time conversion before clustering
+  hours <- hour(sessions$ConnectionStartDateTime)
+  wdays <- wday(sessions$ConnectionStartDateTime, week_start = 1)
+  sessions_backshift_wday <- hours < getOption("evprof.start.hour")
+  wdays_with_start <- wdays
+  wdays_with_start[sessions_backshift_wday] <- wdays_with_start[sessions_backshift_wday] - 1
+  wdays_with_start[wdays_with_start == 0] <- 7
+
   purrr::map2_dfr(
     months_cycles, wdays_cycles,
     ~ filter(sessions,
              month(.data$ConnectionStartDateTime) %in% .x,
-             # week_start=7 to shift daybreak sessions to the corresponding day
-             # with convert_time_to_plot_time conversion before clustering
-             wday(.data$ConnectionStartDateTime, week_start = 7) %in% .y),
+             wdays_with_start %in% .y),
     .id = "Timecycle"
   )
 }
