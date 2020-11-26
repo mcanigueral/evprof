@@ -4,7 +4,7 @@
 \alias{get_MinPts}
 \title{Get MinPts value according to percentage of sessions data set size (rows)}
 \usage{
-get_MinPts(sessions, pct = 0.05)
+get_MinPts(sessions, pct = 0.001)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}

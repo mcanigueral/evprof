@@ -10,7 +10,8 @@ get_dbscan_params(
   eps0,
   noise_th = 2,
   eps_offset_pct = 0.9,
-  eps_inc_pct = 0.02
+  eps_inc_pct = 0.02,
+  log = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ get_dbscan_params(
 \item{eps_offset_pct}{eps_offset_pct}
 
 \item{eps_inc_pct}{eps_inc_pct}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 tibble with minPts and eps parameters, and the corresponding noise

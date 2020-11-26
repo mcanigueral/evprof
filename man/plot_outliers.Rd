@@ -4,10 +4,12 @@
 \alias{plot_outliers}
 \title{Plot outlying sessions}
 \usage{
-plot_outliers(sessions)
+plot_outliers(sessions, log = FALSE)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 ggplot2 plot

@@ -4,7 +4,7 @@
 \alias{detect_outliers}
 \title{Detect outliers}
 \usage{
-detect_outliers(sessions, MinPts = NULL, eps = NULL)
+detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = FALSE)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
@@ -12,6 +12,10 @@ detect_outliers(sessions, MinPts = NULL, eps = NULL)
 \item{MinPts}{MinPts parameter for DBSCAN clustering}
 
 \item{eps}{eps parameter for DBSCAN clustering}
+
+\item{noise_th}{noise treshold}
+
+\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 sessions tibble with extra boolean column \code{Outlier}
