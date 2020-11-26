@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocessing.R
 \name{filter_sessions}
 \alias{filter_sessions}
-\title{Clean outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables}
+\title{Cut outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables}
 \usage{
 filter_sessions(
   sessions,
@@ -30,5 +30,5 @@ filter_sessions(
 session dataframe
 }
 \description{
-Clean outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
+Cut outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
 }
