@@ -599,10 +599,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.12.2",
+      "Version": "0.12.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "398cc1ea892e1aade66d1ecbb2874d24"
+      "Hash": "b5510c50c7f31d453c385c7b460af2b9"
     },
     "rex": {
       "Package": "rex",
@@ -613,10 +613,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.8",
+      "Version": "0.4.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "843a6af51414bce7f8a8e372f11d6cd0"
+      "Hash": "9d7aba7bed9a79e2403b4777428a2b12"
     },
     "rmarkdown": {
       "Package": "rmarkdown",
