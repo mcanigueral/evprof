@@ -181,6 +181,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual
 #'
 plot_outliers <- function(sessions, log = FALSE, ...) {
+  outliers_pct <- round(sum(sessions[['Outlier']])/nrow(sessions)*100, 2)
   if (log) {
     sessions <- mutate_to_log(sessions)
   } else {
@@ -188,7 +189,7 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
   }
   plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
     geom_point(...) +
-    labs(x='Connection start time', y='Number of connection hours', color = "") +
+    labs(x='Connection start time', y='Number of connection hours', color = "", title = paste('Outliers level:', outliers_pct, '%')) +
     theme_light() +
     scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
   if (log) {
