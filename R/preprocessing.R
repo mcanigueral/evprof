@@ -16,7 +16,7 @@
 #'
 #' @importFrom dplyr between
 #'
-filter_sessions <- function(sessions,
+cut_sessions <- function(sessions,
                            connection_hours_min = NA, connection_hours_max = NA,
                            connection_start_min = NA, connection_start_max = NA,
                            log = FALSE) {
@@ -174,6 +174,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #'
 #' @param sessions sessions data set in standard format
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param ... arguments to pass to function ggplot2::plot_point
 #'
 #' @return ggplot2 plot
 #' @export
@@ -247,6 +248,22 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
   dbscan_clusters <- dbscan::dbscan(sessions_cluster, dbscan_params$eps, dbscan_params$MinPts)
   sessions[["Outlier"]] <- dbscan_clusters$cluster == 0
   return( sessions )
+}
+
+#' Drop outliers
+#'
+#' @param sessions sessions data set in standard format
+#'
+#' @return sessions without outliers nor column `Outlier`
+#' @export
+#'
+#' @importFrom dplyr filter select %>%
+#' @importFrom rlang .data
+#'
+drop_outliers <- function(sessions) {
+  sessions %>%
+    filter(!.data$Outlier) %>%
+    select(-.data$Outlier)
 }
 
 
