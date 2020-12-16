@@ -32,10 +32,12 @@ define_clusters <- function (models, interpretations = NULL, profile_names = NUL
   return( centroids )
 }
 
-#' Obtain total sessions data set with Profile classification
+#' Classify sessions of sub-sets into profiles
 #'
-#' @param sessions_clustered list with sessions clustered of each susbset
-#' @param clusters_interpretations tibble with clusters interpretations of each subset
+#' Joins all sub-sets from the list, adding a new column `Profile`
+#'
+#' @param sessions_clustered list of tibbles with sessions clustered (output from function `cluser_sessions`) from each sub-set
+#' @param clusters_definition list of tibbles with clusters definitions (output from function `define_clusters`) of each sub-set
 #'
 #' @return tibble
 #' @export
@@ -43,9 +45,17 @@ define_clusters <- function (models, interpretations = NULL, profile_names = NUL
 #' @importFrom dplyr %>% left_join select everything rename
 #' @importFrom purrr map2_dfr
 #'
-define_profiles <- function (sessions_clustered = list(), clusters_interpretations = list()) {
+set_profiles <- function (sessions_clustered = list(), clusters_definition = list()) {
+  if (!("Cluster") %in% names(sessions_clustered)) {
+    message("Column `Cluster` must be in sessions clustered data frame.")
+    return(NULL)
+  }
+  if (!("cluster") %in% names(clusters_definition) | !("profile") %in% names(clusters_definition)) {
+    message("Columns `cluster` and `profile` must be in clusters definition data frame.")
+    return(NULL)
+  }
   map2_dfr(
-    sessions_clustered, clusters_interpretations,
+    sessions_clustered, clusters_definition,
     ~left_join(
       .x,
       .y %>% select("cluster", "profile") %>% rename(Cluster = "cluster", Profile = "profile"),
