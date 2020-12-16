@@ -340,21 +340,23 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 #' Divide sessions by time-cycle
 #'
 #' @param sessions sessions data set in standard format
-#' @param wdays_cycles list containing Weekdays cycles
 #' @param months_cycles list containing Monthly cycles
+#' @param wdays_cycles list containing Weekdays cycles
 #'
 #' @return same sessions data set with extra column "Timecycle"
 #' @export
 #'
-#' @importFrom purrr map2_dfr
+#' @importFrom purrr pmap
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
 #' @importFrom lubridate month wday
 #'
-divide_by_timecycle <- function(sessions, wdays_cycles = list(1:5, 6:7), months_cycles = list(1:12)) {
+divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycles = list(1:5, 6:7)) {
 
-  wdays_cycles <- rep(wdays_cycles, (length(wdays_cycles) * length(months_cycles))/length(wdays_cycles))
-  months_cycles <- rep(months_cycles, (length(wdays_cycles) * length(months_cycles))/length(months_cycles))
+  cycles_tbl <- tibble(
+    months = rep(months_cycles, each = length(wdays_cycles)),
+    wdays = rep(wdays_cycles, times = length(months_cycles))
+  )
 
   # shift daybreak sessions to the corresponding weekday for convert_time_to_plot_time conversion before clustering
   hours <- hour(sessions$ConnectionStartDateTime)
@@ -364,11 +366,11 @@ divide_by_timecycle <- function(sessions, wdays_cycles = list(1:5, 6:7), months_
   wdays_with_start[sessions_backshift_wday] <- wdays_with_start[sessions_backshift_wday] - 1
   wdays_with_start[wdays_with_start == 0] <- 7
 
-  purrr::map2_dfr(
-    months_cycles, wdays_cycles,
+  purrr::pmap_dfr(
+    cycles_tbl,
     ~ filter(sessions,
-             month(.data$ConnectionStartDateTime) %in% .x,
-             wdays_with_start %in% .y),
+             month(.data$ConnectionStartDateTime) %in% ..1,
+             wdays_with_start %in% ..2),
     .id = "Timecycle"
   )
 }

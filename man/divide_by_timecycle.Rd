@@ -6,16 +6,16 @@
 \usage{
 divide_by_timecycle(
   sessions,
-  wdays_cycles = list(1:5, 6:7),
-  months_cycles = list(1:12)
+  months_cycles = list(1:12),
+  wdays_cycles = list(1:5, 6:7)
 )
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
 
-\item{wdays_cycles}{list containing Weekdays cycles}
-
 \item{months_cycles}{list containing Monthly cycles}
+
+\item{wdays_cycles}{list containing Weekdays cycles}
 }
 \value{
 same sessions data set with extra column "Timecycle"
