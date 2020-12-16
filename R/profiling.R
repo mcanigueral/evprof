@@ -46,11 +46,11 @@ define_clusters <- function (models, interpretations = NULL, profile_names = NUL
 #' @importFrom purrr map2_dfr
 #'
 set_profiles <- function (sessions_clustered = list(), clusters_definition = list()) {
-  if (!("Cluster") %in% names(sessions_clustered)) {
+  if (!(("Cluster") %in% names(sessions_clustered))) {
     message("Column `Cluster` must be in sessions clustered data frame.")
     return(NULL)
   }
-  if (!("cluster") %in% names(clusters_definition) | !("profile") %in% names(clusters_definition)) {
+  if (!(("cluster") %in% names(clusters_definition)) | !(("profile") %in% names(clusters_definition))) {
     message("Columns `cluster` and `profile` must be in clusters definition data frame.")
     return(NULL)
   }
