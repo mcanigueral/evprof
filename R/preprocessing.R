@@ -316,7 +316,7 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @export
 #'
 #' @importFrom purrr map_dfr
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter %>% select
 #' @importFrom lubridate days hours
 #' @importFrom rlang .data
 #'
@@ -330,7 +330,8 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
       sessions,
       .data$EndTime > force_tz(Sys.Date() + days(.x-1) + hours(division_hour), tzone = getOption("evprof.tzone")),
       .data$EndTime <= force_tz(Sys.Date() + days(.x) + hours(division_hour), tzone = getOption("evprof.tzone"))
-    ),
+    ) %>%
+      select(-c("StartTime", "EndTime")),
     .id = "Disconnection"
   )
 }
