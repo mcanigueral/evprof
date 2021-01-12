@@ -94,34 +94,34 @@
 ##   - Energy Models: logarithmic scale
 ## 
 ## Model composed by 4 time-cycle models:
-##   1. Workday:
+##   1. :
 ##      Months = 1-4, Week days = 1-4
-##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
-##   2. Friday:
+##      User profiles = 
+##   2. :
 ##      Months = 1-4, Week days = 5
-##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
-##   3. Saturday:
+##      User profiles = 
+##   3. :
 ##      Months = 1-4, Week days = 6
-##      User profiles = Dinner, Shortstay, Visit, Home, Pillow
-##   4. Sunday:
+##      User profiles = 
+##   4. :
 ##      Months = 1-4, Week days = 7
-##      User profiles = Dinner, Shortstay, Visit, Home, Pillow</code></pre>
+##      User profiles =</code></pre>
 <p>The <code>evmodel</code>object has two components:</p>
 <ul>
 <li><p><code>metadata</code>: creation date, if the scale of connection/energy models is natural or logarithmic, …</p></li>
 <li>
 <p><code>models</code>: tibble containing the different time-cycles models and information. The columns of this tibble are:</p>
 <ul>
-<li><p><code>name</code>: character, given name to the time-cycle</p></li>
+<li><p><code>time_cycle</code>: character, given name to the time-cycle</p></li>
 <li><p><code>months</code>: integer vector, corresponding months of the time-cycle</p></li>
 <li><p><code>wdays</code>: integer vector, corresponding days of the time-cycle (week starting on day 1)</p></li>
 <li>
-<p><code>gmm</code>: tibble with every user profile GMM models. The columns of this tibble are:</p>
+<p><code>user_profiles</code>: tibble with every user profile GMM models. The columns of this tibble are:</p>
 <ul>
 <li>
 <code>profile</code>: character vector, given name to the user profile</li>
 <li>
-<code>profile_ratio</code>: numeric, ratio of daily sessions corresponding to this profile</li>
+<code>ratio</code>: numeric, share of daily sessions corresponding to this profile</li>
 <li>
 <code>connection_models</code>: tibble with the bi-variate GMM, being the variables the Connection Start Time and the Connection Duration of the session</li>
 <li>

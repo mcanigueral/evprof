@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @importFrom purrr map_dbl pmap_dfr
-#' @importFrom dplyr tibble arrange mutate select group_by summarise
+#' @importFrom dplyr tibble arrange mutate select group_by summarise rename
 #' @importFrom rlang .data
 #'
 get_connection_models <- function(subsets_clustering = list(), clusters_interpretations = list()) {
@@ -29,7 +29,8 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
       summarise(
         "profile_ratio" = sum(.data$ratio)* ..3,
         "connection_models" = list(tibble(mu = !!sym('mu'), sigma = !!sym('sigma'), ratio = !!sym('ratio')/sum(!!sym('ratio'))))
-      )
+      ) %>%
+      rename(ratio = .data$profile_ratio)
   )
 }
 
@@ -265,7 +266,7 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
       energy_log = energy_log
     ),
     models = tibble(
-      name = names,
+      time_cycle = names,
       months = months_lst,
       wdays = wdays_lst,
       user_profiles = GMM
@@ -312,12 +313,12 @@ print.evmodel <- function(x, ...) {
   cat('\nModel composed by', nrow(m), 'time-cycle models:\n')
   for (n in 1:nrow(m)) {
     cat(
-      '  ', n, '. ', m[['model_name']][n], ':',
+      '  ', n, '. ', m[['time_cycle']][n], ':',
       '\n     Months = ', if (length(m[['months']][[n]]) == 1) m[['months']][[n]][1] else
         paste0(m[['months']][[n]][1], '-', m[['months']][[n]][length(m[['months']])]),
       ', Week days = ', if (length(m[['wdays']][[n]]) == 1) m[['wdays']][[n]][1] else
         paste0(m[['wdays']][[n]][1], '-', m[['wdays']][[n]][length(m[['wdays']])]),
-      '\n     User profiles = ', paste(m[['models']][[n]][['profile']], collapse = ", "),
+      '\n     User profiles = ', paste(m[['user_profiles']][[n]][['profile']], collapse = ", "),
       '\n', sep = ''
     )
   }
