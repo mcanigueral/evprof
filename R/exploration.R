@@ -16,7 +16,6 @@ round_to_half <- function(time_num) {
 #' @param interval rounding interval
 #'
 #' @return numeric value
-#' @noRd
 #'
 round_to_interval <- function(dbl, interval) {
   round(dbl/interval)*interval

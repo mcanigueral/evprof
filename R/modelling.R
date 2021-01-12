@@ -231,83 +231,95 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 
 # Save the models ---------------------------------------------------------
 
-#' Save the models as .RDS file
+
+
+#' Get the EV model object of class `evmodel`
 #'
+#' @param names character vector with the given names of each time-cycle model
+#' @param months_lst list of integer vectors with the corresponding months of the year for each time-cycle model
+#' @param wdays_lst list of integer vectors with the corresponding days of the week for each model (week start = 1)
 #' @param connection_GMM list of different connection bivariate GMM
 #' @param energy_GMM list of different energy univariate GMM
-#' @param models_names character vector with the labels of each model
-#' @param months integer vector with the corresponding months of the year for each model
-#' @param wdays integer vector with the corresponding days of the week for each model (week start = 1)
 #' @param connection_log Logical, true if connection models have logarithmic transformations
 #' @param energy_log Logical, true if energy models have logarithmic transformations
-#' @param file character string with the path or name of the .RDS file
 #'
+#' @return object of class `evmodel`
 #' @export
 #'
 #' @importFrom purrr map2
 #' @importFrom dplyr tibble left_join
 #'
-save_models <- function(connection_GMM = list(), energy_GMM = list(),
-                        models_names, months = list(1:12, 1:12), wdays = list(1:5, 6:7),
-                        connection_log = TRUE, energy_log = TRUE, file = '.') {
+get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
+                         connection_GMM = list(), energy_GMM = list(),
+                         connection_log = TRUE, energy_log = TRUE) {
 
   GMM <- map2(
     connection_GMM, energy_GMM,
     ~ left_join(.x, .y, by = 'profile')
   )
 
-  ev_models <- list(
+  ev_model <- list(
     metadata = list(
       creation = Sys.Date(),
       connection_log = connection_log,
       energy_log = energy_log
     ),
     models = tibble(
-      model_name = models_names,
-      months = months,
-      wdays = wdays,
-      models = GMM
+      name = names,
+      months = months_lst,
+      wdays = wdays_lst,
+      user_profiles = GMM
     )
   )
-
-  saveRDS(ev_models, file = file)
+  class(ev_model) <- "evmodel"
+  return( ev_model )
 }
 
 
-
-# Modify the models -------------------------------------------------------
-
-#' Update the ratios of the user profiles
+#' Save the EV model object of class `evmodel` to an external file
 #'
-#' @param ev_models tibble with columns: `model_name`, `months`, `wdays`, `models`, `n_sessions`
-#' @param new_ratios tibble with columns: `model_name`, `profile`, `profile_ratio.`
-#' It must have all profiles from every model, including the ones with `profile_ratio = 0`.
-#' The ratios must be between 0 and 1.
-#' @param discard If TRUE, profiles with `profile_ratio == 0` will be discarded from the `ev_models` object
+#' @param evmodel object of class `evmodel`
+#' @param file character string with the path or name of the file
+#' @param fileext character string with the file extension
 #'
-#' @return tibble
 #' @export
 #'
-#' @importFrom purrr map_dbl
-#'
-update_profiles_ratios <- function(ev_models, new_ratios, discard=FALSE) {
-
-  for (m in 1:nrow(ev_models)) {
-    model <- ev_models[["models"]][[m]]
-    model_name <- ev_models[["model_name"]][[m]]
-    model[["profile_ratio"]] <- map_dbl(
-      model[["profile"]],
-      ~ new_ratios[["profile_ratio"]][ (new_ratios[["model_name"]] == model_name) & (new_ratios[["profile"]] == .x) ]
-    )
-
-    if (discard) {
-      model <- model[model[["profile_ratio"]] > 0, ]
-    }
-
-    ev_models[["models"]][[m]] <- model
-  }
-
-  return(ev_models)
+save_ev_model <- function(evmodel, file = 'evmodel', fileext = '.RDS') {
+  saveRDS(evmodel, file = paste0(file, fileext))
+  # ev_models_json <- toJSON(evmodel)
+  # write(ev_models_json, file = paste0(file, fileext))
 }
 
+
+# read_ev_model <- function(file) {
+#   obj_json <- fromJSON(file)
+# }
+
+
+#' `print` method for `evmodel` object class
+#'
+#' @param x  `evmodel` object
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @export
+#'
+print.evmodel <- function(x, ...) {
+  m <- x$models
+  cat('EV sessions model of class "evprof", created on', as.character(x$metadata$creation), '\n')
+  cat('The Gaussian Mixture Models of EV user profiles are built in:\n')
+  cat('  - Connection Models:', if (x$metadata$connection_log) "logarithmic" else "natural", 'scale\n')
+  cat('  - Energy Models:', if (x$metadata$energy_log) "logarithmic" else "natural", 'scale\n')
+  cat('\nModel composed by', nrow(m), 'time-cycle models:\n')
+  for (n in 1:nrow(m)) {
+    cat(
+      '  ', n, '. ', m[['model_name']][n], ':',
+      '\n     Months = ', if (length(m[['months']][[n]]) == 1) m[['months']][[n]][1] else
+        paste0(m[['months']][[n]][1], '-', m[['months']][[n]][length(m[['months']])]),
+      ', Week days = ', if (length(m[['wdays']][[n]]) == 1) m[['wdays']][[n]][1] else
+        paste0(m[['wdays']][[n]][1], '-', m[['wdays']][[n]][length(m[['wdays']])]),
+      '\n     User profiles = ', paste(m[['models']][[n]][['profile']], collapse = ", "),
+      '\n', sep = ''
+    )
+  }
+}
 

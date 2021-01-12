@@ -69,7 +69,6 @@ get_MinPts <- function(sessions, pct=0.001) {
 #' @param MinPts MinPts value
 #'
 #' @return numeric value
-#' @noRd
 #'
 #' @importFrom dbscan kNNdist
 #' @importFrom ecp e.divisive

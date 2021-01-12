@@ -1,48 +1,29 @@
 ---
 title: "Introduction to {evprof}"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{evprof}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: html_document
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
-```{r setup}
-library(evprof)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::load_all()
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(purrr)
 ```
 
-
-# Introduction
-
 An EV user profile can be defined basically for two variables:
 
 - Connection start time
 - Connection duration
 
-Based on these two variables this package aims to provide tools to analyse and define different user profiles with similar flexibility potential.
+Based on these two variables this package aims to provide tools to analyze and define different user profiles with similar flexibility potential.
 
 
 The workflow of this analysis should be:
 
 1. Data exploratory analysis
-  1.1. Data set visualization
-  1.2. Data summary
-  1.3. Data distributions (histograms)
-  1.4. Density plots
 2. Preprocessing
-  2.1. Data division
-  2.2. Ouliers detection
 3. Clustering
 4. Profiling
 5. Modelling

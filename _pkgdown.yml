@@ -1,0 +1,74 @@
+url: 'mcanigueral.github.io/evprof'
+
+template:
+  params:
+    bootswatch: flatly
+
+reference:
+- title: Data exploratory analysis
+- subtitle: Datetime conversions
+- contents:
+  - starts_with("convert_time")
+- subtitle: Numeric conversions
+- contents:
+  - starts_with("round_to")
+  - mutate_to_log
+- subtitle: Plots
+- contents:
+  - plot_points
+  - plot_density_2D
+  - plot_density_3D
+  - plot_histogram
+  - plot_histogram_grid
+- subtitle: Sessions data set analysis
+- contents:
+  - summarise_sessions
+  - get_charging_rates_distribution
+  - get_daily_n_sessions
+  - get_daily_avg_n_sessions
+
+- title: Preprocessing
+- subtitle: DBSCAN outliers cleaning
+- contents:
+  - cut_sessions
+  - get_MinPts
+  - get_eps
+  - plot_kNNdist
+  - get_dbscan_params
+  - plot_outliers
+  - detect_outliers
+  - drop_outliers
+- subtitle: Sessions division
+- contents:
+  - cut_sessions
+  - plot_division_lines
+  - divide_by_disconnection
+  - divide_by_timecycle
+  - plot_divisions
+
+- title: Clustering
+- contents:
+  - choose_k_GMM
+  - cluster_sessions
+  - save_clustering_iterations
+  - plot_bivarGMM
+
+- title: Profiling
+- contents:
+  - define_clusters
+  - set_profiles
+
+- title: Modeling
+- subtitle: Connection Models
+- contents:
+  - get_connection_models
+  - plot_model_clusters
+- subtitle: Energy Models
+- contents:
+  - get_energy_models
+  - plot_energy_models_density
+  - plot_estimated_energy_models_density
+- subtitle: EV model object
+- contents:
+  - get_ev_model
+  - save_ev_model
