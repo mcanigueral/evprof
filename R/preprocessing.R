@@ -98,7 +98,8 @@ plot_kNNdist <- function(sessions, MinPts = NULL, MinPts_pct = 0.001, log = FALS
     sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
   }
   if (is.null(MinPts)) {
-    MinPts <- get_MinPts(sessions, MinPts_pct)
+    # MinPts <- get_MinPts(sessions, MinPts_pct)
+    MinPts <- 200
   }
   ggplot(
     tibble(
@@ -215,9 +216,9 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
 detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = FALSE) {
 
   if (is.null(MinPts) | is.null(eps)) {
-    if (is.null(MinPts)) MinPts <- get_MinPts(sessions, pct = 0.001)
+    if (is.null(MinPts)) MinPts <- 200 #MinPts <- get_MinPts(sessions, pct = 0.001)
     if (is.null(eps)) {
-      if (log) eps <- 0.07 else eps <- 1
+      if (log) eps <- 0.15 else eps <- 2 # Before it was 0.07 and 1
     }
     dbscan_params <- 0
     while (!is.data.frame(dbscan_params)) {
