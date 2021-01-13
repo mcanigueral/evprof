@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   evmodel: evmodel.html
   evprof: evprof.html
-last_built: 2021-01-12T17:53Z
+last_built: 2021-01-13T13:40Z
 urls:
   reference: mcanigueral.github.io/evprof/reference
   article: mcanigueral.github.io/evprof/articles

@@ -88,24 +88,24 @@
 <p>The EV model object defined by <a href="https://mcanigueral.github.io/evprof/">evprof</a> is generated with function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function returns an object of class <code>evmodel</code>. This object prints a summary of its components. For example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ev_model</span></code></pre></div>
-<pre><code>## EV sessions model of class "evprof", created on 2020-12-16 
+<pre><code>## EV sessions model of class "evprof", created on 2021-01-13 
 ## The Gaussian Mixture Models of EV user profiles are built in:
 ##   - Connection Models: logarithmic scale
 ##   - Energy Models: logarithmic scale
 ## 
 ## Model composed by 4 time-cycle models:
-##   1. :
-##      Months = 1-4, Week days = 1-4
-##      User profiles = 
-##   2. :
-##      Months = 1-4, Week days = 5
-##      User profiles = 
-##   3. :
-##      Months = 1-4, Week days = 6
-##      User profiles = 
-##   4. :
-##      Months = 1-4, Week days = 7
-##      User profiles =</code></pre>
+##   1. Workday:
+##      Months = 1-12, Week days = 1-4
+##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
+##   2. Friday:
+##      Months = 1-12, Week days = 5
+##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
+##   3. Saturday:
+##      Months = 1-12, Week days = 6
+##      User profiles = Dinner, Shortstay, Visit, Home, Pillow
+##   4. Sunday:
+##      Months = 1-12, Week days = 7
+##      User profiles = Dinner, Shortstay, Visit, Home, Pillow</code></pre>
 <p>The <code>evmodel</code>object has two components:</p>
 <ul>
 <li><p><code>metadata</code>: creation date, if the scale of connection/energy models is natural or logarithmic, …</p></li>

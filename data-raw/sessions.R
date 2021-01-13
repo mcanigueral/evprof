@@ -5,6 +5,6 @@ library(lubridate)
 sessions <- readRDS("data-raw/sessions.rds") %>%
   filter(year(StartTime) == 2019, month(StartTime) >= 9)
 
-ev_model <- readRDS('data-raw/ev_model.RDS')
+ev_model <- readRDS('data-raw/evmodel.RDS')
 
 usethis::use_data(sessions, ev_model, overwrite = TRUE, internal = TRUE)

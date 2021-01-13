@@ -159,7 +159,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
       # Noise threshold achieved
       return( as.list(noise_table[noise_table$noise >= noise_th, ][1, ]) )
     } else {
-      message(paste0("Not enought noise (", noise_table$noise[nrow(noise_table)] ," %). Consider a lower value of eps"))
+      message(paste0("Not enought noise (", noise_table$noise[nrow(noise_table)] ," %). Consider a lower eps"))
       return( 1 )
     }
   } else {
@@ -224,7 +224,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
     while (!is.data.frame(dbscan_params)) {
       if (dbscan_params == 1) {
         message("Solution not found. Decreasing eps and trying again.")
-        MinPts <- MinPts/1.5
+        eps <- eps/1.5
       } else if (dbscan_params == 2) {
         message("Solution not found. Increasing eps and trying again.")
         eps <- eps*1.5
