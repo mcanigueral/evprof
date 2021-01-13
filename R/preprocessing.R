@@ -168,6 +168,58 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
   }
 }
 
+#' Detect outliers
+#'
+#' @param sessions sessions data set in standard format
+#' @param MinPts MinPts parameter for DBSCAN clustering
+#' @param eps eps parameter for DBSCAN clustering
+#' @param noise_th noise treshold
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#'
+#' @details If MinPts or eps are NULL, no outliers detection is performed.
+#'
+#' @return sessions tibble with extra boolean column `Outlier`
+#' @export
+#'
+#' @importFrom dbscan dbscan
+#'
+detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = FALSE) {
+
+  if (is.null(MinPts) | is.null(eps)) {
+    if (is.null(MinPts)) MinPts <- 200 #MinPts <- get_MinPts(sessions, pct = 0.001)
+    if (is.null(eps)) {
+      if (log) eps <- 0.15 else eps <- 2 # Before it was 0.07 and 1
+    }
+    dbscan_params <- 0
+    while (!is.data.frame(dbscan_params)) {
+      if (dbscan_params == 1) {
+        # message("Solution not found. Decreasing eps and trying again.")
+        eps <- eps/1.5
+      } else if (dbscan_params == 2) {
+        # message("Solution not found. Increasing eps and trying again.")
+        eps <- eps*1.5
+      }
+      message(paste("Trying with MinPts =", MinPts, "and eps =", eps))
+      dbscan_params <- get_dbscan_params(sessions, MinPts = MinPts, eps0 = eps, noise_th = noise_th, log = log)
+      message(dbscan_params)
+    }
+  }
+
+  message(paste("Solution found: MinPts=", dbscan_params$MinPts, ", eps =", dbscan_params$eps))
+
+  sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
+  if (log) {
+    sessions_cluster <- mutate_to_log(sessions_cluster)
+  } else {
+    sessions_cluster[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
+  }
+
+  dbscan_clusters <- dbscan::dbscan(sessions_cluster, dbscan_params$eps, dbscan_params$MinPts)
+  sessions[["Outlier"]] <- dbscan_clusters$cluster == 0
+  return( sessions )
+}
+
+
 #' Plot outlying sessions
 #'
 #' @param sessions sessions data set in standard format
@@ -198,55 +250,6 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
   }
 }
 
-#' Detect outliers
-#'
-#' @param sessions sessions data set in standard format
-#' @param MinPts MinPts parameter for DBSCAN clustering
-#' @param eps eps parameter for DBSCAN clustering
-#' @param noise_th noise treshold
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
-#'
-#' @details If MinPts or eps are NULL, no outliers detection is performed.
-#'
-#' @return sessions tibble with extra boolean column `Outlier`
-#' @export
-#'
-#' @importFrom dbscan dbscan
-#'
-detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = FALSE) {
-
-  if (is.null(MinPts) | is.null(eps)) {
-    if (is.null(MinPts)) MinPts <- 200 #MinPts <- get_MinPts(sessions, pct = 0.001)
-    if (is.null(eps)) {
-      if (log) eps <- 0.15 else eps <- 2 # Before it was 0.07 and 1
-    }
-    dbscan_params <- 0
-    while (!is.data.frame(dbscan_params)) {
-      if (dbscan_params == 1) {
-        message("Solution not found. Decreasing eps and trying again.")
-        eps <- eps/1.5
-      } else if (dbscan_params == 2) {
-        message("Solution not found. Increasing eps and trying again.")
-        eps <- eps*1.5
-      }
-      message(paste("Trying with MinPts =", MinPts, "and eps =", eps))
-      dbscan_params <- get_dbscan_params(sessions, MinPts = MinPts, eps0 = eps, noise_th = noise_th, log = log)
-    }
-  }
-
-  message(paste("Solution found: MinPts=", dbscan_params$MinPts, ", eps =", dbscan_params$eps))
-
-  sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
-  if (log) {
-    sessions_cluster <- mutate_to_log(sessions_cluster)
-  } else {
-    sessions_cluster[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
-  }
-
-  dbscan_clusters <- dbscan::dbscan(sessions_cluster, dbscan_params$eps, dbscan_params$MinPts)
-  sessions[["Outlier"]] <- dbscan_clusters$cluster == 0
-  return( sessions )
-}
 
 #' Drop outliers
 #'
