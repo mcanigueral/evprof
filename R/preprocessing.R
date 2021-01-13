@@ -191,17 +191,16 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
       if (log) eps <- 0.15 else eps <- 2 # Before it was 0.07 and 1
     }
     dbscan_params <- 0
-    while (!is.data.frame(dbscan_params)) {
+    while (!is.list(dbscan_params)) {
       if (dbscan_params == 1) {
-        message("Solution not found. Decreasing eps and trying again.")
+        # message("Solution not found. Decreasing eps and trying again.")
         eps <- eps/1.5
       } else if (dbscan_params == 2) {
-        message("Solution not found. Increasing eps and trying again.")
+        # message("Solution not found. Increasing eps and trying again.")
         eps <- eps*1.5
       }
       message(paste("Trying with MinPts =", MinPts, "and eps =", eps))
       dbscan_params <- get_dbscan_params(sessions, MinPts = MinPts, eps0 = eps, noise_th = noise_th, log = log)
-      message(dbscan_params)
     }
   }
 
