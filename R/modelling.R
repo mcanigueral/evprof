@@ -200,7 +200,7 @@ plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_
 #'
 #' @param subsets_clustering list with clustering results of each subset to aggregate
 #' @param clusters_interpretations list with clusters interpretations of each subset
-#' @param profiles_ratios tibble with columns `profile` and `profile_ratio`
+#' @param profiles_ratios tibble with columns `profile` and `ratio`
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return ggplot2
@@ -224,7 +224,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
     scale_color_discrete(labels = paste0(
       unique(cluster_profiles_names),
       " (",
-      round(profiles_ratios[["profile_ratio"]][match(unique(cluster_profiles_names), profiles_ratios[["profile"]])]*100),
+      round(profiles_ratios[["ratio"]][match(unique(cluster_profiles_names), profiles_ratios[["profile"]])]*100),
       "%)"
     ))
 }
