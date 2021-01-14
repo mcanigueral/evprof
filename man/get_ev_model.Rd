@@ -11,8 +11,7 @@ get_ev_model(
   connection_GMM,
   energy_GMM,
   connection_log,
-  energy_log,
-  tzone
+  energy_log
 )
 }
 \arguments{
@@ -29,8 +28,6 @@ get_ev_model(
 \item{connection_log}{Logical, true if connection models have logarithmic transformations}
 
 \item{energy_log}{Logical, true if energy models have logarithmic transformations}
-
-\item{tzone}{character string, time-zone of the charging sessions data set}
 }
 \value{
 object of class \code{evmodel}

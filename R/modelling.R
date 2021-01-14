@@ -243,7 +243,6 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @param energy_GMM list of different energy univariate GMM
 #' @param connection_log Logical, true if connection models have logarithmic transformations
 #' @param energy_log Logical, true if energy models have logarithmic transformations
-#' @param tzone character string, time-zone of the charging sessions data set
 #'
 #' @return object of class `evmodel`
 #' @export
@@ -252,7 +251,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @importFrom dplyr tibble left_join
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
-                         connection_GMM, energy_GMM, connection_log, energy_log, tzone) {
+                         connection_GMM, energy_GMM, connection_log, energy_log) {
 
   GMM <- map2(
     connection_GMM, energy_GMM,
@@ -264,7 +263,7 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
       creation = Sys.Date(),
       connection_log = connection_log,
       energy_log = energy_log,
-      tzone = tzone
+      tzone = getOption("evprof.tzone", 'Europe/Amsterdam')
     ),
     models = tibble(
       time_cycle = names,
