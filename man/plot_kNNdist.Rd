@@ -4,14 +4,12 @@
 \alias{plot_kNNdist}
 \title{Plot kNNdist}
 \usage{
-plot_kNNdist(sessions, MinPts = NULL, MinPts_pct = 0.001, log = FALSE)
+plot_kNNdist(sessions, MinPts = NULL, log = FALSE)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}
 
-\item{MinPts}{MinPts value}
-
-\item{MinPts_pct}{MinPts percentage}
+\item{MinPts}{integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.}
 
 \item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }

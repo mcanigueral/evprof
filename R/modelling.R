@@ -243,6 +243,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @param energy_GMM list of different energy univariate GMM
 #' @param connection_log Logical, true if connection models have logarithmic transformations
 #' @param energy_log Logical, true if energy models have logarithmic transformations
+#' @param tzone character string, time-zone of the charging sessions data set
 #'
 #' @return object of class `evmodel`
 #' @export
@@ -251,8 +252,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @importFrom dplyr tibble left_join
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
-                         connection_GMM = list(), energy_GMM = list(),
-                         connection_log = TRUE, energy_log = TRUE) {
+                         connection_GMM, energy_GMM, connection_log, energy_log, tzone) {
 
   GMM <- map2(
     connection_GMM, energy_GMM,
@@ -263,7 +263,8 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
     metadata = list(
       creation = Sys.Date(),
       connection_log = connection_log,
-      energy_log = energy_log
+      energy_log = energy_log,
+      tzone = tzone
     ),
     models = tibble(
       time_cycle = names,
@@ -307,10 +308,11 @@ save_ev_model <- function(evmodel, file = 'evmodel', fileext = '.RDS') {
 print.evmodel <- function(x, ...) {
   m <- x$models
   cat('EV sessions model of class "evprof", created on', as.character(x$metadata$creation), '\n')
+  cat('Timezone of the model:', x$metadata$tzone, '\n')
   cat('The Gaussian Mixture Models of EV user profiles are built in:\n')
   cat('  - Connection Models:', if (x$metadata$connection_log) "logarithmic" else "natural", 'scale\n')
   cat('  - Energy Models:', if (x$metadata$energy_log) "logarithmic" else "natural", 'scale\n')
-  cat('\nModel composed by', nrow(m), 'time-cycle models:\n')
+  cat('\nModel composed by', nrow(m), 'time-cycles:\n')
   for (n in 1:nrow(m)) {
     cat(
       '  ', n, '. ', m[['time_cycle']][n], ':',

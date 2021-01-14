@@ -17,24 +17,19 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    devtools,
+    dplyr,
     tidyr,
     plyr,
     purrr,
     lubridate,
-    zoo,
     ggplot2,
-    dygraphs,
     cowplot,
     plotly,
     rlang,
     dbscan,
     mclust,
     mixtools,
-    dplyr,
-    MASS,
-    ecp,
-    xts
+    MASS
 Suggests: 
     knitr,
     rmarkdown

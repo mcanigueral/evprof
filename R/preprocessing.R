@@ -50,55 +50,23 @@ cut_sessions <- function(sessions,
 
 # DBSCAN Clustering -------------------------------------------------------
 
-
-#' Get MinPts value according to percentage of sessions data set size (rows)
-#'
-#' @param sessions sessions data set in standard format
-#' @param pct percentage of rows to consider
-#'
-#' @return integer value
-#' @export
-#'
-get_MinPts <- function(sessions, pct=0.001) {
-  round(pct*nrow(sessions))
-}
-
-#' Get optimal value of eps according to MinPts kNNdist
-#'
-#' @param sessions sessions data set in standard format
-#' @param MinPts MinPts value
-#'
-#' @return numeric value
-#'
-#' @importFrom dbscan kNNdist
-#' @importFrom ecp e.divisive
-get_eps <- function(sessions, MinPts) {
-  sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
-  kNNdist <- dbscan::kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts)
-  elbows <- ecp::e.divisive(diff(matrix(kNNdist)), k = 1, min.size = 2)$estimates
-  elbow <- elbows[length(elbows)]
-  kNNdist[elbow]
-}
-
 #' Plot kNNdist
 #'
 #' @param sessions sessions data set in standard format
-#' @param MinPts MinPts value
-#' @param MinPts_pct MinPts percentage
+#' @param MinPts integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return plot
 #' @export
 #'
 #' @importFrom dbscan kNNdist
-plot_kNNdist <- function(sessions, MinPts = NULL, MinPts_pct = 0.001, log = FALSE) {
+plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
   if (log) {
     sessions <- mutate_to_log(sessions)
   } else {
     sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
   }
   if (is.null(MinPts)) {
-    # MinPts <- get_MinPts(sessions, MinPts_pct)
     MinPts <- 200
   }
   ggplot(
@@ -186,7 +154,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = FALSE) {
 
   if (is.null(MinPts) | is.null(eps)) {
-    if (is.null(MinPts)) MinPts <- 200 #MinPts <- get_MinPts(sessions, pct = 0.001)
+    if (is.null(MinPts)) MinPts <- 200
     if (is.null(eps)) {
       if (log) eps <- 0.15 else eps <- 2 # Before it was 0.07 and 1
     }

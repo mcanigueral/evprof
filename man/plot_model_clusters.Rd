@@ -16,7 +16,7 @@ plot_model_clusters(
 
 \item{clusters_interpretations}{list with clusters interpretations of each subset}
 
-\item{profiles_ratios}{tibble with columns \code{profile} and \code{profile_ratio}}
+\item{profiles_ratios}{tibble with columns \code{profile} and \code{ratio}}
 
 \item{log}{Logical, true to perform logarithmic transformation (base = exp(1))}
 }

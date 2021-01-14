@@ -8,10 +8,11 @@ get_ev_model(
   names,
   months_lst = list(1:12, 1:12),
   wdays_lst = list(1:5, 6:7),
-  connection_GMM = list(),
-  energy_GMM = list(),
-  connection_log = TRUE,
-  energy_log = TRUE
+  connection_GMM,
+  energy_GMM,
+  connection_log,
+  energy_log,
+  tzone
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ get_ev_model(
 \item{connection_log}{Logical, true if connection models have logarithmic transformations}
 
 \item{energy_log}{Logical, true if energy models have logarithmic transformations}
+
+\item{tzone}{character string, time-zone of the charging sessions data set}
 }
 \value{
 object of class \code{evmodel}
