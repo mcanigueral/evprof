@@ -46,9 +46,6 @@
     <loc>mcanigueral.github.io/evprof/reference/detect_outliers.html</loc>
   </url>
   <url>
-    <loc>mcanigueral.github.io/evprof/reference/df_to_ts.html</loc>
-  </url>
-  <url>
     <loc>mcanigueral.github.io/evprof/reference/divide_by_disconnection.html</loc>
   </url>
   <url>
@@ -56,9 +53,6 @@
   </url>
   <url>
     <loc>mcanigueral.github.io/evprof/reference/drop_outliers.html</loc>
-  </url>
-  <url>
-    <loc>mcanigueral.github.io/evprof/reference/get_MinPts.html</loc>
   </url>
   <url>
     <loc>mcanigueral.github.io/evprof/reference/get_charging_rates_distribution.html</loc>
@@ -76,9 +70,6 @@
     <loc>mcanigueral.github.io/evprof/reference/get_dbscan_params.html</loc>
   </url>
   <url>
-    <loc>mcanigueral.github.io/evprof/reference/get_demand.html</loc>
-  </url>
-  <url>
     <loc>mcanigueral.github.io/evprof/reference/get_division_line.html</loc>
   </url>
   <url>
@@ -91,13 +82,7 @@
     <loc>mcanigueral.github.io/evprof/reference/get_energy_models.html</loc>
   </url>
   <url>
-    <loc>mcanigueral.github.io/evprof/reference/get_eps.html</loc>
-  </url>
-  <url>
     <loc>mcanigueral.github.io/evprof/reference/get_ev_model.html</loc>
-  </url>
-  <url>
-    <loc>mcanigueral.github.io/evprof/reference/get_interval_demand.html</loc>
   </url>
   <url>
     <loc>mcanigueral.github.io/evprof/reference/get_mclust_object.html</loc>

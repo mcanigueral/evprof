@@ -127,7 +127,7 @@
     <p>Plot kNNdist</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plot_kNNdist</span><span class='op'>(</span><span class='va'>sessions</span>, MinPts <span class='op'>=</span> <span class='cn'>NULL</span>, MinPts_pct <span class='op'>=</span> <span class='fl'>0.001</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>plot_kNNdist</span><span class='op'>(</span><span class='va'>sessions</span>, MinPts <span class='op'>=</span> <span class='cn'>NULL</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,11 +138,7 @@
     </tr>
     <tr>
       <th>MinPts</th>
-      <td><p>MinPts value</p></td>
-    </tr>
-    <tr>
-      <th>MinPts_pct</th>
-      <td><p>MinPts percentage</p></td>
+      <td><p>integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.</p></td>
     </tr>
     <tr>
       <th>log</th>
