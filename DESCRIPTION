@@ -1,12 +1,12 @@
 Package: evprof
-Title: Characterizing EV charging sessions into generic user profiles
+Title: Profiling EV sessions with {evprof}
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Marc",
            family = "Cañigueral",
            role = c("aut", "cre"),
            email = "marc.canigueral@udg.edu",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0001-9724-5829"))
 Description: This package aims to provide tools for classifying EV charging sessions into smaller groups with
     similar flexibility potential (i.e. user profiles). The goal of obtaining these user profiles is to, in a 
     later step, define a specific smart charging strategy to each group, considering its flexbility potential
@@ -36,4 +36,4 @@ Suggests:
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
-URL: https://mcanigueral.github.io/evprof/
+URL: https://github.com/mcanigueral/evprof/

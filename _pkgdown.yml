@@ -3,6 +3,12 @@ url: 'mcanigueral.github.io/evprof'
 template:
   params:
     bootswatch: flatly
+    ganalytics: 'G-ZKG1YCMCDJ'
+
+navbar:
+  structure:
+    left:  [home, intro, reference, articles, tutorials, news]
+    right: [github]
 
 reference:
 - title: Data exploratory analysis
