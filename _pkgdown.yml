@@ -37,8 +37,6 @@ reference:
 - subtitle: DBSCAN outliers cleaning
 - contents:
   - cut_sessions
-  - get_MinPts
-  - get_eps
   - plot_kNNdist
   - get_dbscan_params
   - plot_outliers
