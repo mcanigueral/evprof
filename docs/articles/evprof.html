@@ -351,10 +351,10 @@
 <a href="#time-cycle-division" class="anchor"></a>Time-cycle division</h3>
 <p>It is also important to consider the time-cycles or periods when users change their behaviors. The function <code>plot_density_2D</code> lets to analyze the different density of sessions (i.e. users behavior) according to different weekday, month or year.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/plot_density_2D.html">plot_density_2D</a></span><span class="op">(</span><span class="va">sessions_divided</span>, by <span class="op">=</span> <span class="st">'wday'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_density_2D.html">plot_density_2D</a></span><span class="op">(</span><span class="va">sessions_divisions</span>, by <span class="op">=</span> <span class="st">'wday'</span><span class="op">)</span></code></pre></div>
 <p><img src="evprof_files/figure-html/density%202D%20plot%20wday-1.png" width="960"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/plot_density_2D.html">plot_density_2D</a></span><span class="op">(</span><span class="va">sessions_divided</span>, by <span class="op">=</span> <span class="st">'month'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_density_2D.html">plot_density_2D</a></span><span class="op">(</span><span class="va">sessions_divisions</span>, by <span class="op">=</span> <span class="st">'month'</span><span class="op">)</span></code></pre></div>
 <p><img src="evprof_files/figure-html/density%202D%20plot%20month-1.png" width="960"></p>
 <p>While depending on the weekday the density of sessions is highly diverse, between months we can’t see a big difference. Moreover, we could see different distributions on Monday-Thursday, Friday, Saturday and Sunday, thus we will consider four different groups: working days (Monday - Thursday), Fridays, Saturdays, Sundays. The division for time-cycles sessions is performed by function <code><a href="../reference/divide_by_timecycle.html">divide_by_timecycle()</a></code>, which adds an extra column <code>Timecycle</code> to the sessions data set with the number of time-cycle according to function parameters <code>months_cycles</code> and <code>wdays_cycles</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -1439,10 +1439,13 @@
 <li>
 <code>energy_models</code>: List of tibbles containing the energy models of each profile, obtained from function <code><a href="../reference/get_energy_models.html">get_energy_models()</a></code>.</li>
 </ul>
-<p>The energy consumed is very sensitive to latest models of EV in the market, since the batteries are larger with every new model. To deal with this variability, we will make the energy model of each profile and time-cycle based on January and February of 2020.</p>
+<p>The energy consumed is very sensitive to latest models of EV in the market, since the batteries are larger with every new model. To deal with this variability, we will make the energy model of each profile and time-cycle based on data from January and February of 2020, making use of <code><a href="http://lubridate.tidyverse.org/reference/year.html">lubridate::year</a></code> and <code><a href="http://lubridate.tidyverse.org/reference/month.html">lubridate::month</a></code> functions to filter our sessions.</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sessions_energy_models</span> <span class="op">&lt;-</span> <span class="va">sessions_profiles</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">year</span><span class="op">(</span><span class="va">ConnectionStartDateTime</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2020</span>, <span class="fu">month</span><span class="op">(</span><span class="va">ConnectionStartDateTime</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span>
+    <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">ConnectionStartDateTime</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2020</span>, 
+    <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/month.html">month</a></span><span class="op">(</span><span class="va">ConnectionStartDateTime</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">3</span>
+  <span class="op">)</span></code></pre></div>
 <p>On one hand, after obtaining the connection models (i.e. bi-variate Gaussian Mixture Models weights, means and co-variance matrices) with function <code><a href="../reference/get_connection_models.html">get_connection_models()</a></code>, we can visualize them with function <code><a href="../reference/plot_model_clusters.html">plot_model_clusters()</a></code> which outputs a similar ellipses plot than function <code><a href="../reference/plot_bivarGMM.html">plot_bivarGMM()</a></code> but using a different color for each user profile instead of clusters (the clusters of a same profile have the same color now). On the other hand, the energy models (i.e. uni-variate Gaussian Mixture Models weigths, means and variance) obtained with function <code><a href="../reference/get_energy_models.html">get_energy_models()</a></code> can be visualized with function <code><a href="../reference/plot_energy_models_density.html">plot_energy_models_density()</a></code>. This function simulates random energy values, makes the density curve and overlaps the simulated density curve with the real density curve of the user profile’s energy values. This is useful to appreciate how the modeled values fit the real ones and increase or decrease the number of Gaussian components.</p>
 <div id="workdays-models" class="section level2">
 <h2 class="hasAnchor">
@@ -1626,7 +1629,7 @@
 <span class="op">)</span>
 
 <span class="va">ev_model</span></code></pre></div>
-<pre><code>## EV sessions model of class "evprof", created on 2021-02-06 
+<pre><code>## EV sessions model of class "evprof", created on 2021-02-18 
 ## Timezone of the model: Europe/Amsterdam 
 ## The Gaussian Mixture Models of EV user profiles are built in:
 ##   - Connection Models: logarithmic scale
