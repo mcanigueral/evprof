@@ -58,12 +58,12 @@ convert_time_dt_to_rounded_dt <- function(time_dt, interval=0.5) {
 #'
 #' @param time_num Numeric time value (hour-based)
 #'
-#' @importFrom lubridate as_datetime minutes
+#' @importFrom lubridate as_datetime hours minutes
 #'
 convert_time_num_to_chr <- function(time_num) {
   strftime(
     as_datetime(hours(time_num%/%1) + minutes(round(time_num%%1*60))),
-    format = '%H:%M', tz = getOption("evprof.tzone")
+    format = '%H:%M', tz = "UTC"
   )
 }
 
@@ -265,11 +265,11 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #'
 plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye = list(x = -1.5, y = -1.5, z = 1.5), log = TRUE) {
   if (!log) {
-    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   } else {
     sessions <- mutate_to_log(sessions)
   }
-  density <- MASS::kde2d(convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start), sessions[["ConnectionHours"]])
+  density <- MASS::kde2d(sessions[["ConnectionStartDateTime"]], sessions[["ConnectionHours"]])
   plot_ly(x = density$x, y = density$y, z = t(density$z)) %>%
     add_surface() %>%
     layout(

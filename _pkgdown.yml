@@ -76,3 +76,17 @@ reference:
 - contents:
   - get_ev_model
   - save_ev_model
+
+articles:
+- title: Developer
+  navbar: ~
+  contents:
+  - outliers
+  - evmodel
+- title: Study cases
+  navbar: Study cases
+  contents:
+  - california
+
+
+
