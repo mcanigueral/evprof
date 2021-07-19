@@ -281,25 +281,22 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @return same sessions data set with extra column "Disconnection"
 #' @export
 #'
-#' @importFrom purrr map_dfr
-#' @importFrom dplyr filter %>% select
+#' @importFrom dplyr select
 #' @importFrom lubridate days hours
-#' @importFrom rlang .data
 #'
 divide_by_disconnection <- function(sessions, days, division_hour) {
-  sessions[["StartTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
-  sessions[["EndTime"]] <- sessions[["StartTime"]] + convert_time_num_to_period(sessions[["ConnectionHours"]])
+  sessions[["StartTime"]] <- evprof:::convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
+  sessions[["EndTime"]] <- sessions[["StartTime"]] + evprof:::convert_time_num_to_period(sessions[["ConnectionHours"]])
+  sessions[['Disconnection']] <- NA
 
-  purrr::map_dfr(
-    days,
-    ~ filter(
-      sessions,
-      .data$EndTime > force_tz(Sys.Date() + days(.x-1) + hours(division_hour), tzone = getOption("evprof.tzone")),
-      .data$EndTime <= force_tz(Sys.Date() + days(.x) + hours(division_hour), tzone = getOption("evprof.tzone"))
-    ) %>%
-      select(-c("StartTime", "EndTime")),
-    .id = "Disconnection"
-  )
+  for (day in days) {
+    sessions$Disconnection[
+      (sessions$EndTime > force_tz(Sys.Date() + days(day-1) + hours(division_hour), tzone = getOption("evprof.tzone"))) &
+        (sessions$EndTime <= force_tz(Sys.Date() + days(day) + hours(division_hour), tzone = getOption("evprof.tzone")))
+    ] <- day
+  }
+
+  return( select(sessions, -c("StartTime", "EndTime")) )
 }
 
 
