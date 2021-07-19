@@ -51,7 +51,10 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' @importFrom dplyr tibble
 #'
 get_energy_model <- function(energy_vct, k, maxit=5000, log = TRUE) {
-  if (log) energy_vct <- log(energy_vct)
+  if (log) {
+    energy_vct <- log(energy_vct)
+    energy_vct <- energy_vct[energy_vct > 0]
+  }
   mixmdl <- mixtools::normalmixEM(energy_vct, k = k, maxit = maxit)
   tibble(mu = mixmdl$mu, sigma = mixmdl$sigma, lambda = mixmdl$lambda)
 }
