@@ -331,35 +331,32 @@ print.evmodel <- function(x, ...) {
 
 
 
-# Print model tables ------------------------------------------------------
+# Print connection model tables ------------------------------------------------------
 
 
-print_sigma_matrix <- function(sigma) {
+#' Get LaTeX code for the connection bivariate GMM features (mu and sigma)
+#'
+#' @param GMM Gaussian Mixture Models obtained from function `get_connection_models`
+#'
+#' @return character, LaTeX code
+#' @export
+#'
+#' @importFrom purrr pmap_chr
+print_connection_models_table <- function(GMM) {
   paste(
-    "\\begin{array}{cc}",
-    sigma[1, 1], "&",
-    sigma[1, 2], "\\\\",
-    sigma[2, 1], "&",
-    sigma[2, 2],
-    "\\end{array}"
-  )
-}
-
-print_mu_matrix <- function(mu) {
-  paste(
-    "\\begin{array}{cc}",
-    mu[1], "\\\\",
-    mu[2],
-    "\\end{array}"
-  )
-}
-
-print_cluster_features <- function(cluster) {
-  paste(
-    sep = "&",
-    print_mu_matrix(round(cluster$mu[[1]], 6)),
-    print_sigma_matrix(round(cluster$sigma[[1]], 6)),
-    round(cluster$ratio*100)
+    sep = "\n",
+    "\\begin{tabular}{l|c|c|c}",
+    "\\hline",
+    "User profile & Centroid ($\\mu$) & Covariance ($\\Sigma$) & Share (\\%) \\\\",
+    "\\hline",
+    paste(
+      collapse = "\n",
+      pmap_chr(
+        GMM,
+        ~ print_profile_connection_models(..1, ..3)
+      )
+    ),
+    "\\end{tabular}"
   )
 }
 
@@ -378,34 +375,84 @@ print_profile_connection_models <- function(profile_name, connection_models) {
   )
 }
 
+print_cluster_features <- function(cluster) {
+  paste(
+    sep = "&",
+    print_biGMM_mu_matrix(round(cluster$mu[[1]], 6)),
+    print_biGMM_sigma_matrix(round(cluster$sigma[[1]], 6)),
+    round(cluster$ratio*100)
+  )
+}
 
-#' Get LaTeX code for the GMM features (mu and sigma)
+print_biGMM_sigma_matrix <- function(sigma) {
+  paste(
+    "\\begin{array}{cc}",
+    sigma[1, 1], "&",
+    sigma[1, 2], "\\\\",
+    sigma[2, 1], "&",
+    sigma[2, 2],
+    "\\end{array}"
+  )
+}
+
+print_biGMM_mu_matrix <- function(mu) {
+  paste(
+    "\\begin{array}{cc}",
+    mu[1], "\\\\",
+    mu[2],
+    "\\end{array}"
+  )
+}
+
+
+# Print energy models table -----------------------------------------------
+
+#' Get LaTeX code for the energy GMM features (mu and sigma)
 #'
-#' @param GMM Gaussian Mixture Models obtained from function `get_connection_models`
+#' @param GMM Gaussian Mixture Models obtained from function `get_energy_models`
 #'
 #' @return character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_GMM_table <- function(GMM) {
+print_energy_models_table <- function(GMM) {
   paste(
     sep = "\n",
     "\\begin{tabular}{l|c|c|c}",
     "\\hline",
-    "User profile & Centroid ($\\mu$) & Covariance ($\\Sigma$) & Share (\\%) \\\\",
+    "User profile & Mean ($\\mu$) & Variance ($\\sigma$) & Share (\\%) \\\\",
     "\\hline",
     paste(
       collapse = "\n",
       pmap_chr(
         GMM,
-        ~ print_profile_connection_models(..1, ..3)
+        ~ print_profile_energy_models(..1, ..2)
       )
     ),
     "\\end{tabular}"
   )
 }
 
+print_profile_energy_models <- function(profile_name, energy_models) {
+  paste(
+    paste0("\\multirow{", nrow(energy_models), "}{*}{", profile_name, "}&"),
+    paste(
+      collapse = "\\\\ \\cline{2-4} & ",
+      purrr::map_chr(
+        energy_models %>%
+          split(1:nrow(energy_models)),
+        print_gaussian_features
+      )
+    ),
+    "\\\\ \\hline"
+  )
+}
 
-
-
-
+print_gaussian_features <- function(gaussian) {
+  paste(
+    sep = "&",
+    round(gaussian$mu, 6),
+    round(gaussian$sigma, 6),
+    round(gaussian$lambda*100)
+  )
+}
