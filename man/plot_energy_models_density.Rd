@@ -4,7 +4,12 @@
 \alias{plot_energy_models_density}
 \title{Compare density of estimated energy with density of real energy vector}
 \usage{
-plot_energy_models_density(sessions_profiles, energy_models, log = TRUE)
+plot_energy_models_density(
+  sessions_profiles,
+  energy_models,
+  log = TRUE,
+  seed = 1234
+)
 }
 \arguments{
 \item{sessions_profiles}{sessions data set with user profile attribute in column 'Profile'}

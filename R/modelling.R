@@ -83,7 +83,7 @@ get_energy_models <- function(sessions_profiles, k, maxit=5000, log = TRUE) {
     ) %>%
     arrange(match(.data$profile, names(k))) %>%
     mutate(
-      k = k[.data$profile],
+      k = as.numeric(k),
       energy_models = map2(.data$energy, .data$k, ~ get_energy_model(.x, .y, maxit, log))
     ) %>%
     select(.data$profile, .data$energy_models)
@@ -140,8 +140,8 @@ get_estimated_energy <- function(n, energy_models, log) {
 #' @importFrom rlang .data
 #' @importFrom cowplot plot_grid
 #'
-plot_energy_models_density <- function(sessions_profiles, energy_models, log = TRUE) {
-  set.seed(1234)
+plot_energy_models_density <- function(sessions_profiles, energy_models, log = TRUE, seed = 1234) {
+  set.seed(seed)
   plot_list <- energy_models %>%
     left_join(
       sessions_profiles %>%
