@@ -141,6 +141,7 @@ get_estimated_energy <- function(n, energy_models, log) {
 #' @importFrom cowplot plot_grid
 #'
 plot_energy_models_density <- function(sessions_profiles, energy_models, log = TRUE) {
+  set.seed(1234)
   plot_list <- energy_models %>%
     left_join(
       sessions_profiles %>%
@@ -327,4 +328,84 @@ print.evmodel <- function(x, ...) {
     )
   }
 }
+
+
+
+# Print model tables ------------------------------------------------------
+
+
+print_sigma_matrix <- function(sigma) {
+  paste(
+    "\\begin{array}{cc}",
+    sigma[1, 1], "&",
+    sigma[1, 2], "\\\\",
+    sigma[2, 1], "&",
+    sigma[2, 2],
+    "\\end{array}"
+  )
+}
+
+print_mu_matrix <- function(mu) {
+  paste(
+    "\\begin{array}{cc}",
+    mu[1], "\\\\",
+    mu[2],
+    "\\end{array}"
+  )
+}
+
+print_cluster_features <- function(cluster) {
+  paste(
+    sep = "&",
+    print_mu_matrix(round(cluster$mu[[1]], 6)),
+    print_sigma_matrix(round(cluster$sigma[[1]], 6)),
+    round(cluster$ratio*100)
+  )
+}
+
+print_profile_connection_models <- function(profile_name, connection_models) {
+  paste(
+    paste0("\\multirow{", nrow(connection_models), "}{*}{", profile_name, "}&"),
+    paste(
+      collapse = "\\\\ \\cline{2-4} & ",
+      purrr::map_chr(
+        connection_models %>%
+          split(1:nrow(connection_models)),
+        print_cluster_features
+      )
+    ),
+    "\\\\ \\hline"
+  )
+}
+
+
+#' Get LaTeX code for the GMM features (mu and sigma)
+#'
+#' @param GMM Gaussian Mixture Models obtained from function `get_connection_models`
+#'
+#' @return character, LaTeX code
+#' @export
+#'
+#' @importFrom purrr pmap_chr
+print_GMM_table <- function(GMM) {
+  paste(
+    sep = "\n",
+    "\\begin{tabular}{l|c|c|c}",
+    "\\hline",
+    "User profile & Centroid ($\\mu$) & Covariance ($\\Sigma$) & Share (\\%) \\\\",
+    "\\hline",
+    paste(
+      collapse = "\n",
+      pmap_chr(
+        GMM,
+        ~ print_profile_connection_models(..1, ..3)
+      )
+    ),
+    "\\end{tabular}"
+  )
+}
+
+
+
+
 
