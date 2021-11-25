@@ -38,55 +38,76 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 
 # Energy models -----------------------------------------------------------
 
+#' Get Mclust object of univariate Gaussian Mixture Models
+#'
+#' @param energy_vct numeric vector, energy from sessions
+#' @param log logical, true to perform logarithmic transformation (base = exp(1))
+#'
+#' @return object of class `dnstyMcl`
+#'
+#' @importFrom mclust densityMclust cdfMclust
+#'
+get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
+  if (log) {
+    energy_vct <- log(energy_vct)
+    energy_vct <- energy_vct[!is.infinite(energy_vct)]
+  }
+  # Discard the 2% thresholds
+  uvGMM <- densityMclust(energy_vct, plot = F)
+  cdf_uvGMM <- cdfMclust(uvGMM)
+  th_min <- cdf_uvGMM$x[which(cdf_uvGMM$y >= 0.02)[1]]
+  th_max <- cdf_uvGMM$x[which(cdf_uvGMM$y <= 0.98)[length(which(cdf_uvGMM$y <= 0.98))]]
+  energy_vct <- energy_vct[energy_vct >= th_min & energy_vct <= th_max]
+  densityMclust(energy_vct, plot = F)
+}
+
 #' Get energy univariate Gaussian Mixture Model
 #'
-#' @param energy_vct energy numeric vector
-#' @param k number of univariate Gaussian Mixture Models (int)
-#' @param maxit maximum number of iterations (int)
-#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
+#' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
 #'
 #' @return tibble
 #'
-#' @importFrom mixtools normalmixEM
+#' @importFrom purrr map_dfr
 #' @importFrom dplyr tibble
 #'
-get_energy_model <- function(energy_vct, k, maxit=5000, log = TRUE) {
-  if (log) {
-    energy_vct <- log(energy_vct)
-    energy_vct <- energy_vct[energy_vct > 0]
-  }
-  mixmdl <- mixtools::normalmixEM(energy_vct, k = k, maxit = maxit)
-  tibble(mu = mixmdl$mu, sigma = mixmdl$sigma, lambda = mixmdl$lambda)
+get_energy_model_parameters <- function(mclust_obj) {
+  map_dfr(
+    factor(1:mclust_obj$G),
+    ~ tibble(
+      mu =  mclust_obj$parameters$mean[.x],
+      sigma = mclust_obj$parameters$variance$sigmasq[.x],
+      ratio = mclust_obj$parameters$pro[.x]
+    ),
+    .id = "model"
+  )
 }
 
 
 #' Title
 #'
 #' @param sessions_profiles sessions data set with user profile attribute
-#' @param k named numeric vector with the number of univariate Gaussian Mixture Models for each profile.
-#' The names of the vector should correspond exactly with all user profiles in `sessions_profiles` tibble.
-#' @param maxit maximum number of iterations (int)
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>% group_by arrange summarise mutate select
-#' @importFrom purrr map2
+#' @importFrom dplyr %>% group_by summarise mutate select
+#' @importFrom purrr map
 #' @importFrom rlang .data
 #'
-get_energy_models <- function(sessions_profiles, k, maxit=5000, log = TRUE) {
+get_energy_models <- function(sessions_profiles, log = TRUE) {
   sessions_profiles %>%
+    mutate(Energy = round(.data$Energy, 3)) %>%
+    filter(.data$Energy > 0) %>%
     group_by(profile = .data$Profile) %>%
     summarise(
       energy = list(.data$Energy)
     ) %>%
-    arrange(match(.data$profile, names(k))) %>%
     mutate(
-      k = as.numeric(k),
-      energy_models = map2(.data$energy, .data$k, ~ get_energy_model(.x, .y, maxit, log))
+      mclust = map(.data$energy, ~ get_energy_model_mclust_object(.x, log)),
+      energy_models = map(.data$mclust, ~ get_energy_model_parameters(.x))
     ) %>%
-    select(.data$profile, .data$energy_models)
+    select(.data$profile, .data$energy_models, .data$mclust)
 }
 
 #' Estimate sessions energy values
@@ -126,76 +147,50 @@ get_estimated_energy <- function(n, energy_models, log) {
   )))
 }
 
-#' Compare density of estimated energy with density of real energy vector
-#'
-#' @param sessions_profiles sessions data set with user profile attribute in column 'Profile'
-#' @param energy_models energy models returned by function `get_energy_models`
-#' @param log Logical, true to apply a logarithmic transformation
-#'
-#' @return list of ggplots
-#' @export
-#'
-#' @importFrom ggplot2 ggplot aes_string geom_density labs theme_light
-#' @importFrom dplyr tibble rename
-#' @importFrom rlang .data
-#' @importFrom cowplot plot_grid
-#'
-plot_energy_models_density <- function(sessions_profiles, energy_models, log = TRUE, seed = 1234) {
-  set.seed(seed)
-  plot_list <- energy_models %>%
-    left_join(
-      sessions_profiles %>%
-        group_by(.data$Profile) %>%
-        summarise(energy = list(
-          if (log) log(.data$Energy) else .data$Energy
-        )) %>%
-        rename(profile = .data$Profile),
-      by = 'profile'
-    ) %>%
-    mutate(
-      estimated_energy = map2(.data$energy, .data$energy_models, ~ get_estimated_energy(length(.x), .y, log = !log))
-    ) %>%
-    select("profile", "energy", "estimated_energy") %>%
-    pmap(
-      ~ ggplot(data = tibble(x = ..2), aes_string(x = "x")) +
-        geom_density(fill = 'navy', alpha = 0.7, show.legend = T) +
-        geom_density(
-          data = tibble(x = ..3),
-          aes_string(x = "x"), size = 1.2, color = "navy", show.legend = T
-        ) +
-        labs(x = "Energy charged", y = "Density", title = ..1) +
-        theme_light()
-    )
-  plot_grid(plotlist = plot_list)
-}
 
-
-#' DEPRECATED: Compare Gaussian Mixture Models of estimated energy with density of real energy vector
+#' Plot energy model
 #'
 #' @param profile profile name
-#' @param energy_vct energy numeric vector
-#' @param estimated_energy estimated energy numeric vector
+#' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
 #'
 #' @return ggplot
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_density labs theme_light
+#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs
 #' @importFrom dplyr tibble
+#' @importFrom mclust predict.densityMclust
+#' @importFrom grDevices extendrange
 #'
-plot_estimated_energy_models_density <- function(profile, energy_vct, estimated_energy) {
-  plot <- ggplot(data = tibble(x = energy_vct), aes_string(x = "x")) +
-    geom_density(fill = 'navy', alpha = 0.7) +
+plot_energy_model <- function(profile, mclust_obj) {
+  xrange <- extendrange(mclust_obj$data, f = 0.1)
+  eval.points <- seq(from = xrange[1], to = xrange[2], length = 1000)
+  ggplot(data = tibble(x = mclust_obj$data), aes_string(x = "x")) +
+    geom_histogram(aes_string(y = "..density.."), color = 'darkgrey', fill = 'grey', alpha = 0.2, show.legend = T, binwidth = 0.03) +
+    geom_line(
+      data = tibble(x = eval.points, y = predict.densityMclust(mclust_obj, eval.points)),
+      aes_string(x = "x", y = "y"), size = 1, color = "navy", show.legend = T
+    ) +
     labs(x = "Energy charged", y = "Density", title = profile) +
     theme_light()
-  for (i in 1:length(estimated_energy)) {
-    plot <- plot +
-      geom_density(
-        data = tibble(x = estimated_energy[[i]]),
-        aes_string(x = "x"), size = 1.2, color = "navy"
-      )
-  }
-  return(plot)
 }
 
+
+#' Compare density of estimated energy with density of real energy vector
+#'
+#' @param energy_models energy models returned by function `get_energy_models`
+#'
+#' @return ggplot
+#' @export
+#'
+#' @importFrom purrr pmap
+#' @importFrom cowplot plot_grid
+#'
+plot_energy_models <- function(energy_models) {
+  plot_list <- pmap(
+    select(energy_models, "profile", "mclust"),
+    ~ plot_energy_model(..1, ..2)
+  )
+  cowplot::plot_grid(plotlist = plot_list)
+}
 
 
 # Plot all clusters of the models -----------------------------------------

@@ -28,7 +28,6 @@ Imports:
     rlang,
     dbscan,
     mclust,
-    mixtools,
     MASS
 Suggests: 
     knitr,

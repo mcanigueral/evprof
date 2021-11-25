@@ -1,27 +1,7 @@
 
 # Bivariate Gaussian Mixture Models clustering --------------------------------------
 
-#' Visuallize BIC indicator to choose the number of clusters
-#'
-#' @param sessions sessions data set in standard format
-#' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.
-#' @param mclust_tol tolerance parameter for clustering
-#' @param mclust_itmax maximum number of iterations
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
-#'
-#' @return BIC plot
-#' @export
-#'
-#' @importFrom graphics plot
-#' @importFrom mclust mclustBIC
-#'
-choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
-  mod <- get_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
-  plot(mod, what = "BIC")
-}
-
-
-#' Perform `mclust::Mclust` clustering
+#' Perform `mclust::Mclust` clustering for multivariate GMM
 #'
 #' @param sessions sessions data set in standard format
 #' @param k number of clusters
@@ -33,7 +13,7 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log
 #'
 #' @importFrom mclust Mclust emControl
 #'
-get_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+get_connection_model_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
   if (!log) {
     sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
   } else {
@@ -50,7 +30,7 @@ get_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr tibble
 #'
-get_mclust_params <- function(mclust_obj) {
+get_connection_model_params <- function(mclust_obj) {
   purrr::map_dfr(
     factor(1:mclust_obj$G),
     ~ tibble(
@@ -61,6 +41,26 @@ get_mclust_params <- function(mclust_obj) {
     .id = "cluster"
   )
 }
+
+#' Visuallize BIC indicator to choose the number of clusters
+#'
+#' @param sessions sessions data set in standard format
+#' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.
+#' @param mclust_tol tolerance parameter for clustering
+#' @param mclust_itmax maximum number of iterations
+#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#'
+#' @return BIC plot
+#' @export
+#'
+#' @importFrom graphics plot
+#' @importFrom mclust mclustBIC
+#'
+choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+  mod <- get_connection_model_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+  plot(mod, what = "BIC")
+}
+
 
 #' Cluster sessions with `mclust` package
 #'
@@ -76,11 +76,11 @@ get_mclust_params <- function(mclust_obj) {
 #'
 cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
   set.seed(seed)
-  mclust_obj <- get_mclust_object(sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+  mclust_obj <- get_connection_model_mclust_object(sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
   sessions["Cluster"] <- factor(mclust_obj$classification)
   list(
     sessions = sessions,
-    models = get_mclust_params(mclust_obj)
+    models = get_connection_model_params(mclust_obj)
   )
 }
 
@@ -114,8 +114,8 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
 
   for (i in 1:length(seeds)) {
     set.seed(seeds[i])
-    mod <- get_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
-    mod_params <- get_mclust_params(mod)
+    mod <- get_connection_model_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+    mod_params <- get_connection_model_params(mod)
     ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params, log = log) +
       ggtitle(paste0("Seed: ", seeds[i], ", BIC: ", round(mod$bic))) +
       scale_color_discrete(labels = paste0(
@@ -136,18 +136,16 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
 }
 
 
-#' Get ellipse values of a Gaussian model
-#'
-#' @param mu mean of the g¡Gaussian model
-#' @param sigma variance of the Gaussian model
-#'
-#' @importFrom mixtools ellipse
-#'
-get_ellipse <- function(mu, sigma) {
-  ellips <- mixtools::ellipse(mu = mu, sigma = sigma, npoints = 100, draw = FALSE)
-  tibble(
-    x = ellips[, 1],
-    y = ellips[, 2]
+get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
+  es <- eigen(sigma)
+  e1 <- es$vec %*% diag(sqrt(es$val))
+  r1 <- sqrt(stats::qchisq(1 - alpha, 2))
+  theta <- seq(0, 2 * pi, len = npoints)
+  v1 <- cbind(r1 * cos(theta), r1 * sin(theta))
+  pts = t(mu - (e1 %*% t(v1)))
+  dplyr::tibble(
+    x = pts[, 1],
+    y = pts[, 2]
   )
 }
 
@@ -170,7 +168,7 @@ get_ellipse <- function(mu, sigma) {
 plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.5, lines_size = 1, legend_nrow = 2, log = TRUE) {
   ellipses <- purrr::map_dfr(
     set_names(seq(1, nrow(bivarGMM_params)), nm = profiles_names),
-    ~get_ellipse(bivarGMM_params$mu[[.x]], bivarGMM_params$sigma[[.x]]),
+    ~ get_ellipse(bivarGMM_params$mu[[.x]], bivarGMM_params$sigma[[.x]]),
     .id = "profile"
   )
   ellipses$profile <- factor(ellipses$profile, levels = unique(profiles_names))

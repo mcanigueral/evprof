@@ -285,8 +285,8 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @importFrom lubridate days hours
 #'
 divide_by_disconnection <- function(sessions, days, division_hour) {
-  sessions[["StartTime"]] <- evprof:::convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
-  sessions[["EndTime"]] <- sessions[["StartTime"]] + evprof:::convert_time_num_to_period(sessions[["ConnectionHours"]])
+  sessions[["StartTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
+  sessions[["EndTime"]] <- sessions[["StartTime"]] + convert_time_num_to_period(sessions[["ConnectionHours"]])
   sessions[['Disconnection']] <- NA
 
   for (day in days) {
