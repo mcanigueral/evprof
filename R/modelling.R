@@ -75,7 +75,7 @@ get_energy_model_parameters <- function(mclust_obj) {
     factor(1:mclust_obj$G),
     ~ tibble(
       mu =  mclust_obj$parameters$mean[.x],
-      sigmasq = mclust_obj$parameters$variance$sigmasq[.x],
+      sigma = sqrt(mclust_obj$parameters$variance$sigmasq[.x]),
       ratio = mclust_obj$parameters$pro[.x]
     )
   )
@@ -414,7 +414,7 @@ print_energy_models_table <- function(GMM) {
     sep = "\n",
     "\\begin{tabular}{l|c|c|c}",
     "\\hline",
-    "User profile & Mean ($\\mu$) & Variance ($\\sigma$) & Share (\\%) \\\\",
+    "User profile & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
     "\\hline",
     paste(
       collapse = "\n",
@@ -446,7 +446,7 @@ print_gaussian_features <- function(gaussian) {
   paste(
     sep = "&",
     round(gaussian$mu, 6),
-    round(gaussian$sigmasq, 6),
+    round(gaussian$sigma, 6),
     round(gaussian$ratio*100)
   )
 }
