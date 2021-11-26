@@ -75,10 +75,9 @@ get_energy_model_parameters <- function(mclust_obj) {
     factor(1:mclust_obj$G),
     ~ tibble(
       mu =  mclust_obj$parameters$mean[.x],
-      sigma = mclust_obj$parameters$variance$sigmasq[.x],
+      sigmasq = mclust_obj$parameters$variance$sigmasq[.x],
       ratio = mclust_obj$parameters$pro[.x]
-    ),
-    .id = "model"
+    )
   )
 }
 
@@ -447,7 +446,7 @@ print_gaussian_features <- function(gaussian) {
   paste(
     sep = "&",
     round(gaussian$mu, 6),
-    round(gaussian$sigma, 6),
-    round(gaussian$lambda*100)
+    round(gaussian$sigmasq, 6),
+    round(gaussian$ratio*100)
   )
 }
