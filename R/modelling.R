@@ -2,7 +2,7 @@
 
 # Connection models -------------------------------------------------------
 
-#' Aggregate clusters GMM into profiles GMM
+#' Get a tibble of connection GMM for every user profile
 #'
 #' @param subsets_clustering list with clustering results of each subset to aggregate
 #' @param clusters_interpretations list with clusters interpretations of each subset
@@ -71,18 +71,15 @@ get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
 #' @importFrom dplyr tibble
 #'
 get_energy_model_parameters <- function(mclust_obj) {
-  map_dfr(
-    factor(1:mclust_obj$G),
-    ~ tibble(
-      mu =  mclust_obj$parameters$mean[.x],
-      sigma = sqrt(mclust_obj$parameters$variance$sigmasq[.x]),
-      ratio = mclust_obj$parameters$pro[.x]
-    )
+  tibble(
+    mu = mclust_obj$parameters$mean,
+    sigma = sqrt(mclust_obj$parameters$variance$sigmasq),
+    ratio = mclust_obj$parameters$pro
   )
 }
 
 
-#' Title
+#' Get a tibble of energy GMM for every user profile
 #'
 #' @param sessions_profiles sessions data set with user profile attribute
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))

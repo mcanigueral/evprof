@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelling.R
 \name{get_connection_models}
 \alias{get_connection_models}
-\title{Aggregate clusters GMM into profiles GMM}
+\title{Get a tibble of connection GMM for every user profile}
 \usage{
 get_connection_models(
   subsets_clustering = list(),
@@ -18,5 +18,5 @@ get_connection_models(
 tibble
 }
 \description{
-Aggregate clusters GMM into profiles GMM
+Get a tibble of connection GMM for every user profile
 }

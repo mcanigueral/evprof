@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelling.R
 \name{get_energy_models}
 \alias{get_energy_models}
-\title{Title}
+\title{Get a tibble of energy GMM for every user profile}
 \usage{
 get_energy_models(sessions_profiles, log = TRUE)
 }
@@ -15,5 +15,5 @@ get_energy_models(sessions_profiles, log = TRUE)
 tibble
 }
 \description{
-Title
+Get a tibble of energy GMM for every user profile
 }
