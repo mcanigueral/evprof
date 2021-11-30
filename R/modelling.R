@@ -243,10 +243,14 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @export
 #'
 #' @importFrom purrr map2
-#' @importFrom dplyr tibble left_join
+#' @importFrom dplyr tibble left_join select
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
                          connection_GMM, energy_GMM, connection_log, energy_log) {
+
+  if ('mclust' %in% colnames(energy_GMM)) {
+    energy_GMM <- select(energy_GMM, - "mclust")
+  }
 
   GMM <- map2(
     connection_GMM, energy_GMM,
