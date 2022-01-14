@@ -105,7 +105,7 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #'
 save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),
                                     filename = paste0("iteration_", k, "_clusters.pdf"), plot_scale = 2,
-                                    mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+                                    points_size = 0.25, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
   ellipses_plots <- list()
   IC_values <- tibble(
     seed = seeds,
@@ -116,7 +116,7 @@ save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(i
     set.seed(seeds[i])
     mod <- get_connection_model_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
     mod_params <- get_connection_model_params(mod)
-    ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params, log = log) +
+    ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params, log = log, points_size = points_size) +
       ggtitle(paste0("Seed: ", seeds[i], ", BIC: ", round(mod$bic))) +
       scale_color_discrete(labels = paste0(
         seq(1, mod$G), " (", round(mod$parameters$pro*100), "%)"
@@ -165,7 +165,7 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #' @importFrom purrr map_dfr set_names
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_path labs theme_light theme guides guide_legend scale_x_continuous scale_y_continuous
 #'
-plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.5, lines_size = 1, legend_nrow = 2, log = TRUE) {
+plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.25, lines_size = 1, legend_nrow = 2, log = TRUE) {
   ellipses <- purrr::map_dfr(
     set_names(seq(1, nrow(bivarGMM_params)), nm = profiles_names),
     ~ get_ellipse(bivarGMM_params$mu[[.x]], bivarGMM_params$sigma[[.x]]),

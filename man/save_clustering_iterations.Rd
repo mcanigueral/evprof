@@ -11,6 +11,7 @@ save_clustering_iterations(
   seeds = round(runif(it, min = 1, max = 1000)),
   filename = paste0("iteration_", k, "_clusters.pdf"),
   plot_scale = 2,
+  points_size = 0.25,
   mclust_tol = 1e-08,
   mclust_itmax = 10000,
   log = TRUE

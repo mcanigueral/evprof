@@ -8,7 +8,7 @@ plot_bivarGMM(
   sessions,
   bivarGMM_params,
   profiles_names = seq(1, nrow(bivarGMM_params)),
-  points_size = 0.5,
+  points_size = 0.25,
   lines_size = 1,
   legend_nrow = 2,
   log = TRUE
