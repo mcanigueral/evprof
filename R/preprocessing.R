@@ -161,7 +161,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
   while (!is.list(dbscan_params)) {
     if (dbscan_params == 1) {
       # message("Solution not found. Decreasing eps and trying again.")
-      eps <- eps/1.5
+      eps <- eps/2
     } else if (dbscan_params == 2) {
       # message("Solution not found. Increasing eps and trying again.")
       eps <- eps*1.5
