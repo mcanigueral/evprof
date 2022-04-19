@@ -205,7 +205,8 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
   }
   plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
     geom_point(...) +
-    labs(x='Connection start time', y='Number of connection hours', color = "", title = paste('Outliers level:', outliers_pct, '%')) +
+    labs(x='Connection start time', y='Number of connection hours', color = "",
+         subtitle = paste('Outliers level:', outliers_pct, '%')) +
     theme_light() +
     scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
   if (log) {
