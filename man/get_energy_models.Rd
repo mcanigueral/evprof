@@ -4,12 +4,14 @@
 \alias{get_energy_models}
 \title{Get a tibble of energy GMM for every user profile}
 \usage{
-get_energy_models(sessions_profiles, log = TRUE)
+get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
 }
 \arguments{
 \item{sessions_profiles}{sessions data set with user profile attribute}
 
 \item{log}{Logical, true to perform logarithmic transformation (base = exp(1))}
+
+\item{by_power}{Logical, true to fit the energy models for every charging rate separately}
 }
 \value{
 tibble

@@ -83,6 +83,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #'
 #' @param sessions_profiles sessions data set with user profile attribute
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))
+#' @param by_power Logical, true to fit the energy models for every charging rate separately
 #'
 #' @return tibble
 #' @export
@@ -91,11 +92,22 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @importFrom purrr map
 #' @importFrom rlang .data
 #'
-get_energy_models <- function(sessions_profiles, log = TRUE) {
+get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
+  if (by_power) {
+    sessions_profiles <- sessions_profiles %>%
+      mutate(
+        ChargingRate = round_to_interval(.data$Power, 3.7)
+      )
+    sessions_profiles$ChargingRate[sessions_profiles$ChargingRate == 0] <- 3.7
+    sessions_profiles$ChargingRate[sessions_profiles$ChargingRate > 11] <- 11
+  } else {
+    sessions_profiles$ChargingRate <- "Unknown"
+  }
+
   sessions_profiles %>%
     mutate(Energy = round(.data$Energy, 3)) %>%
     filter(.data$Energy > 0) %>%
-    group_by(profile = .data$Profile) %>%
+    group_by(profile = .data$Profile, charging_rate = .data$ChargingRate) %>%
     summarise(
       energy = list(.data$Energy)
     ) %>%
@@ -103,7 +115,8 @@ get_energy_models <- function(sessions_profiles, log = TRUE) {
       mclust = map(.data$energy, ~ get_energy_model_mclust_object(.x, log)),
       energy_models = map(.data$mclust, ~ get_energy_model_parameters(.x))
     ) %>%
-    select(.data$profile, .data$energy_models, .data$mclust)
+    select(.data$profile, .data$charging_rate, .data$energy_models, .data$mclust) %>%
+    ungroup()
 }
 
 #' Estimate sessions energy values
@@ -144,32 +157,6 @@ get_estimated_energy <- function(n, energy_models, log) {
 }
 
 
-#' Plot energy model
-#'
-#' @param profile profile name
-#' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
-#'
-#' @return ggplot
-#'
-#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs
-#' @importFrom dplyr tibble
-#' @importFrom mclust predict.densityMclust
-#' @importFrom grDevices extendrange
-#'
-plot_energy_model <- function(profile, mclust_obj) {
-  xrange <- extendrange(mclust_obj$data, f = 0.1)
-  eval.points <- seq(from = xrange[1], to = xrange[2], length = 1000)
-  ggplot(data = tibble(x = mclust_obj$data), aes_string(x = "x")) +
-    geom_histogram(aes_string(y = "..density.."), color = 'darkgrey', fill = 'grey', alpha = 0.2, show.legend = T, binwidth = 0.03) +
-    geom_line(
-      data = tibble(x = eval.points, y = predict.densityMclust(mclust_obj, eval.points)),
-      aes_string(x = "x", y = "y"), size = 1, color = "navy", show.legend = T
-    ) +
-    labs(x = "Energy charged", y = "Density", title = profile) +
-    theme_light()
-}
-
-
 #' Compare density of estimated energy with density of real energy vector
 #'
 #' @param energy_models energy models returned by function `get_energy_models`
@@ -177,15 +164,72 @@ plot_energy_model <- function(profile, mclust_obj) {
 #' @return ggplot
 #' @export
 #'
-#' @importFrom purrr pmap
+#' @importFrom purrr map set_names
 #' @importFrom cowplot plot_grid
+#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs theme unit
+#' @importFrom dplyr tibble mutate %>%
+#' @importFrom mclust predict.densityMclust
+#' @importFrom grDevices extendrange
 #'
 plot_energy_models <- function(energy_models) {
-  plot_list <- pmap(
-    select(energy_models, "profile", "mclust"),
-    ~ plot_energy_model(..1, ..2)
-  )
-  cowplot::plot_grid(plotlist = plot_list)
+
+  plot_list <- list()
+
+  for (prof in unique(energy_models$profile)) {
+
+    em_df <- filter(energy_models, .data$profile == prof)
+
+    histogram_data <- unlist(map(em_df$mclust, ~ .x$data))
+
+    profile_plot <- ggplot(data = tibble(x = histogram_data), aes_string(x = "x")) +
+      geom_histogram(
+        aes_string(y = "..density.."), color = 'darkgrey', fill = 'grey',
+        alpha = 0.2, show.legend = T, binwidth = 0.03
+      ) +
+      labs(x = "Energy charged", y = "Density", title = prof) +
+      theme_light()
+
+    lines_data <- map_dfr(
+      set_names(em_df$mclust, em_df$charging_rate),
+      ~ tibble(
+        x = seq(
+          from = extendrange(.x$data, f = 0.1)[1],
+          to = extendrange(.x$data, f = 0.1)[2],
+          length = 1000
+        )
+      ) %>%
+        mutate(
+          y = predict.densityMclust(.x, .data$x)
+        ),
+      .id = "charging_rate"
+    ) %>%
+      mutate(
+        charging_rate = factor(.data$charging_rate, levels = c("3.7", "7.4", "11", "Unknown"))
+      )
+
+    profile_plot2 <- profile_plot +
+      geom_line(
+        data = lines_data,
+        aes_string(x = "x", y = "y", color = "charging_rate"),
+        size = 1
+      ) +
+      labs(color = "Charging rate (kW)") +
+      theme(
+        legend.position = "bottom",
+        plot.margin = unit(c(1, 0.5, 0.5, 0.5), "cm")
+      )
+
+    if (length(unique(em_df$charging_rate)) == 1) {
+      profile_plot2 <- profile_plot2 +
+        theme(
+          legend.position = "none"
+        )
+    }
+
+    plot_list[[prof]] <- profile_plot2
+  }
+
+  cowplot::plot_grid(plotlist = plot_list, nrow = 2)
 }
 
 

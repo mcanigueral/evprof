@@ -93,6 +93,7 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param seeds seed for each iteration
 #' @param filename PDF output file (with extension .pdf)
 #' @param plot_scale scale of each iteration plot for a good visualization in pdf file
+#' @param points_size integer, size of points in the scatter plot
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).

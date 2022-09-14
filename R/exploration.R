@@ -176,10 +176,12 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
   } else {
     sessions <- mutate_to_log(sessions)
   }
+
   plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
     geom_point(...) +
     labs(x='Connection start time', y='Number of connection hours') +
     theme_light()
+
   if (!log) {
     plot + scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour')
   } else {

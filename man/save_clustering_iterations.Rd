@@ -30,6 +30,8 @@ save_clustering_iterations(
 
 \item{plot_scale}{scale of each iteration plot for a good visualization in pdf file}
 
+\item{points_size}{integer, size of points in the scatter plot}
+
 \item{mclust_tol}{tolerance parameter for clustering}
 
 \item{mclust_itmax}{maximum number of iterations}
