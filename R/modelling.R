@@ -88,7 +88,8 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>% group_by summarise mutate select
+#' @importFrom dplyr %>% group_by summarise mutate select rename
+#' @importFrom tidyr nest
 #' @importFrom purrr map
 #' @importFrom rlang .data
 #'
@@ -116,6 +117,9 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
       energy_models = map(.data$mclust, ~ get_energy_model_parameters(.x))
     ) %>%
     select(.data$profile, .data$charging_rate, .data$energy_models, .data$mclust) %>%
+    group_by(.data$profile) %>%
+    nest() %>%
+    rename(energy_models = .data$data) %>%
     ungroup()
 }
 
@@ -177,7 +181,7 @@ plot_energy_models <- function(energy_models) {
 
   for (prof in unique(energy_models$profile)) {
 
-    em_df <- filter(energy_models, .data$profile == prof)
+    em_df <- filter(energy_models, .data$profile == prof)[["energy_models"]]
 
     histogram_data <- unlist(map(em_df$mclust, ~ .x$data))
 
@@ -286,15 +290,20 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @return object of class `evmodel`
 #' @export
 #'
-#' @importFrom purrr map2
-#' @importFrom dplyr tibble left_join select
+#' @importFrom purrr map map2
+#' @importFrom dplyr tibble left_join select mutate %>%
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
                          connection_GMM, energy_GMM, connection_log, energy_log) {
 
-  if ('mclust' %in% colnames(energy_GMM)) {
-    energy_GMM <- select(energy_GMM, - "mclust")
-  }
+  # Remove `mclust` component from energy models tibble
+  energy_GMM <- energy_GMM %>%
+    mutate(
+      energy_models = map(
+        .data$energy_models,
+        ~ select(.x, - "mclust")
+      )
+    )
 
   GMM <- map2(
     connection_GMM, energy_GMM,
