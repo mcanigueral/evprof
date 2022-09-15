@@ -123,43 +123,6 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
     ungroup()
 }
 
-#' Estimate sessions energy values
-#'
-#' @param n number of sessions
-#' @param mu means of univariate GMM
-#' @param sigma covariance matrix of univariate GMM
-#' @param log Logical, true if models have logarithmic transformation and exponential transformation will be performed
-#'
-#' @return numeric vector
-#' @noRd
-#'
-#' @importFrom stats rnorm
-#'
-estimate_energy <- function(n, mu, sigma, log) {
-  if (n == 0) n = 1
-  energy <- rnorm(n, mu, sigma)
-  if (log) energy <- exp(energy)
-  return( energy )
-}
-
-#' Estimate energy given energy models tibble
-#'
-#' @param n number of sessions
-#' @param energy_models energy models tibble
-#' @param log Logical, true if models have logarithmic transformation and exponential transformation will be performed
-#'
-#' @return list of numeric vectors
-#' @noRd
-#'
-#' @importFrom purrr pmap
-#'
-get_estimated_energy <- function(n, energy_models, log) {
-  return(unlist(pmap(
-    energy_models,
-    ~ estimate_energy(round(n*..3), ..1, ..2, log)
-  )))
-}
-
 
 #' Compare density of estimated energy with density of real energy vector
 #'
