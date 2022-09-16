@@ -11,7 +11,8 @@ get_ev_model(
   connection_GMM,
   energy_GMM,
   connection_log,
-  energy_log
+  energy_log,
+  data_tz
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ get_ev_model(
 \item{connection_log}{Logical, true if connection models have logarithmic transformations}
 
 \item{energy_log}{Logical, true if energy models have logarithmic transformations}
+
+\item{data_tz}{character, time zone of the original data (necessary to properly simulate new sessions)}
 }
 \value{
 object of class \code{evmodel}

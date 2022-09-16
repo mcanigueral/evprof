@@ -246,13 +246,13 @@ drop_outliers <- function(sessions) {
 #'
 #' @importFrom ggplot2 geom_line aes_string
 #' @importFrom dplyr tibble
-#' @importFrom lubridate force_tz hours days
+#' @importFrom lubridate force_tz hours days today
 #' @importFrom rlang .data
 #'
 get_division_line <- function(day_n, division_hour) {
   geom_line(data = tibble(
-    "dt" = seq.POSIXt(from = force_tz(Sys.Date() + hours(division_hour), tzone = getOption("evprof.tzone")), to = force_tz(Sys.Date() + days(1) + hours(division_hour), tzone = getOption("evprof.tzone")), by = "hour"),
-    "line" = as.numeric(difftime(force_tz(Sys.Date()+days(day_n) + hours(division_hour), tzone = getOption("evprof.tzone")), .data$dt, units = "hours"))
+    "dt" = seq.POSIXt(from = today() + hours(division_hour), to = today() + days(1) + hours(division_hour), by = "hour"),
+    "line" = as.numeric(difftime(today()+days(day_n) + hours(division_hour), .data$dt, units = "hours"))
   ), aes_string("dt", "line"), size = 1, color = "red", linetype = "dashed")
 }
 
@@ -283,7 +283,7 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @export
 #'
 #' @importFrom dplyr select
-#' @importFrom lubridate days hours
+#' @importFrom lubridate days hours today
 #'
 divide_by_disconnection <- function(sessions, days, division_hour) {
   sessions[["StartTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
@@ -292,8 +292,8 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 
   for (day in days) {
     sessions$Disconnection[
-      (sessions$EndTime > force_tz(Sys.Date() + days(day-1) + hours(division_hour), tzone = getOption("evprof.tzone"))) &
-        (sessions$EndTime <= force_tz(Sys.Date() + days(day) + hours(division_hour), tzone = getOption("evprof.tzone")))
+      (sessions$EndTime > today() + days(day-1) + hours(division_hour)) &
+        (sessions$EndTime <= today() + days(day) + hours(division_hour))
     ] <- day
   }
 

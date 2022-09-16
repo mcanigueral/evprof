@@ -2,7 +2,7 @@
 % Please edit documentation in R/exploration.R
 \name{convert_time_dt_to_plot_dt}
 \alias{convert_time_dt_to_plot_dt}
-\title{Modify datetime values according to time sequence start time}
+\title{Modify datetime values according evprof.start.hour}
 \usage{
 convert_time_dt_to_plot_dt(time_dt, start = getOption("evprof.start.hour"))
 }
@@ -12,5 +12,5 @@ convert_time_dt_to_plot_dt(time_dt, start = getOption("evprof.start.hour"))
 \item{start}{Start hour (int)}
 }
 \description{
-Modify datetime values according to time sequence start time
+Modify datetime values according evprof.start.hour
 }

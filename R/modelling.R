@@ -144,7 +144,7 @@ plot_energy_models <- function(energy_models) {
 
   for (prof in unique(energy_models$profile)) {
 
-    em_df <- filter(energy_models, .data$profile == prof)[["energy_models"]]
+    em_df <- energy_models$energy_models[[which(energy_models$profile == prof)]]
 
     histogram_data <- unlist(map(em_df$mclust, ~ .x$data))
 
@@ -249,6 +249,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @param energy_GMM list of different energy univariate GMM
 #' @param connection_log Logical, true if connection models have logarithmic transformations
 #' @param energy_log Logical, true if energy models have logarithmic transformations
+#' @param data_tz character, time zone of the original data (necessary to properly simulate new sessions)
 #'
 #' @return object of class `evmodel`
 #' @export
@@ -257,14 +258,17 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @importFrom dplyr tibble left_join select mutate %>%
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
-                         connection_GMM, energy_GMM, connection_log, energy_log) {
+                         connection_GMM, energy_GMM, connection_log, energy_log, data_tz) {
 
   # Remove `mclust` component from energy models tibble
-  energy_GMM <- energy_GMM %>%
-    mutate(
-      energy_models = map(
-        .data$energy_models,
-        ~ select(.x, - "mclust")
+  energy_GMM <- map(
+    energy_GMM,
+    ~ .x %>%
+      mutate(
+        energy_models = map(
+          .data$energy_models,
+          ~ select(.x, - "mclust")
+        )
       )
     )
 
@@ -278,7 +282,7 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
       creation = Sys.Date(),
       connection_log = connection_log,
       energy_log = energy_log,
-      tzone = getOption("evprof.tzone", 'Europe/Amsterdam')
+      tzone = data_tz
     ),
     models = tibble(
       time_cycle = names,

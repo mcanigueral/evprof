@@ -28,30 +28,11 @@ round_to_interval <- function(dbl, interval) {
 #'
 #' @param time_dt Datetime value
 #'
-#' @importFrom lubridate hour minute second
+#' @importFrom lubridate hour minute second with_tz
 #'
 convert_time_dt_to_num <- function(time_dt) {
-  hour(time_dt) + minute(time_dt)/60 + second(time_dt)/3600
-}
-
-#' Convert datetime value to rounded numeric (hour-based)
-#'
-#' @param time_dt Datetime value
-#' @param interval Time interval of the time sequence. It can be 0.5 (30 minutes) or 1 (1 hour).
-#'
-#' @importFrom lubridate hour<- minute<-
-#'
-convert_time_dt_to_rounded_dt <- function(time_dt, interval=0.5) {
-  if (interval == 0.5) {
-    hour_round <- round_to_half(convert_time_dt_to_num(time_dt))
-    hour(time_dt) <- hour_round %/% 1
-    minute(time_dt) <- (hour_round %% 1)*60
-  }
-  if (interval == 1) {
-    hour(time_dt) <- round(convert_time_dt_to_num(time_dt))
-    minute(time_dt) <- 0
-  }
-  time_dt
+  time_dt_utc <- with_tz(time_dt, "UTC")
+  hour(time_dt_utc) + minute(time_dt_utc)/60 + second(time_dt_utc)/3600
 }
 
 #' Convert numeric time value (hour-based) to character hour in %H:%M format
@@ -82,18 +63,19 @@ convert_time_num_to_plot_factor <- function(time_num, interval=0.5, start=getOpt
   )
 }
 
-#' Modify datetime values according to time sequence start time
+#' Modify datetime values according evprof.start.hour
 #'
 #' @param time_dt Datetime value
 #' @param start Start hour (int)
 #'
-#' @importFrom lubridate date<- date hour days
+#' @importFrom lubridate date<- date hour days with_tz
 #'
 convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.hour")) {
-  date(time_dt) <- Sys.Date()
-  next_day_idx <- seq(1, length(time_dt))[(hour(time_dt) < start)]
-  date(time_dt)[next_day_idx] <- date(time_dt)[next_day_idx] + days(1)
-  time_dt
+  time_dt_utc <- with_tz(time_dt, "UTC")
+  date(time_dt_utc) <- Sys.Date()
+  next_day_idx <- seq(1, length(time_dt_utc))[(hour(time_dt_utc) < start)]
+  date(time_dt_utc)[next_day_idx] <- date(time_dt_utc)[next_day_idx] + days(1)
+  time_dt_utc
 }
 
 #' Modify numeric time value according to a time sequence start time
