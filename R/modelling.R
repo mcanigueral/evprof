@@ -458,7 +458,7 @@ print_user_profile_energy_models_table <- function(user_profile_GMM, label, capt
     paste(
       collapse = "\n",
       pmap_chr(
-        GMM,
+        user_profile_GMM,
         ~ print_profile_energy_models(..1, ..2)
       )
     ),
