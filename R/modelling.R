@@ -356,12 +356,13 @@ print.evmodel <- function(x, ...) {
 #' @param caption character, table caption
 #' @param full_width logical, if true the "*" will be added next to the "table" tag
 #' @param path character, file path to write the latex table to. Is must have ".tex" extension.
+#' If it is NULL, then the character string is returned instead of writing a file.
 #'
 #' @return character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_connection_models_table <- function(GMM, label, caption, full_width, path) {
+print_connection_models_table <- function(GMM, label, caption, full_width, path = NULL) {
   latex_table <- paste(
     sep = "\n",
     paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
@@ -381,7 +382,11 @@ print_connection_models_table <- function(GMM, label, caption, full_width, path)
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
-  writeLines(latex_table, path)
+  if (is.null(path)) {
+    return( latex_table )
+  } else {
+    writeLines(latex_table, path)
+  }
 }
 
 print_profile_connection_models <- function(profile_name, connection_models) {
@@ -438,12 +443,13 @@ print_biGMM_mu_matrix <- function(mu) {
 #' @param caption character, table caption
 #' @param full_width logical, if true the "*" will be added next to the "table" tag
 #' @param path character, file path to write the latex table to. Is must have ".tex" extension.
+#' If it is NULL, then the character string is returned instead of writing a file.
 #'
 #' @return character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_energy_models_table <- function(GMM, label, caption, full_width, path) {
+print_energy_models_table <- function(GMM, label, caption, full_width, path = NULL) {
   latex_table <- paste(
     sep = "\n",
     paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
@@ -463,7 +469,11 @@ print_energy_models_table <- function(GMM, label, caption, full_width, path) {
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
-  writeLines(latex_table, path)
+  if (is.null(path)) {
+    return( latex_table )
+  } else {
+    writeLines(latex_table, path)
+  }
 }
 
 print_profile_energy_models <- function(profile_name, energy_models) {
