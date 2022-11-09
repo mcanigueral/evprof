@@ -378,7 +378,7 @@ print_connection_models_table <- function(GMM, label, caption, full_width, path 
         ~ print_profile_connection_models(..1, ..3)
       )
     ),
-    "\\end{tabular}",
+    "\\end{tabular}}",
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
@@ -465,7 +465,7 @@ print_energy_models_table <- function(GMM, label, caption, full_width, path = NU
         ~ print_profile_energy_models(..1, ..2)
       )
     ),
-    "\\end{tabular}",
+    "\\end{tabular}}",
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
