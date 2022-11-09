@@ -346,8 +346,7 @@ print.evmodel <- function(x, ...) {
 
 
 
-# Print connection model tables ------------------------------------------------------
-
+#  Print Model tables -----------------------------------------------------
 
 #' Get LaTeX code for the connection bivariate GMM features (mu and sigma)
 #'
@@ -434,11 +433,9 @@ print_biGMM_mu_matrix <- function(mu) {
 }
 
 
-# Print energy models table -----------------------------------------------
-
-#' Get LaTeX code for the energy GMM features (mu and sigma)
+#' Get LaTeX code for the energy GMM features OF A SINGLE USER PROFILE (mu and sigma)
 #'
-#' @param GMM Gaussian Mixture Models obtained from function `get_energy_models`
+#' @param user_profile_GMM Gaussian Mixture Models obtained from function `get_energy_models`
 #' @param label character, e.g. "tab:gmm"
 #' @param caption character, table caption
 #' @param full_width logical, if true the "*" will be added next to the "table" tag
@@ -449,14 +446,14 @@ print_biGMM_mu_matrix <- function(mu) {
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_energy_models_table <- function(GMM, label, caption, full_width, path = NULL) {
+print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, path = NULL) {
   latex_table <- paste(
     sep = "\n",
     paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
     "\\resizebox{\\linewidth}{!} {",
     "\\begin{tabular}{l|c|c|c}",
     "\\hline",
-    "User profile & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
+    "Charging rate (kW) & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
     "\\hline",
     paste(
       collapse = "\n",
@@ -499,3 +496,77 @@ print_gaussian_features <- function(gaussian) {
     round(gaussian$ratio*100)
   )
 }
+
+
+
+
+# NOT EXPORTED: Print Model tables (ALL MODELS FROM THE SAME TIME CYCLE TOGETHER) ------------------------------------------------------
+
+#' Get LaTeX code for the energy GMM features (mu and sigma)
+#'
+#' @param GMM Gaussian Mixture Models obtained from function `get_energy_models`
+#' @param label character, e.g. "tab:gmm"
+#' @param caption character, table caption
+#' @param full_width logical, if true the "*" will be added next to the "table" tag
+#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
+#' If it is NULL, then the character string is returned instead of writing a file.
+#'
+#' @return character, LaTeX code
+#'
+#' @importFrom purrr pmap_chr
+.print_energy_models_table <- function(GMM, label, caption, full_width, path = NULL) {
+  latex_table <- paste(
+    sep = "\n",
+    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
+    "\\resizebox{\\linewidth}{!} {",
+    "\\begin{tabular}{l|c|c|c|c}",
+    "\\hline",
+    "User profile & Charging power (kW) & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
+    "\\hline",
+    paste(
+      collapse = "\n",
+      pmap_chr(
+        GMM,
+        ~ .print_profile_energy_models(..1, ..2)
+      )
+    ),
+    "\\end{tabular}}",
+    paste0("\\caption{\\label{", label, "}", caption, "}"),
+    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
+  )
+  if (is.null(path)) {
+    return( latex_table )
+  } else {
+    writeLines(latex_table, path)
+  }
+}
+
+.print_profile_energy_models <- function(profile_name, energy_models) {
+  n_models <- sum(map_dbl(energy_models$energy_models, ~ nrow(.x)))
+  paste(
+    paste0("\\multirow{", n_models, "}{*}{", profile_name, "}&"),
+    paste(
+      collapse = "\\\\ \\cline{2-5} & \n",
+      pmap_chr(
+        energy_models,
+        ~ .print_power_energy_models(..1, ..2)
+      )
+    ),
+    "\\\\ \\hline"
+  )
+}
+
+.print_power_energy_models <- function(charging_power, energy_models) {
+  paste(
+    paste0("\\multirow{", nrow(energy_models), "}{*}{", charging_power, "}&"),
+    paste(
+      collapse = "\\\\ \\cline{3-5} & & ",
+      purrr::map_chr(
+        energy_models %>%
+          split(1:nrow(energy_models)),
+        print_gaussian_features
+      )
+    )
+  )
+}
+
