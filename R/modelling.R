@@ -352,14 +352,20 @@ print.evmodel <- function(x, ...) {
 #' Get LaTeX code for the connection bivariate GMM features (mu and sigma)
 #'
 #' @param GMM Gaussian Mixture Models obtained from function `get_connection_models`
+#' @param label character, e.g. "tab:gmm"
+#' @param caption character, table caption
+#' @param full_width logical, if true the "*" will be added next to the "table" tag
+#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
 #'
 #' @return character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_connection_models_table <- function(GMM) {
-  paste(
+print_connection_models_table <- function(GMM, label, caption, full_width, path) {
+  latex_table <- paste(
     sep = "\n",
+    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
+    "\\resizebox{\\linewidth}{!} {",
     "\\begin{tabular}{l|c|c|c}",
     "\\hline",
     "User profile & Centroid ($\\mu$) & Covariance ($\\Sigma$) & Share (\\%) \\\\",
@@ -371,8 +377,11 @@ print_connection_models_table <- function(GMM) {
         ~ print_profile_connection_models(..1, ..3)
       )
     ),
-    "\\end{tabular}"
+    "\\end{tabular}",
+    paste0("\\caption{\\label{", label, "}", caption, "}"),
+    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
+  writeLines(latex_table, path)
 }
 
 print_profile_connection_models <- function(profile_name, connection_models) {
@@ -401,21 +410,21 @@ print_cluster_features <- function(cluster) {
 
 print_biGMM_sigma_matrix <- function(sigma) {
   paste(
-    "\\begin{array}{cc}",
+    "$\\begin{array}{cc}",
     sigma[1, 1], "&",
     sigma[1, 2], "\\\\",
     sigma[2, 1], "&",
     sigma[2, 2],
-    "\\end{array}"
+    "\\end{array}$"
   )
 }
 
 print_biGMM_mu_matrix <- function(mu) {
   paste(
-    "\\begin{array}{cc}",
+    "$\\begin{array}{cc}",
     mu[1], "\\\\",
     mu[2],
-    "\\end{array}"
+    "\\end{array}$"
   )
 }
 
@@ -425,14 +434,20 @@ print_biGMM_mu_matrix <- function(mu) {
 #' Get LaTeX code for the energy GMM features (mu and sigma)
 #'
 #' @param GMM Gaussian Mixture Models obtained from function `get_energy_models`
+#' @param label character, e.g. "tab:gmm"
+#' @param caption character, table caption
+#' @param full_width logical, if true the "*" will be added next to the "table" tag
+#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
 #'
 #' @return character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
-print_energy_models_table <- function(GMM) {
-  paste(
+print_energy_models_table <- function(GMM, label, caption, full_width, path) {
+  latex_table <- paste(
     sep = "\n",
+    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
+    "\\resizebox{\\linewidth}{!} {",
     "\\begin{tabular}{l|c|c|c}",
     "\\hline",
     "User profile & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
@@ -444,8 +459,11 @@ print_energy_models_table <- function(GMM) {
         ~ print_profile_energy_models(..1, ..2)
       )
     ),
-    "\\end{tabular}"
+    "\\end{tabular}",
+    paste0("\\caption{\\label{", label, "}", caption, "}"),
+    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
+  writeLines(latex_table, path)
 }
 
 print_profile_energy_models <- function(profile_name, energy_models) {

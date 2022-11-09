@@ -4,10 +4,18 @@
 \alias{print_energy_models_table}
 \title{Get LaTeX code for the energy GMM features (mu and sigma)}
 \usage{
-print_energy_models_table(GMM)
+print_energy_models_table(GMM, label, caption, full_width, path)
 }
 \arguments{
 \item{GMM}{Gaussian Mixture Models obtained from function \code{get_energy_models}}
+
+\item{label}{character, e.g. "tab:gmm"}
+
+\item{caption}{character, table caption}
+
+\item{full_width}{logical, if true the "*" will be added next to the "table" tag}
+
+\item{path}{character, file path to write the latex table to. Is must have ".tex" extension.}
 }
 \value{
 character, LaTeX code
