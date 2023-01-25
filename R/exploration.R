@@ -181,7 +181,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' @export
 #'
 #' @importFrom lubridate wday month year
-#' @importFrom ggplot2 aes_string stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat facet_wrap
+#' @importFrom ggplot2 aes_string stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat facet_wrap vars
 #' @importFrom rlang .data
 #'
 plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), start=getOption("evprof.start.hour"), log = FALSE) {
@@ -216,15 +216,15 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 
   if (by == "wday") {
     return(
-      density_plot + facet_wrap(~ .data$wday)
+      density_plot + facet_wrap(vars(.data$wday))
     )
   } else if (by == "month") {
     return(
-      density_plot + facet_wrap(~ .data$month)
+      density_plot + facet_wrap(vars(.data$month))
     )
   } else if (by == "year") {
     return(
-      density_plot + facet_wrap(~ .data$year)
+      density_plot + facet_wrap(vars(.data$year))
     )
   } else {
     return( density_plot )
@@ -335,7 +335,7 @@ plot_histogram_grid <- function(sessions, vars=evprof::sessions_summary_feature_
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>% tibble select mutate group_by ungroup summarise
+#' @importFrom dplyr %>% tibble select mutate group_by ungroup summarise all_of
 #' @importFrom tidyr drop_na
 #' @importFrom purrr map2 pmap
 #' @importFrom plyr mapvalues
@@ -355,7 +355,7 @@ get_charging_rates_distribution <- function(sessions, unit="year") {
     seq = map2(.data$start, .data$end, ~ seq(.x, .y, by = 0.5))
   )
   sessions %>%
-    select(.data$ConnectionStartDateTime, .data$Power) %>%
+    select(all_of(c("ConnectionStartDateTime", "Power"))) %>%
     mutate(
       ChargingPower_round = round_to_half(.data$Power),
       ChargingPower_rate = plyr::mapvalues(
@@ -415,11 +415,10 @@ get_daily_n_sessions <- function(sessions, years, months, wdays) {
 #' @export
 #'
 #' @importFrom dplyr %>% pull
-#' @importFrom rlang .data
 #'
 get_daily_avg_n_sessions <- function(sessions, years, months, wdays) {
   get_daily_n_sessions(sessions, years, months, wdays) %>%
-    pull(.data$n_sessions) %>%
+    pull("n_sessions") %>%
     mean %>%
     round
 }

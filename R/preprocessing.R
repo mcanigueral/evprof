@@ -354,7 +354,7 @@ divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycl
 #'
 #' @importFrom purrr when
 #' @importFrom dplyr %>% group_by summarise mutate select n left_join
-#' @importFrom ggplot2 facet_wrap theme
+#' @importFrom ggplot2 facet_wrap theme vars
 #' @importFrom rlang .data
 #'
 plot_divisions <- function(sessions, by_disconnection = TRUE, by_timecycle = TRUE, plottype = c("points", "density"), nrow = NULL, ncol = NULL) {
@@ -364,14 +364,14 @@ plot_divisions <- function(sessions, by_disconnection = TRUE, by_timecycle = TRU
       by_disconnection & !by_timecycle ~ group_by(., .data$Disconnection),
       !by_disconnection & by_timecycle ~ group_by(., .data$Timecycle)
     ) %>%
-    summarise("n" = n()) %>%
-    mutate("SessionsPct" = .data$n/sum(.data$n)*100) %>%
+    summarise(n = n()) %>%
+    mutate(SessionsPct = .data$n/sum(.data$n)*100) %>%
     select(-"n")
 
   sessions <- sessions %>%
     left_join(groups_pct, by = c(if (by_disconnection) .data$Disconnection, if (by_timecycle) .data$Timecycle)) %>%
     mutate(
-      "DivisionLabel" = paste0(
+      DivisionLabel = paste0(
         if (by_disconnection) paste0("Disconnection: ", .data$Disconnection),
         if (by_disconnection & by_timecycle) ", ",
         if (by_timecycle) paste0("Time-cycle: ", .data$Timecycle),
@@ -380,9 +380,9 @@ plot_divisions <- function(sessions, by_disconnection = TRUE, by_timecycle = TRU
     )
 
   if (plottype == "points") {
-    plot_points(sessions) + facet_wrap(~ .data$DivisionLabel, nrow = nrow, ncol = ncol)
+    plot_points(sessions) + facet_wrap(vars(.data$DivisionLabel), nrow = nrow, ncol = ncol)
   } else {
-    plot_density_2D(sessions) + facet_wrap(~ .data$DivisionLabel, nrow = nrow, ncol = ncol) + theme(legend.position = "none")
+    plot_density_2D(sessions) + facet_wrap(vars(.data$DivisionLabel), nrow = nrow, ncol = ncol) + theme(legend.position = "none")
   }
 }
 

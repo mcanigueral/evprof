@@ -23,14 +23,14 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
     tibble(subsets_clustering, clusters_interpretations, subsets_ratios),
     ~ ..1[["models"]] %>%
       arrange(.data$cluster) %>%
-      mutate("profile" = ..2[["profile"]]) %>%
+      mutate(profile = ..2[["profile"]]) %>%
       select(- "cluster") %>%
       group_by(.data$profile) %>%
       summarise(
         "profile_ratio" = sum(.data$ratio)* ..3,
         "connection_models" = list(tibble(mu = !!sym('mu'), sigma = !!sym('sigma'), ratio = !!sym('ratio')/sum(!!sym('ratio'))))
       ) %>%
-      rename(ratio = .data$profile_ratio)
+      rename(ratio = "profile_ratio")
   )
 }
 
@@ -88,7 +88,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>% group_by summarise mutate select rename
+#' @importFrom dplyr %>% group_by summarise mutate select rename all_of
 #' @importFrom tidyr nest
 #' @importFrom purrr map
 #' @importFrom rlang .data
@@ -116,10 +116,10 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
       mclust = map(.data$energy, ~ get_energy_model_mclust_object(.x, log)),
       energy_models = map(.data$mclust, ~ get_energy_model_parameters(.x))
     ) %>%
-    select(.data$profile, .data$charging_rate, .data$energy_models, .data$mclust) %>%
+    select(all_of(c("profile", "charging_rate", "energy_models", "mclust"))) %>%
     group_by(.data$profile) %>%
     nest() %>%
-    rename(energy_models = .data$data) %>%
+    rename(energy_models = "data") %>%
     ungroup()
 }
 
