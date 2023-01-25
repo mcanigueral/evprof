@@ -28,11 +28,10 @@ round_to_interval <- function(dbl, interval) {
 #'
 #' @param time_dt Datetime value
 #'
-#' @importFrom lubridate hour minute second with_tz
+#' @importFrom lubridate hour minute second
 #'
 convert_time_dt_to_num <- function(time_dt) {
-  time_dt_utc <- with_tz(time_dt, "UTC")
-  hour(time_dt_utc) + minute(time_dt_utc)/60 + second(time_dt_utc)/3600
+  hour(time_dt) + minute(time_dt)/60 + second(time_dt)/3600
 }
 
 #' Convert numeric time value (hour-based) to character hour in %H:%M format
@@ -68,14 +67,13 @@ convert_time_num_to_plot_factor <- function(time_num, interval=0.5, start=getOpt
 #' @param time_dt Datetime value
 #' @param start Start hour (int)
 #'
-#' @importFrom lubridate date<- date hour days with_tz
+#' @importFrom lubridate date<- date hour days
 #'
 convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.hour")) {
-  time_dt_utc <- with_tz(time_dt, "UTC")
-  date(time_dt_utc) <- Sys.Date()
-  next_day_idx <- seq(1, length(time_dt_utc))[(hour(time_dt_utc) < start)]
-  date(time_dt_utc)[next_day_idx] <- date(time_dt_utc)[next_day_idx] + days(1)
-  time_dt_utc
+  date(time_dt) <- Sys.Date()
+  next_day_idx <- seq(1, length(time_dt))[(hour(time_dt) < start)]
+  date(time_dt)[next_day_idx] <- date(time_dt)[next_day_idx] + days(1)
+  time_dt
 }
 
 #' Modify numeric time value according to a time sequence start time

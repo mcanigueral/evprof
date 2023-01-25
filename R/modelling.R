@@ -258,7 +258,8 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @importFrom dplyr tibble left_join select mutate %>%
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
-                         connection_GMM, energy_GMM, connection_log, energy_log, data_tz) {
+                         connection_GMM, energy_GMM, connection_log, energy_log,
+                         data_tz=getOption("evprof.tzone", "Europe/Amsterdam")) {
 
   # Remove `mclust` component from energy models tibble
   energy_GMM <- map(

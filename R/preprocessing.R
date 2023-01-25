@@ -246,7 +246,7 @@ drop_outliers <- function(sessions) {
 #'
 #' @importFrom ggplot2 geom_line aes_string
 #' @importFrom dplyr tibble
-#' @importFrom lubridate force_tz hours days today
+#' @importFrom lubridate hours days today
 #' @importFrom rlang .data
 #'
 get_division_line <- function(day_n, division_hour) {
