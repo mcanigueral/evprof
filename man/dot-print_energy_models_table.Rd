@@ -24,3 +24,4 @@ character, LaTeX code
 \description{
 Get LaTeX code for the energy GMM features (mu and sigma)
 }
+\keyword{internal}

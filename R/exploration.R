@@ -335,44 +335,28 @@ plot_histogram_grid <- function(sessions, vars=evprof::sessions_summary_feature_
 #' @return tibble
 #' @export
 #'
-#' @importFrom dplyr %>% tibble select mutate group_by ungroup summarise all_of
-#' @importFrom tidyr drop_na
-#' @importFrom purrr map2 pmap
-#' @importFrom plyr mapvalues
+#' @importFrom dplyr %>% select mutate group_by ungroup summarise n all_of
 #' @importFrom lubridate floor_date
 #' @importFrom rlang .data
 #'
 get_charging_rates_distribution <- function(sessions, unit="year") {
-  if (max(sessions[["Power"]]) <= 24.5) {
-    max_power <- 25
-  } else {
-    max_power <- max(sessions[["Power"]])
-  }
-  power_ranges <- tibble(
-    rate = c("1ph-16A (3.7kW)", "1ph-32A (7.3kW)", "3ph-16A (11kW)", "3ph-32A (22kW)", "Fast charging (>22kW)"),
-    start = c(0, 4.5, 8.5, 12.5, 24.5),
-    end = c(4, 8, 12, 24, max_power),
-    seq = map2(.data$start, .data$end, ~ seq(.x, .y, by = 0.5))
-  )
-  sessions %>%
+  sessions_power_round <- sessions %>%
     select(all_of(c("ConnectionStartDateTime", "Power"))) %>%
     mutate(
-      ChargingPower_round = round_to_half(.data$Power),
-      ChargingPower_rate = plyr::mapvalues(
-        .data$ChargingPower_round,
-        pmap(power_ranges, ~ ..4) %>% unlist,
-        pmap(power_ranges, ~ rep(..1, length(..4))) %>% unlist,
-        warn_missing = F
-      )
-    ) %>%
+      power = round_to_interval(.data$Power, 3.7)
+    )
+  sessions_power_round$power[sessions_power_round$power == 0] <- 3.7
+  sessions_power_round$power[sessions_power_round$power > 11] <- 11
+  sessions_power_round %>%
     group_by(
       datetime = floor_date(.data$ConnectionStartDateTime, unit = unit),
-      power = factor(.data$ChargingPower_rate, levels = power_ranges$rate)
+      power = .data$power
     ) %>%
     summarise(n = n()) %>%
     ungroup() %>%
-    mutate(ratio = .data$n/sum(.data$n)) %>%
-    tidyr::drop_na()
+    mutate(
+      ratio = .data$n/sum(.data$n)
+    )
 }
 
 

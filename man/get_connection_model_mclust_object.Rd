@@ -29,3 +29,4 @@ mclust object
 \description{
 Perform \code{mclust::Mclust} clustering for multivariate GMM
 }
+\keyword{internal}

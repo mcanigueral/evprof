@@ -194,7 +194,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
 #' @return ggplot2 plot
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual
+#' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
 #'
 plot_outliers <- function(sessions, log = FALSE, ...) {
   outliers_pct <- round(sum(sessions[['Outlier']])/nrow(sessions)*100, 2)
@@ -208,7 +208,8 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
     labs(x='Connection start time', y='Number of connection hours', color = "",
          subtitle = paste('Outliers level:', outliers_pct, '%')) +
     theme_light() +
-    scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey"))
+    scale_color_manual(labels = c("Normal", "Outlier"), values = c("black", "grey")) +
+    guides(color = guide_legend(override.aes = list(size = 2)))
   if (log) {
     plot
   } else {
@@ -243,6 +244,7 @@ drop_outliers <- function(sessions) {
 #'
 #' @return ggplot2 function
 #' @export
+#' @keywords internal
 #'
 #' @importFrom ggplot2 geom_line aes_string
 #' @importFrom dplyr tibble

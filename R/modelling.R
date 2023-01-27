@@ -44,6 +44,7 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' @param log logical, true to perform logarithmic transformation (base = exp(1))
 #'
 #' @return object of class `dnstyMcl`
+#' @keywords internal
 #'
 #' @importFrom mclust densityMclust cdfMclust
 #'
@@ -66,6 +67,7 @@ get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
 #' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
 #'
 #' @return tibble
+#' @keywords internal
 #'
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr tibble
@@ -127,18 +129,20 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
 #' Compare density of estimated energy with density of real energy vector
 #'
 #' @param energy_models energy models returned by function `get_energy_models`
+#' @param nrow integer, number of rows in the plot grid (passed to `cowplot::plot_grid`)
 #'
 #' @return ggplot
 #' @export
 #'
 #' @importFrom purrr map set_names
 #' @importFrom cowplot plot_grid
-#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs theme unit
+#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs theme unit after_stat
 #' @importFrom dplyr tibble mutate %>%
 #' @importFrom mclust predict.densityMclust
 #' @importFrom grDevices extendrange
+#' @importFrom rlang .data
 #'
-plot_energy_models <- function(energy_models) {
+plot_energy_models <- function(energy_models, nrow=2) {
 
   plot_list <- list()
 
@@ -146,11 +150,11 @@ plot_energy_models <- function(energy_models) {
 
     em_df <- energy_models$energy_models[[which(energy_models$profile == prof)]]
 
-    histogram_data <- unlist(map(em_df$mclust, ~ .x$data))
+    histogram_data <- unlist(purrr::map(em_df$mclust, ~ .x$data))
 
     profile_plot <- ggplot(data = tibble(x = histogram_data), aes_string(x = "x")) +
       geom_histogram(
-        aes_string(y = "..density.."), color = 'darkgrey', fill = 'grey',
+        aes(y = after_stat(.data$density)), color = 'darkgrey', fill = 'grey',
         alpha = 0.2, show.legend = T, binwidth = 0.03
       ) +
       labs(x = "Energy charged", y = "Density", title = prof) +
@@ -162,7 +166,7 @@ plot_energy_models <- function(energy_models) {
         x = seq(
           from = extendrange(.x$data, f = 0.1)[1],
           to = extendrange(.x$data, f = 0.1)[2],
-          length = 1000
+          length.out = 1000
         )
       ) %>%
         mutate(
@@ -171,16 +175,17 @@ plot_energy_models <- function(energy_models) {
       .id = "charging_rate"
     ) %>%
       mutate(
-        charging_rate = factor(.data$charging_rate, levels = c("3.7", "7.4", "11", "Unknown"))
+        charging_rate = plyr::mapvalues(.data$charging_rate, c("3.7", "7.4", "11", "Unknown"), c("3.7kW", "7.4kW", "11kW", "Unknown"), warn_missing = F),
+        charging_rate = factor(.data$charging_rate, levels = c("3.7kW", "7.4kW", "11kW", "Unknown"))
       )
 
     profile_plot2 <- profile_plot +
       geom_line(
         data = lines_data,
         aes_string(x = "x", y = "y", color = "charging_rate"),
-        size = 1
+        linewidth = 1
       ) +
-      labs(color = "Charging rate (kW)") +
+      labs(color = "") +
       theme(
         legend.position = "bottom",
         plot.margin = unit(c(1, 0.5, 0.5, 0.5), "cm")
@@ -196,7 +201,7 @@ plot_energy_models <- function(energy_models) {
     plot_list[[prof]] <- profile_plot2
   }
 
-  cowplot::plot_grid(plotlist = plot_list, nrow = 2)
+  cowplot::plot_grid(plotlist = plot_list, nrow = nrow)
 }
 
 
@@ -323,6 +328,7 @@ save_ev_model <- function(evmodel, file = 'evmodel', fileext = '.RDS') {
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @export
+#' @keywords internal
 #'
 print.evmodel <- function(x, ...) {
   m <- x$models
@@ -360,6 +366,7 @@ print.evmodel <- function(x, ...) {
 #'
 #' @return character, LaTeX code
 #' @export
+#' @keywords internal
 #'
 #' @importFrom purrr pmap_chr
 print_connection_models_table <- function(GMM, label, caption, full_width, path = NULL) {
@@ -445,6 +452,7 @@ print_biGMM_mu_matrix <- function(mu) {
 #'
 #' @return character, LaTeX code
 #' @export
+#' @keywords internal
 #'
 #' @importFrom purrr pmap_chr
 print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, path = NULL) {
@@ -513,6 +521,7 @@ print_gaussian_features <- function(gaussian) {
 #' If it is NULL, then the character string is returned instead of writing a file.
 #'
 #' @return character, LaTeX code
+#' @keywords internal
 #'
 #' @importFrom purrr pmap_chr
 .print_energy_models_table <- function(GMM, label, caption, full_width, path = NULL) {

@@ -14,4 +14,4 @@ sessions_feature_names
 A vector with the standard names of sessions features
 for this package functions.
 }
-\keyword{datasets}
+\keyword{internal}

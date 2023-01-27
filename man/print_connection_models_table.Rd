@@ -24,3 +24,4 @@ character, LaTeX code
 \description{
 Get LaTeX code for the connection bivariate GMM features (mu and sigma)
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ tibble
 \description{
 Get energy univariate Gaussian Mixture Model
 }
+\keyword{internal}

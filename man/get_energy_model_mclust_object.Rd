@@ -17,3 +17,4 @@ object of class \code{dnstyMcl}
 \description{
 Get Mclust object of univariate Gaussian Mixture Models
 }
+\keyword{internal}

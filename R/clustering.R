@@ -9,6 +9,7 @@
 #' @param mclust_itmax maximum number of iterations
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
+#' @keywords internal
 #' @return mclust object
 #'
 #' @importFrom mclust Mclust emControl
@@ -27,6 +28,7 @@ get_connection_model_mclust_object <- function(sessions, k, mclust_tol = 1e-8, m
 #'
 #' @param mclust_obj `mclust::Mclust` object
 #'
+#' @keywords internal
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr tibble
 #'

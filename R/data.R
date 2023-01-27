@@ -8,6 +8,8 @@
 #' for this package functions.
 #'
 #' @format A vector
+#' @keywords internal
+#'
 "sessions_feature_names"
 
 
@@ -16,4 +18,6 @@
 #' A vector with the summary features
 #'
 #' @format A vector
+#' @keywords internal
+#'
 "sessions_summary_feature_names"

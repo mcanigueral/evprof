@@ -4,15 +4,22 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="evprof">
 <title>EV model object • evprof</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="EV model object">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="EV model object">
 <meta property="og:description" content="evprof">
+<meta property="og:image" content="mcanigueral.github.io/evprof/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -24,158 +31,153 @@
   gtag('config', 'G-ZKG1YCMCDJ');
 </script>
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">evprof</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">evprof</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../articles/evprof.html">Get started</a>
 </li>
-<li>
-  <a href="../articles/evprof.html">Get started</a>
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/outliers.html">Outliers detection</a>
-    </li>
-    <li>
-      <a href="../articles/evmodel.html">EV model object</a>
-    </li>
-    <li class="divider">
-    <li class="dropdown-header">Study cases</li>
-    <li>
-      <a href="../articles/california.html">California case study</a>
-    </li>
-  </ul>
-</li>
-      </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/mcanigueral/evprof/">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
-</div>
-<!--/.nav-collapse -->
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/outliers.html">Outliers detection</a>
+    <a class="dropdown-item" href="../articles/evmodel.html">EV model object</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Study cases</h6>
+    <a class="dropdown-item" href="../articles/california.html">California case study</a>
   </div>
-<!--/.container -->
+</li>
+      </ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mcanigueral/evprof/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
-<!--/.navbar -->
 
-      
+    
+  </div>
+</nav><div class="container template-article">
 
-      </header><script src="evmodel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>EV model object</h1>
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>EV model object</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mcanigueral/evprof/blob/master/vignettes/evmodel.Rmd"><code>vignettes/evmodel.Rmd</code></a></small>
-      <div class="hidden name"><code>evmodel.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/mcanigueral/evprof/blob/HEAD/vignettes/evmodel.Rmd" class="external-link"><code>vignettes/evmodel.Rmd</code></a></small>
+      <div class="d-none name"><code>evmodel.Rmd</code></div>
     </div>
 
     
     
-<p>The EV model object defined by <a href="https://github.com/mcanigueral/evprof/">evprof</a> is generated with function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function returns an object of class <code>evmodel</code>. This object prints a summary of its components. For example:</p>
+<p>The EV model object defined by <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> is generated
+with function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function returns an
+object of class <code>evmodel</code>. This object prints a summary of
+its components. For example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ev_model</span></code></pre></div>
-<pre><code>## EV sessions model of class "evprof", created on 2021-01-14 
-## Timezone of the model: Europe/Amsterdam 
-## The Gaussian Mixture Models of EV user profiles are built in:
-##   - Connection Models: logarithmic scale
-##   - Energy Models: logarithmic scale
-## 
-## Model composed by 4 time-cycles:
-##   1. Workday:
-##      Months = 1-12, Week days = 1-4
-##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
-##   2. Friday:
-##      Months = 1-12, Week days = 5
-##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow
-##   3. Saturday:
-##      Months = 1-12, Week days = 6
-##      User profiles = Dinner, Shortstay, Visit, Home, Pillow
-##   4. Sunday:
-##      Months = 1-12, Week days = 7
-##      User profiles = Dinner, Shortstay, Visit, Home, Pillow</code></pre>
+<code class="sourceCode R"><span><span class="va">ev_model</span></span></code></pre></div>
+<pre><code><span><span class="co">## EV sessions model of class "evprof", created on 2023-01-27 </span></span>
+<span><span class="co">## Timezone of the model: Europe/Amsterdam </span></span>
+<span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
+<span><span class="co">##   - Connection Models: logarithmic scale</span></span>
+<span><span class="co">##   - Energy Models: logarithmic scale</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Model composed by 4 time-cycles:</span></span>
+<span><span class="co">##   1. Workday:</span></span>
+<span><span class="co">##      Months = 1-12, Week days = 1-4</span></span>
+<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow</span></span>
+<span><span class="co">##   2. Friday:</span></span>
+<span><span class="co">##      Months = 1-12, Week days = 5</span></span>
+<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow</span></span>
+<span><span class="co">##   3. Saturday:</span></span>
+<span><span class="co">##      Months = 1-12, Week days = 6</span></span>
+<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Home, Pillow</span></span>
+<span><span class="co">##   4. Sunday:</span></span>
+<span><span class="co">##      Months = 1-12, Week days = 7</span></span>
+<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Home, Pillow</span></span></code></pre>
 <p>The <code>evmodel</code>object has two components:</p>
 <ul>
-<li><p><code>metadata</code>: creation date, if the scale of connection/energy models is natural or logarithmic, …</p></li>
+<li><p><code>metadata</code>: creation date, if the scale of
+connection/energy models is natural or logarithmic, …</p></li>
 <li>
-<p><code>models</code>: tibble containing the different time-cycles models and information. The columns of this tibble are:</p>
+<p><code>models</code>: tibble containing the different time-cycles
+models and information. The columns of this tibble are:</p>
 <ul>
-<li><p><code>time_cycle</code>: character, given name to the time-cycle</p></li>
-<li><p><code>months</code>: integer vector, corresponding months of the time-cycle</p></li>
-<li><p><code>wdays</code>: integer vector, corresponding days of the time-cycle (week starting on day 1)</p></li>
+<li><p><code>time_cycle</code>: character, given name to the
+time-cycle</p></li>
+<li><p><code>months</code>: integer vector, corresponding months of the
+time-cycle</p></li>
+<li><p><code>wdays</code>: integer vector, corresponding days of the
+time-cycle (week starting on day 1)</p></li>
 <li>
-<p><code>user_profiles</code>: tibble with every user profile GMM models. The columns of this tibble are:</p>
+<p><code>user_profiles</code>: tibble with every user profile GMM
+models. The columns of this tibble are:</p>
 <ul>
 <li>
-<code>profile</code>: character vector, given name to the user profile</li>
+<code>profile</code>: character vector, given name to the user
+profile</li>
 <li>
-<code>ratio</code>: numeric, share of daily sessions corresponding to this profile</li>
+<code>ratio</code>: numeric, share of daily sessions corresponding
+to this profile</li>
 <li>
-<code>connection_models</code>: tibble with the bi-variate GMM, being the variables the Connection Start Time and the Connection Duration of the session</li>
+<code>connection_models</code>: tibble with the bi-variate GMM,
+being the variables the Connection Start Time and the Connection
+Duration of the session</li>
 <li>
-<code>energy_models</code>: tibble with the uni-variate GMM, being the variable the Energy of the session</li>
+<code>energy_models</code>: tibble with the uni-variate GMM, being
+the variable the Energy of the session</li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-      </div>
-
+</ul></main>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p>Developed by Marc Cañigueral.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Marc Cañigueral.</p>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
 
+  
 
   </body>
 </html>

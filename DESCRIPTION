@@ -7,10 +7,11 @@ Authors@R:
            role = c("aut", "cre"),
            email = "marc.canigueral@udg.edu",
            comment = c(ORCID = "0000-0001-9724-5829"))
-Description: This package aims to provide tools for classifying EV charging sessions into smaller groups with
-    similar flexibility potential (i.e. user profiles). The goal of obtaining these user profiles is to, in a 
-    later step, define a specific smart charging strategy to each group, considering its flexbility potential
-    and constraints.
+Description: This package aims to provide tools for classifying EV charging 
+    sessions into generic groups with similar connection patterns named 
+    "user profiles", using Gaussian Mixture Models (GMM) clustering method.
+    Moreover, functions to build stochastic models (based on GMM) for every
+    user profile are also provided in order to simulate new EV sessions.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

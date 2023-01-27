@@ -17,3 +17,4 @@ ggplot2 function
 \description{
 {ggplot2} type function to plot a division line
 }
+\keyword{internal}

@@ -12,3 +12,4 @@ get_connection_model_params(mclust_obj)
 \description{
 Extract models parameters from mclust object
 }
+\keyword{internal}

@@ -1,6 +1,7 @@
 url: 'mcanigueral.github.io/evprof'
 
 template:
+  bootstrap: 5
   params:
     bootswatch: flatly
     ganalytics: 'G-ZKG1YCMCDJ'
@@ -70,8 +71,7 @@ reference:
 - subtitle: Energy Models
 - contents:
   - get_energy_models
-  - plot_energy_models_density
-  - plot_estimated_energy_models_density
+  - plot_energy_models
 - subtitle: EV model object
 - contents:
   - get_ev_model

@@ -13,4 +13,4 @@ sessions_summary_feature_names
 \description{
 A vector with the summary features
 }
-\keyword{datasets}
+\keyword{internal}

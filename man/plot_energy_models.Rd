@@ -4,10 +4,12 @@
 \alias{plot_energy_models}
 \title{Compare density of estimated energy with density of real energy vector}
 \usage{
-plot_energy_models(energy_models)
+plot_energy_models(energy_models, nrow = 2)
 }
 \arguments{
 \item{energy_models}{energy models returned by function \code{get_energy_models}}
+
+\item{nrow}{integer, number of rows in the plot grid (passed to \code{cowplot::plot_grid})}
 }
 \value{
 ggplot
