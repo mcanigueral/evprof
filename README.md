@@ -4,9 +4,9 @@
 # evprof <a href='https://mcanigueral.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
-<!-- [![CRAN status](https://www.r-pkg.org/badges/version/dplyr)](https://cran.r-project.org/package=dplyr) -->
-<!-- [![R-CMD-check](https://github.com/tidyverse/dplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tidyverse/dplyr/actions/workflows/R-CMD-check.yaml) -->
-<!-- [![Codecov test coverage](https://codecov.io/gh/tidyverse/dplyr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/tidyverse/dplyr?branch=main) -->
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof) -->
+<!-- [![R-CMD-check](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml) -->
+<!-- [![Codecov test coverage](https://codecov.io/gh/mcanigueral/evprof/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mcanigueral/evprof?branch=main) -->
 <!-- badges: end -->
 
 ## Overview
@@ -77,5 +77,31 @@ reproducible example on
 [GitHub](https://github.com/mcanigueral/evprof/issues). For questions
 and other discussion, please send me a mail to
 <marc.canigueral@udg.edu>.
+
+For further technical details, you can read the following academic
+articles about the methodology used in this paper:
+
+- **Electric vehicle user profiles for aggregated flexibility
+  planning**. IEEE PES Innovative Smart Grid Technologies Europe (ISGT
+  Europe). IEEE, Oct. 18, 2021. DOI:
+  [10.1109/isgteurope52324.2021.9639931](10.1109/isgteurope52324.2021.9639931).
+- **Flexibility management of electric vehicles based on user profiles:
+  The Arnhem case study**. International Journal of Electrical Power and
+  Energy Systems, vol. 133. Elsevier BV, p. 107195, Dec. 2021. DOI:
+  [10.1016/j.ijepes.2021.107195](10.1016/j.ijepes.2021.107195).
+- **Potential benefits of scheduling electric vehicle sessions over
+  limiting charging power**. CIRED Porto Workshop 2022: E-mobility and
+  power distribution systems. Institution of Engineering and
+  Technology, 2022. DOI: [10.1049/icp.2022.0744](10.1049/icp.2022.0744).
+
+## Acknowledgements
+
+This work has been developed under a PhD program in the University of
+Girona (Catalonia) in collaboration with
+[Resourcefully](https://resourcefully.nl/), an energy transition
+consulting company based in Amsterdam, The Netherlands. The author would
+also like to thank the city of Arnhem, in particular Peter Swart, for
+facilitating access to the data used in the validation stage of this
+research.
 
 ------------------------------------------------------------------------
