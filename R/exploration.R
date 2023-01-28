@@ -290,12 +290,12 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 #' @return ggplot plot
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string aes geom_histogram stat theme_light
+#' @importFrom ggplot2 ggplot aes_string aes geom_histogram after_stat theme_light
 #' @importFrom rlang .data
 #'
 plot_histogram <- function(sessions, var, binwidth=1) {
   ggplot(sessions, aes_string(x=var)) +
-    geom_histogram(aes(y=stat(.data$count)/sum(stat(.data$count))*100),
+    geom_histogram(aes(y=after_stat(.data$count)/sum(after_stat(.data$count))*100),
                    binwidth = binwidth, color = 'navy', fill = 'navy', alpha = 0.7) +
     labs(x = "", y = "Count (%)", title = var) +
     theme_light()
