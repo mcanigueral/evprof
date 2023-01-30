@@ -141,7 +141,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #' @param sessions sessions data set in standard format
 #' @param MinPts MinPts parameter for DBSCAN clustering
 #' @param eps eps parameter for DBSCAN clustering
-#' @param noise_th noise treshold
+#' @param noise_th noise threshold
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @return sessions tibble with extra boolean column `Outlier`

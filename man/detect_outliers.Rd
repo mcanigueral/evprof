@@ -13,7 +13,7 @@ detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = FALSE)
 
 \item{eps}{eps parameter for DBSCAN clustering}
 
-\item{noise_th}{noise treshold}
+\item{noise_th}{noise threshold}
 
 \item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }

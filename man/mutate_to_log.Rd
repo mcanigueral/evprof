@@ -2,7 +2,7 @@
 % Please edit documentation in R/exploration.R
 \name{mutate_to_log}
 \alias{mutate_to_log}
-\title{Logarithmic transforamtion to ConnectionStartDateTime and ConnectionHours variables}
+\title{Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables}
 \usage{
 mutate_to_log(sessions, base = exp(1))
 }
@@ -12,5 +12,5 @@ mutate_to_log(sessions, base = exp(1))
 \item{base}{logarithmic base}
 }
 \description{
-Logarithmic transforamtion to ConnectionStartDateTime and ConnectionHours variables
+Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables
 }

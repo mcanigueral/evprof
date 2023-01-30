@@ -44,7 +44,7 @@ get_connection_model_params <- function(mclust_obj) {
   )
 }
 
-#' Visuallize BIC indicator to choose the number of clusters
+#' Visualize BIC indicator to choose the number of clusters
 #'
 #' @param sessions sessions data set in standard format
 #' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.

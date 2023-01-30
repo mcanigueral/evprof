@@ -17,7 +17,7 @@ plot_histogram_grid(
 
 \item{vars}{variables to plot}
 
-\item{binwidths}{bindwidths of each variable histogram}
+\item{binwidths}{binwidths of each variable histogram}
 
 \item{nrow}{number of rows of the plot grid}
 

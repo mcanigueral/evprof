@@ -125,7 +125,7 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
 
 # Logarithmic scale -------------------------------------------------------
 
-#' Logarithmic transforamtion to ConnectionStartDateTime and ConnectionHours variables
+#' Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables
 #'
 #' @param sessions sessions data set in standard format.
 #' @param base logarithmic base
@@ -307,7 +307,7 @@ plot_histogram <- function(sessions, var, binwidth=1) {
 #'
 #' @param sessions sessions data set in standard format
 #' @param vars variables to plot
-#' @param binwidths bindwidths of each variable histogram
+#' @param binwidths binwidths of each variable histogram
 #' @param nrow number of rows of the plot grid
 #' @param ncol number of columns of the plot grid
 #'

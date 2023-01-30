@@ -7,6 +7,8 @@
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof) -->
 <!-- [![R-CMD-check](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml) -->
 <!-- [![Codecov test coverage](https://codecov.io/gh/mcanigueral/evprof/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mcanigueral/evprof?branch=main) -->
+
+[![R-CMD-check](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Overview
@@ -99,9 +101,6 @@ articles about the methodology used in this paper:
 This work has been developed under a PhD program in the University of
 Girona (Catalonia) in collaboration with
 [Resourcefully](https://resourcefully.nl/), an energy transition
-consulting company based in Amsterdam, The Netherlands. The author would
-also like to thank the city of Arnhem, in particular Peter Swart, for
-facilitating access to the data used in the validation stage of this
-research.
+consulting company based in Amsterdam, The Netherlands.
 
 ------------------------------------------------------------------------

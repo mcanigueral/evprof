@@ -2,7 +2,7 @@
 % Please edit documentation in R/clustering.R
 \name{choose_k_GMM}
 \alias{choose_k_GMM}
-\title{Visuallize BIC indicator to choose the number of clusters}
+\title{Visualize BIC indicator to choose the number of clusters}
 \usage{
 choose_k_GMM(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000, log = TRUE)
 }
@@ -21,5 +21,5 @@ choose_k_GMM(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000, log = TRUE)
 BIC plot
 }
 \description{
-Visuallize BIC indicator to choose the number of clusters
+Visualize BIC indicator to choose the number of clusters
 }
