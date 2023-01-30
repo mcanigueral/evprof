@@ -1,5 +1,5 @@
 Package: evprof
-Title: Profiling EV sessions with {evprof}
+Title: Electric Vehicle Charging Sessions Profiling and Modelling
 Version: 0.1.0
 Authors@R: 
     person(given = "Marc",
@@ -7,11 +7,11 @@ Authors@R:
            role = c("aut", "cre"),
            email = "marc.canigueral@udg.edu",
            comment = c(ORCID = "0000-0001-9724-5829"))
-Description: This package aims to provide tools for classifying EV charging 
+Description: Tools for classifying EV charging 
     sessions into generic groups with similar connection patterns named 
-    "user profiles", using Gaussian Mixture Models (GMM) clustering method.
-    Moreover, functions to build stochastic models (based on GMM) for every
-    user profile are also provided in order to simulate new EV sessions.
+    "user profiles", using Gaussian Mixture Models clustering.
+    Functions to build Gaussian models for every user profile are also 
+    provided to simulate new charging sessions.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
