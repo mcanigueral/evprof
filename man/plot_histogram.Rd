@@ -19,3 +19,10 @@ ggplot plot
 \description{
 Histogram of a variable from sessions data set
 }
+\examples{
+library(dplyr)
+sessions <- tibble(Power = rnorm(100, mean = 30))
+plot_histogram(sessions, "Power", binwidth = 2)
+plot_histogram(sessions, "Power", binwidth = 0.1)
+
+}

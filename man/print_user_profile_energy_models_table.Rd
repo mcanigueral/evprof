@@ -30,4 +30,3 @@ character, LaTeX code
 \description{
 Get LaTeX code for the energy GMM features OF A SINGLE USER PROFILE (mu and sigma)
 }
-\keyword{internal}

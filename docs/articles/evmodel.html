@@ -57,6 +57,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/sessions-format.html">Standard data format</a>
     <a class="dropdown-item" href="../articles/outliers.html">Outliers detection</a>
     <a class="dropdown-item" href="../articles/evmodel.html">EV model object</a>
     <div class="dropdown-divider"></div>
@@ -103,32 +104,28 @@
 <p>The EV model object defined by <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> is generated
 with function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function returns an
 object of class <code>evmodel</code>. This object prints a summary of
-its components. For example:</p>
+its components. The package provides an example of <code>evmodel</code>
+created in the <a href="https://mcanigueral.github.io/evprof/articles/california.html">California
+study case article</a>, using the charging sessions data provided by <a href="https://acnportal.readthedocs.io/en/latest/" class="external-link">ACN</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ev_model</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">evprof</span><span class="fu">::</span><span class="va"><a href="../reference/california_ev_model.html">california_ev_model</a></span></span></code></pre></div>
 <pre><code><span><span class="co">## EV sessions model of class "evprof", created on 2023-01-28 </span></span>
-<span><span class="co">## Timezone of the model: Europe/Amsterdam </span></span>
+<span><span class="co">## Timezone of the model: America/Los_Angeles </span></span>
 <span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
 <span><span class="co">##   - Connection Models: logarithmic scale</span></span>
 <span><span class="co">##   - Energy Models: logarithmic scale</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Model composed by 4 time-cycles:</span></span>
+<span><span class="co">## Model composed by 2 time-cycles:</span></span>
 <span><span class="co">##   1. Workday:</span></span>
-<span><span class="co">##      Months = 1-12, Week days = 1-4</span></span>
-<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow</span></span>
-<span><span class="co">##   2. Friday:</span></span>
-<span><span class="co">##      Months = 1-12, Week days = 5</span></span>
-<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Worktime, Commuters, Home, Pillow</span></span>
-<span><span class="co">##   3. Saturday:</span></span>
-<span><span class="co">##      Months = 1-12, Week days = 6</span></span>
-<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Commuters, Home, Pillow</span></span>
-<span><span class="co">##   4. Sunday:</span></span>
-<span><span class="co">##      Months = 1-12, Week days = 7</span></span>
-<span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Commuters, Home, Pillow</span></span></code></pre>
+<span><span class="co">##      Months = 1-12, Week days = 1-2</span></span>
+<span><span class="co">##      User profiles = Visit, Worktime</span></span>
+<span><span class="co">##   2. Weekend:</span></span>
+<span><span class="co">##      Months = 1-12, Week days = 6-7</span></span>
+<span><span class="co">##      User profiles = Visit</span></span></code></pre>
 <p>The <code>evmodel</code>object has two components:</p>
 <ul>
-<li><p><code>metadata</code>: creation date, if the scale of
-connection/energy models is natural or logarithmic, …</p></li>
+<li><p><code>metadata</code>: creation date, data time zone, if the
+scale of connection/energy models is natural or logarithmic, …</p></li>
 <li>
 <p><code>models</code>: tibble containing the different time-cycles
 models and information. The columns of this tibble are:</p>
@@ -150,17 +147,129 @@ profile</li>
 <code>ratio</code>: numeric, share of daily sessions corresponding
 to this profile</li>
 <li>
-<code>connection_models</code>: tibble with the bi-variate GMM,
-being the variables the Connection Start Time and the Connection
-Duration of the session</li>
+<code>connection_models</code>: tibble with the connection
+bi-variate GMM</li>
 <li>
-<code>energy_models</code>: tibble with the uni-variate GMM, being
-the variable the Energy of the session</li>
+<code>energy_models</code>: tibble with the energy uni-variate
+GMM</li>
 </ul>
 </li>
 </ul>
 </li>
-</ul></main>
+</ul>
+<p>The model itself is composed by multiple Gaussian models (GMM). The
+<code>connection_models</code> are Gaussian models of two variables
+(connection start time and connection duration) and the
+<code>energy_models</code> are built with a single variable (energy).
+Thus, the statistic features of <code>connection_models</code> are a
+centroid (<span class="math inline">\(\mu\)</span>), a covariance matrix
+(<span class="math inline">\(\Sigma\)</span>) and the weight or ratio of
+the corresponding model. Besides, the statistic features of
+<code>energy_models</code> are a mean (<span class="math inline">\(\mu\)</span>), a standard deviation (<span class="math inline">\(\sigma\)</span>) and the weight or ratio of the
+corresponding model.</p>
+<p>Let’s take a look to these statistical features of the Worktime user
+profile for Working days in the California model:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">california_ev_model</span><span class="op">$</span><span class="va">models</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
+<span><span class="co">##   time_cycle months     wdays     user_profiles   </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> Workday    <span style="color: #949494;">&lt;int [12]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;tibble [2 × 4]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> Weekend    <span style="color: #949494;">&lt;int [12]&gt;</span> <span style="color: #949494;">&lt;int [2]&gt;</span> <span style="color: #949494;">&lt;tibble [1 × 4]&gt;</span></span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">workday_model</span> <span class="op">&lt;-</span> <span class="va">california_ev_model</span><span class="op">$</span><span class="va">models</span><span class="op">$</span><span class="va">user_profiles</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">workday_model</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
+<span><span class="co">##   profile  ratio connection_models energy_models   </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> Visit    0.519 <span style="color: #949494;">&lt;tibble [4 × 3]&gt;</span>  <span style="color: #949494;">&lt;tibble [1 × 2]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> Worktime 0.481 <span style="color: #949494;">&lt;tibble [3 × 3]&gt;</span>  <span style="color: #949494;">&lt;tibble [1 × 2]&gt;</span></span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">worktime_model</span> <span class="op">&lt;-</span> <span class="va">workday_model</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span></span></code></pre></div>
+<p>The connection model is a mixture of 3 bi-variate Gaussian
+Models:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">connection_models</span></span></code></pre></div>
+<pre><code><span><span class="co">## [[1]]</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 3</span></span></span>
+<span><span class="co">##   mu        sigma         ratio</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> <span style="color: #949494;">&lt;dbl [2]&gt;</span> <span style="color: #949494;">&lt;dbl [2 × 2]&gt;</span> 0.292</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> <span style="color: #949494;">&lt;dbl [2]&gt;</span> <span style="color: #949494;">&lt;dbl [2 × 2]&gt;</span> 0.343</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> <span style="color: #949494;">&lt;dbl [2]&gt;</span> <span style="color: #949494;">&lt;dbl [2 × 2]&gt;</span> 0.366</span></span></code></pre>
+<p>To properly visualize the statistic features’ values the function
+<code>print_connection_models_table</code> prints the LaTeX code and
+provides a nice table.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_connection_models_table.html">print_connection_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span>, label <span class="op">=</span> <span class="st">"tab:connection"</span>, caption <span class="op">=</span> <span class="st">"Worktime connection Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>[1] “\begin{table}\resizebox{\linewidth}{!}
+{\begin{tabular}{l|c|c|c}\hlineprofile &amp; Centroid (<span class="math inline">\(\\mu\)</span>) &amp; Covariance (<span class="math inline">\(\\Sigma\)</span>) &amp; Share (\%)
+\\\hline\multirow{3}{*}{Worktime}&amp; <span class="math inline">\(\\begin{array}{cc} 1.988369 \\\\ 2.260861
+\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
+0.001819 &amp; -0.00138 \\\\ -0.00138 &amp; 0.009553
+\\end{array}\)</span>&amp;29\\ \cline{2-4} &amp; <span class="math inline">\(\\begin{array}{cc} 1.887171 \\\\ 2.268155
+\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
+0.009629 &amp; -0.001792 \\\\ -0.001792 &amp; 0.006395
+\\end{array}\)</span>&amp;34\\ \cline{2-4} &amp; <span class="math inline">\(\\begin{array}{cc} 2.2242 \\\\ 2.119886
+\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
+0.013847 &amp; -0.015517 \\\\ -0.015517 &amp; 0.038308
+\\end{array}\)</span>&amp;37 \\
+\hline\end{tabular}}\caption{\label{tab:connection}Worktime connection
+Gaussian Models}\end{table}”</p>
+<p>On the other hand, the energy models can be based on the charging
+rate (<code>Power</code> variable) of the sessions. It has been observed
+that the energy demand increases together with the charging power (big
+vehicles have larger batteries and can charge at higher rates). Thus,
+function <code>get_energy_models</code> has the logical parameter
+<code>by_power</code> to fit the Energy Gaussian Models for the
+different groups of charging powers separately. In the case of
+California study case, we set <code>by_power=FALSE</code>, that’s why we
+got the <code>Unknown</code> in the <code>energy_models</code>
+tibble:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
+<span><span class="co">##   charging_rate energy_models   </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> Unknown       <span style="color: #949494;">&lt;tibble [9 × 3]&gt;</span></span></span></code></pre>
+<p>Thus, the energy model of all Worktime sessions is a mixture of 9
+Gaussian models:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 9 × 3</span></span></span>
+<span><span class="co">##      mu sigma  ratio</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.514 0.427 0.051<span style="text-decoration: underline;">7</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1.59  0.296 0.155 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1.80  0.101 0.104 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2.09  0.106 0.105 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2.41  0.134 0.115 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2.55  0.109 0.116 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span> 2.78  0.183 0.147 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">8</span> 3.25  0.226 0.125 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">9</span> 3.64  0.112 0.080<span style="text-decoration: underline;">7</span></span></span></code></pre>
+<p>The function <code>print_user_profile_energy_models_table</code> is
+provided to print the energy models in LaTeX and properly visualize the
+content of the models. It has to be specifically for a single user
+profile (unlike <code>print_connection_models_table</code>) since every
+user profile could have multiple models according to the different
+charging rates.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_user_profile_energy_models_table.html">print_user_profile_energy_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, label <span class="op">=</span> <span class="st">"tab:energy"</span>, caption <span class="op">=</span> <span class="st">"Worktime energy Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>[1] “\begin{table}\resizebox{\linewidth}{!}
+{\begin{tabular}{l|c|c|c}\hlinerate (kW) &amp; Mean (<span class="math inline">\(\\mu\)</span>) &amp; Std. deviation (<span class="math inline">\(\\sigma\)</span>) &amp; Share (\%)
+\\\hline\multirow{9}{*}{Unknown}&amp; 0.51429&amp;0.426911&amp;5\\
+\cline{2-4} &amp; 1.588592&amp;0.29619&amp;15\\ \cline{2-4} &amp;
+1.803055&amp;0.10091&amp;10\\ \cline{2-4} &amp;
+2.086168&amp;0.105895&amp;11\\ \cline{2-4} &amp;
+2.406657&amp;0.133595&amp;12\\ \cline{2-4} &amp;
+2.545667&amp;0.108505&amp;12\\ \cline{2-4} &amp;
+2.779488&amp;0.183284&amp;15\\ \cline{2-4} &amp;
+3.25302&amp;0.225542&amp;13\\ \cline{2-4} &amp;
+3.644371&amp;0.111778&amp;8 \\
+\hline\end{tabular}}\caption{\label{tab:energy}Worktime energy Gaussian
+Models}\end{table}”</p>
+  </main>
 </div>
 
 

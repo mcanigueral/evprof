@@ -33,6 +33,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/sessions-format.html">Standard data format</a>
     <a class="dropdown-item" href="../articles/outliers.html">Outliers detection</a>
     <a class="dropdown-item" href="../articles/evmodel.html">EV model object</a>
     <div class="dropdown-divider"></div>
@@ -144,7 +145,7 @@
           
           <code><a href="mutate_to_log.html">mutate_to_log()</a></code> 
         </dt>
-        <dd>Logarithmic transforamtion to ConnectionStartDateTime and ConnectionHours variables</dd>
+        <dd>Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables</dd>
       </dl></div><div class="section level2">
       
       <h3 id="plots">Plots<a class="anchor" aria-label="anchor" href="#plots"></a></h3>
@@ -310,7 +311,7 @@
           
           <code><a href="choose_k_GMM.html">choose_k_GMM()</a></code> 
         </dt>
-        <dd>Visuallize BIC indicator to choose the number of clusters</dd>
+        <dd>Visualize BIC indicator to choose the number of clusters</dd>
       </dl><dl><dt>
           
           <code><a href="cluster_sessions.html">cluster_sessions()</a></code> 
@@ -374,6 +375,11 @@
           <code><a href="plot_model_clusters.html">plot_model_clusters()</a></code> 
         </dt>
         <dd>Aggregate clusters GMM into profiles GMM</dd>
+      </dl><dl><dt>
+          
+          <code><a href="print_connection_models_table.html">print_connection_models_table()</a></code> 
+        </dt>
+        <dd>Get LaTeX code for the connection bivariate GMM features (mu and sigma)</dd>
       </dl></div><div class="section level2">
       
       <h3 id="energy-models">Energy Models<a class="anchor" aria-label="anchor" href="#energy-models"></a></h3>
@@ -395,6 +401,11 @@
           <code><a href="plot_energy_models.html">plot_energy_models()</a></code> 
         </dt>
         <dd>Compare density of estimated energy with density of real energy vector</dd>
+      </dl><dl><dt>
+          
+          <code><a href="print_user_profile_energy_models_table.html">print_user_profile_energy_models_table()</a></code> 
+        </dt>
+        <dd>Get LaTeX code for the energy GMM features OF A SINGLE USER PROFILE (mu and sigma)</dd>
       </dl></div><div class="section level2">
       
       <h3 id="ev-model-object">EV model object<a class="anchor" aria-label="anchor" href="#ev-model-object"></a></h3>

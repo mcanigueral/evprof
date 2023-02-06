@@ -7,7 +7,12 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-vignettes/
 pkgdown/
 ^README.Rmd
 ^\.github$
+vignettes/arnhem_data
+vignettes/evprof.Rmd
+vignettes/california_data
+vignettes/california.Rmd
+vignettes/outliers.RData
+vignettes/outliers.Rmd

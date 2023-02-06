@@ -366,7 +366,6 @@ print.evmodel <- function(x, ...) {
 #'
 #' @return character, LaTeX code
 #' @export
-#' @keywords internal
 #'
 #' @importFrom purrr pmap_chr
 print_connection_models_table <- function(GMM, label, caption, full_width, path = NULL) {
@@ -452,7 +451,6 @@ print_biGMM_mu_matrix <- function(mu) {
 #'
 #' @return character, LaTeX code
 #' @export
-#' @keywords internal
 #'
 #' @importFrom purrr pmap_chr
 print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, path = NULL) {

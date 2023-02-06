@@ -68,10 +68,12 @@ reference:
 - contents:
   - get_connection_models
   - plot_model_clusters
+  - print_connection_models_table
 - subtitle: Energy Models
 - contents:
   - get_energy_models
   - plot_energy_models
+  - print_user_profile_energy_models_table
 - subtitle: EV model object
 - contents:
   - get_ev_model
@@ -81,6 +83,7 @@ articles:
 - title: Developer
   navbar: ~
   contents:
+  - sessions-format
   - outliers
   - evmodel
 - title: Study cases

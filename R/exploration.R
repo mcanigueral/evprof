@@ -292,6 +292,13 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 #'
 #' @importFrom ggplot2 ggplot aes_string aes geom_histogram after_stat theme_light
 #' @importFrom rlang .data
+#' @importFrom tibble tibble
+#'
+#' @examples
+#' library(dplyr)
+#' sessions <- tibble(Power = rnorm(100, mean = 30))
+#' plot_histogram(sessions, "Power", binwidth = 2)
+#' plot_histogram(sessions, "Power", binwidth = 0.1)
 #'
 plot_histogram <- function(sessions, var, binwidth=1) {
   ggplot(sessions, aes_string(x=var)) +
