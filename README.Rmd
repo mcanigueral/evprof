@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof) -->
 [![R-CMD-check](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml)
+<!-- [![Codecov test coverage](https://codecov.io/gh/mcanigueral/evprof/branch/master/graph/badge.svg)](https://app.codecov.io/gh/mcanigueral/evprof?branch=master) -->
 <!-- badges: end -->
 
 ## Overview

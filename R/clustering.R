@@ -166,7 +166,8 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #' @export
 #'
 #' @importFrom purrr map_dfr set_names
-#' @importFrom ggplot2 ggplot aes_string geom_point geom_path labs theme_light theme guides guide_legend scale_x_continuous scale_y_continuous
+#' @importFrom ggplot2 ggplot aes geom_point geom_path labs theme_light theme guides guide_legend scale_x_continuous scale_y_continuous
+#' @importFrom rlang .data
 #'
 plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.25, lines_size = 1, legend_nrow = 2, log = TRUE) {
   ellipses <- purrr::map_dfr(
@@ -182,9 +183,9 @@ plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nro
     sessions <- mutate_to_log(sessions)
   }
 
-  plot <- ggplot(data = sessions, aes_string(x = "ConnectionStartDateTime", y = "ConnectionHours")) +
+  plot <- ggplot(data = sessions, aes(x = .data$ConnectionStartDateTime, y = .data$ConnectionHours)) +
     geom_point(size = points_size) +
-    geom_path(data = ellipses, aes_string(x = "x", y = "y", color = "profile"), size = lines_size) +
+    geom_path(data = ellipses, aes(x = .data$x, y = .data$y, color = .data$profile), linewidth = lines_size) +
     labs(x = 'Connection start time', y = 'Connection hours', color = "") +
     theme_light() +
     theme(legend.position = "bottom") +
