@@ -201,21 +201,18 @@ Models:</p>
 <code>print_connection_models_table</code> prints the LaTeX code and
 provides a nice table.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_connection_models_table.html">print_connection_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span>, label <span class="op">=</span> <span class="st">"tab:connection"</span>, caption <span class="op">=</span> <span class="st">"Worktime connection Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>[1] “\begin{table}\resizebox{\linewidth}{!}
-{\begin{tabular}{l|c|c|c}\hlineprofile &amp; Centroid (<span class="math inline">\(\\mu\)</span>) &amp; Covariance (<span class="math inline">\(\\Sigma\)</span>) &amp; Share (\%)
-\\\hline\multirow{3}{*}{Worktime}&amp; <span class="math inline">\(\\begin{array}{cc} 1.988369 \\\\ 2.260861
-\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
-0.001819 &amp; -0.00138 \\\\ -0.00138 &amp; 0.009553
-\\end{array}\)</span>&amp;29\\ \cline{2-4} &amp; <span class="math inline">\(\\begin{array}{cc} 1.887171 \\\\ 2.268155
-\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
-0.009629 &amp; -0.001792 \\\\ -0.001792 &amp; 0.006395
-\\end{array}\)</span>&amp;34\\ \cline{2-4} &amp; <span class="math inline">\(\\begin{array}{cc} 2.2242 \\\\ 2.119886
-\\end{array}\)</span>&amp;<span class="math inline">\(\\begin{array}{cc}
-0.013847 &amp; -0.015517 \\\\ -0.015517 &amp; 0.038308
-\\end{array}\)</span>&amp;37 \\
-\hline\end{tabular}}\caption{\label{tab:connection}Worktime connection
-Gaussian Models}\end{table}”</p>
+<code class="sourceCode R"><span><span class="va">latex_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/print_connection_models_table.html">print_connection_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span>, label <span class="op">=</span> <span class="st">"tab:connection"</span>, caption <span class="op">=</span> <span class="st">"Worktime connection Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">latex_code</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## \begin{table}</span></span>
+<span><span class="co">## \resizebox{\linewidth}{!} {</span></span>
+<span><span class="co">## \begin{tabular}{l|c|c|c}</span></span>
+<span><span class="co">## \hline</span></span>
+<span><span class="co">## User profile &amp; Centroid ($\mu$) &amp; Covariance ($\Sigma$) &amp; Share (\%) \\</span></span>
+<span><span class="co">## \hline</span></span>
+<span><span class="co">## \multirow{3}{*}{Worktime}&amp; $\begin{array}{cc} 1.988369 \\ 2.260861 \end{array}$&amp;$\begin{array}{cc} 0.001819 &amp; -0.00138 \\ -0.00138 &amp; 0.009553 \end{array}$&amp;29\\ \cline{2-4} &amp; $\begin{array}{cc} 1.887171 \\ 2.268155 \end{array}$&amp;$\begin{array}{cc} 0.009629 &amp; -0.001792 \\ -0.001792 &amp; 0.006395 \end{array}$&amp;34\\ \cline{2-4} &amp; $\begin{array}{cc} 2.2242 \\ 2.119886 \end{array}$&amp;$\begin{array}{cc} 0.013847 &amp; -0.015517 \\ -0.015517 &amp; 0.038308 \end{array}$&amp;37 \\ \hline</span></span>
+<span><span class="co">## \end{tabular}}</span></span>
+<span><span class="co">## \caption{\label{tab:connection}Worktime connection Gaussian Models}</span></span>
+<span><span class="co">## \end{table}</span></span></code></pre>
 <p>On the other hand, the energy models can be based on the charging
 rate (<code>Power</code> variable) of the sessions. It has been observed
 that the energy demand increases together with the charging power (big
@@ -226,7 +223,7 @@ different groups of charging powers separately. In the case of
 California study case, we set <code>by_power=FALSE</code>, that’s why we
 got the <code>Unknown</code> in the <code>energy_models</code>
 tibble:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
 <span><span class="co">##   charging_rate energy_models   </span></span>
@@ -234,7 +231,7 @@ tibble:</p>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> Unknown       <span style="color: #949494;">&lt;tibble [9 × 3]&gt;</span></span></span></code></pre>
 <p>Thus, the energy model of all Worktime sessions is a mixture of 9
 Gaussian models:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 9 × 3</span></span></span>
 <span><span class="co">##      mu sigma  ratio</span></span>
@@ -254,21 +251,19 @@ content of the models. It has to be specifically for a single user
 profile (unlike <code>print_connection_models_table</code>) since every
 user profile could have multiple models according to the different
 charging rates.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_user_profile_energy_models_table.html">print_user_profile_energy_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, label <span class="op">=</span> <span class="st">"tab:energy"</span>, caption <span class="op">=</span> <span class="st">"Worktime energy Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>[1] “\begin{table}\resizebox{\linewidth}{!}
-{\begin{tabular}{l|c|c|c}\hlinerate (kW) &amp; Mean (<span class="math inline">\(\\mu\)</span>) &amp; Std. deviation (<span class="math inline">\(\\sigma\)</span>) &amp; Share (\%)
-\\\hline\multirow{9}{*}{Unknown}&amp; 0.51429&amp;0.426911&amp;5\\
-\cline{2-4} &amp; 1.588592&amp;0.29619&amp;15\\ \cline{2-4} &amp;
-1.803055&amp;0.10091&amp;10\\ \cline{2-4} &amp;
-2.086168&amp;0.105895&amp;11\\ \cline{2-4} &amp;
-2.406657&amp;0.133595&amp;12\\ \cline{2-4} &amp;
-2.545667&amp;0.108505&amp;12\\ \cline{2-4} &amp;
-2.779488&amp;0.183284&amp;15\\ \cline{2-4} &amp;
-3.25302&amp;0.225542&amp;13\\ \cline{2-4} &amp;
-3.644371&amp;0.111778&amp;8 \\
-\hline\end{tabular}}\caption{\label{tab:energy}Worktime energy Gaussian
-Models}\end{table}”</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">latex_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/print_user_profile_energy_models_table.html">print_user_profile_energy_models_table</a></span><span class="op">(</span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, label <span class="op">=</span> <span class="st">"tab:energy"</span>, caption <span class="op">=</span> <span class="st">"Worktime energy Gaussian Models"</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">latex_code</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## \begin{table}</span></span>
+<span><span class="co">## \resizebox{\linewidth}{!} {</span></span>
+<span><span class="co">## \begin{tabular}{l|c|c|c}</span></span>
+<span><span class="co">## \hline</span></span>
+<span><span class="co">## Charging rate (kW) &amp; Mean ($\mu$) &amp; Std. deviation ($\sigma$) &amp; Share (\%) \\</span></span>
+<span><span class="co">## \hline</span></span>
+<span><span class="co">## \multirow{9}{*}{Unknown}&amp; 0.51429&amp;0.426911&amp;5\\ \cline{2-4} &amp; 1.588592&amp;0.29619&amp;15\\ \cline{2-4} &amp; 1.803055&amp;0.10091&amp;10\\ \cline{2-4} &amp; 2.086168&amp;0.105895&amp;11\\ \cline{2-4} &amp; 2.406657&amp;0.133595&amp;12\\ \cline{2-4} &amp; 2.545667&amp;0.108505&amp;12\\ \cline{2-4} &amp; 2.779488&amp;0.183284&amp;15\\ \cline{2-4} &amp; 3.25302&amp;0.225542&amp;13\\ \cline{2-4} &amp; 3.644371&amp;0.111778&amp;8 \\ \hline</span></span>
+<span><span class="co">## \end{tabular}}</span></span>
+<span><span class="co">## \caption{\label{tab:energy}Worktime energy Gaussian Models}</span></span>
+<span><span class="co">## \end{table}</span></span></code></pre>
   </main>
 </div>
 
