@@ -39,7 +39,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">evprof</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@
 
 
 
-<script src="evprof_files/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="evprof_files/dygraphs-1.1.1/dygraph.css" rel="stylesheet">
+<script src="evprof_files/htmlwidgets-1.6.2/htmlwidgets.js"></script><link href="evprof_files/dygraphs-1.1.1/dygraph.css" rel="stylesheet">
 <script src="evprof_files/dygraphs-1.1.1/dygraph-combined.js"></script><script src="evprof_files/dygraphs-1.1.1/shapes.js"></script><script src="evprof_files/moment-2.8.4/moment.js"></script><script src="evprof_files/moment-timezone-0.2.5/moment-timezone-with-data.js"></script><script src="evprof_files/moment-fquarter-1.0.0/moment-fquarter.min.js"></script><script src="evprof_files/dygraphs-binding-1.1.1.6/dygraphs.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Profiling EV users</h1>
@@ -416,22 +416,22 @@ over these 5 disconnection days is:</p>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
-<td align="right">107805</td>
-<td align="right">51.16</td>
+<td align="right">108109</td>
+<td align="right">51.31</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
-<td align="right">96980</td>
-<td align="right">46.03</td>
+<td align="right">96680</td>
+<td align="right">45.88</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
-<td align="right">4805</td>
+<td align="right">4802</td>
 <td align="right">2.28</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
-<td align="right">907</td>
+<td align="right">906</td>
 <td align="right">0.43</td>
 </tr>
 <tr class="odd">
@@ -1650,7 +1650,7 @@ object of the output from <code>cluster_sessions</code> function.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">4</span> Visit     Workday   86466   2015-09-02 <span style="color: #949494;">08:38:00</span>     2015-09-02 <span style="color: #949494;">11:49:00</span>  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">5</span> Visit     Workday   86486   2015-09-02 <span style="color: #949494;">08:58:00</span>     2015-09-02 <span style="color: #949494;">13:11:00</span>  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">6</span> Worktime  Workday   86492   2015-09-02 <span style="color: #949494;">09:07:00</span>     2015-09-02 <span style="color: #949494;">17:33:00</span>  </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 10 more variables: ChargingStartDateTime &lt;dttm&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 10 more variables: ChargingStartDateTime &lt;dttm&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   ChargingEndDateTime &lt;dttm&gt;, Power &lt;dbl&gt;, Energy &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   ConnectionHours &lt;dbl&gt;, ChargingHours &lt;dbl&gt;, FlexibilityHours &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   ChargingStation &lt;chr&gt;, Disconnection &lt;fct&gt;, Cluster &lt;chr&gt;</span></span></span></code></pre>
@@ -1915,7 +1915,7 @@ ones and increase or decrease the number of Gaussian components.</p>
 <p><img src="evprof_files/figure-html/unnamed-chunk-68-1.png" width="960"></p>
 </div>
 <div class="section level3">
-<h3 id="save-the-ev-models">Save the EV models<a class="anchor" aria-label="anchor" href="#save-the-ev-models"></a>
+<h3 id="save-the-ev-model">Save the EV model<a class="anchor" aria-label="anchor" href="#save-the-ev-model"></a>
 </h3>
 <p>The package <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> proposes a standard format for the
 EV model with the function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function
@@ -1969,7 +1969,7 @@ built the energy models in a logarithmic scale</li>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ev_model</span></span></code></pre></div>
-<pre><code><span><span class="co">## EV sessions model of class "evprof", created on 2023-02-06 </span></span>
+<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2023-04-28 </span></span>
 <span><span class="co">## Timezone of the model: Europe/Amsterdam </span></span>
 <span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
 <span><span class="co">##   - Connection Models: logarithmic scale</span></span>
@@ -1988,9 +1988,9 @@ built the energy models in a logarithmic scale</li>
 <span><span class="co">##   4. Sunday:</span></span>
 <span><span class="co">##      Months = 1-12, Week days = 7</span></span>
 <span><span class="co">##      User profiles = Dinner, Shortstay, Visit, Commuters, Home, Pillow</span></span></code></pre>
-<p>Then we can save the object to an <code>.RDS</code> file with:</p>
+<p>Then we can save the object to a <code>.JSON</code> file with:</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_ev_model.html">save_ev_model</a></span><span class="op">(</span><span class="va">ev_model</span>, file <span class="op">=</span> <span class="st">"arnhem_data/evmodel_arnhem"</span>, fileext <span class="op">=</span> <span class="st">".RDS"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_ev_model.html">save_ev_model</a></span><span class="op">(</span><span class="va">ev_model</span>, filename <span class="op">=</span> <span class="st">"arnhem_data/evmodel_arnhem"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -2074,11 +2074,11 @@ for each model</li>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Timecycle</span>, <span class="va">Profile</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ratio <span class="op">=</span> <span class="va">n</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>time_cycle <span class="op">=</span> <span class="va">Timecycle</span>, profile <span class="op">=</span> <span class="va">Profile</span>, <span class="va">ratio</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>time_cycle <span class="op">=</span> <span class="va">Timecycle</span>, profile <span class="op">=</span> <span class="va">Profile</span>, <span class="va">ratio</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">profiles_ratios</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Groups:   time_cycle [2]</span></span></span>
 <span><span class="co">##    time_cycle profile    ratio</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Workday    Commuters 0.203 </span></span>
@@ -2091,16 +2091,6 @@ for each model</li>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Friday     Commuters 0.066<span style="text-decoration: underline;">2</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Friday     Dinner    0.118 </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> Friday     Home      0.155</span></span></code></pre>
-<p>These user profiles’ ratios are different from the ratios within our
-model, since these ratios are calculated considering just the most
-recent sessions. Therefore, we have to update the ratios of the model
-with this new table. There is a specific function
-<code>update_profiles_ratios</code> for this purpose:</p>
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_ev_model</span> <span class="op">&lt;-</span> <span class="va">ev_model</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/evsim/man/update_profiles_ratios.html" class="external-link">update_profiles_ratios</a></span><span class="op">(</span></span>
-<span>    <span class="va">profiles_ratios</span> <span class="co"># Update the distribution of user profiles</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
 <p>Finally, the function <code><a href="https://rdrr.io/pkg/evsim/man/simulate_sessions.html" class="external-link">simulate_sessions()</a></code> requires the
 <code>dates</code> of the simulated sessions and the
 <code>interval_mins</code> as the time resolution (in minutes).
@@ -2108,11 +2098,12 @@ Moreover, parameters <code>connection_log</code> and
 <code>energy_log</code> must be <code>TRUE</code> if the models have
 been built in a logarithmic scale.</p>
 <p>With all these parameters in hand we can simulate new sessions:</p>
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">sessions_estimated</span> <span class="op">&lt;-</span> <span class="fu">evsim</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/evsim/man/simulate_sessions.html" class="external-link">simulate_sessions</a></span><span class="op">(</span></span>
-<span>  <span class="va">my_ev_model</span>,</span>
+<span>  <span class="va">ev_model</span>,</span>
 <span>  <span class="va">n_sessions</span>,</span>
+<span>  <span class="va">profiles_ratios</span>,</span>
 <span>  <span class="va">charging_rates</span>, </span>
 <span>  dates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/date.html" class="external-link">date</a></span><span class="op">(</span><span class="va">dttm_seq</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>  <span class="va">interval_mins</span></span>
@@ -2126,12 +2117,11 @@ been built in a logarithmic scale.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">4</span> S4      Saturday  Visit   2020-02-01 <span style="color: #949494;">09:15:00</span>     2020-02-01 <span style="color: #949494;">13:37:00</span>  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">5</span> S5      Saturday  Visit   2020-02-01 <span style="color: #949494;">09:30:00</span>     2020-02-01 <span style="color: #949494;">10:15:00</span>  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">6</span> S6      Saturday  Visit   2020-02-01 <span style="color: #949494;">09:30:00</span>     2020-02-01 <span style="color: #949494;">15:13:00</span>  </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 6 more variables: ChargingStartDateTime &lt;dttm&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ChargingEndDateTime &lt;dttm&gt;, Power &lt;dbl&gt;, Energy &lt;dbl&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ConnectionHours &lt;dbl&gt;, ChargingHours &lt;dbl&gt;</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 6 more variables: ChargingStartDateTime &lt;dttm&gt;, ChargingEndDateTime &lt;dttm&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   Power &lt;dbl&gt;, Energy &lt;dbl&gt;, ConnectionHours &lt;dbl&gt;, ChargingHours &lt;dbl&gt;</span></span></span></code></pre>
 <p>Finally, we can calculate the estimated demand and compare it with
 the real demand:</p>
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">estimated_demand</span> <span class="op">&lt;-</span> <span class="va">sessions_estimated</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/evsim/man/get_demand.html" class="external-link">get_demand</a></span><span class="op">(</span><span class="va">dttm_seq</span><span class="op">)</span></span>
 <span>  </span>
@@ -2140,7 +2130,7 @@ the real demand:</p>
 <span>  demand_real <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">demand</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>  demand_estimated <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">estimated_demand</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">)</span> </span></code></pre></div>
-<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">comparison_demand</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/dutils/man/dyplot.html" class="external-link">dyplot</a></span><span class="op">(</span>ylab <span class="op">=</span> <span class="st">'kW'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/dygraphs/man/dySeries.html" class="external-link">dySeries</a></span><span class="op">(</span><span class="st">'demand_real'</span>, <span class="st">'Real demand'</span>, color <span class="op">=</span> <span class="st">'black'</span>, strokePattern <span class="op">=</span> <span class="st">'dashed'</span>, strokeWidth <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
