@@ -302,29 +302,69 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
 }
 
 
-#' Save the EV model object of class `evmodel` to an external file
+#' Save the EV model object of class `evmodel` to a JSON file
 #'
 #' @param evmodel object of class `evmodel`
-#' @param file character string with the path or name of the file
-#' @param fileext character string with the file extension
+#' (see this [link](https://mcanigueral.github.io/evprof/articles/evmodel.html) for more information)
+#' @param filename character string with the path or name of the file
 #'
 #' @export
 #'
-save_ev_model <- function(evmodel, file = 'evmodel', fileext = '.RDS') {
-  saveRDS(evmodel, file = paste0(file, fileext))
-  # ev_models_json <- toJSON(evmodel)
-  # write(ev_models_json, file = paste0(file, fileext))
+#' @importFrom jsonlite toJSON
+#'
+save_ev_model <- function(evmodel, filename = 'evmodel') {
+  evmodel_lst <- list(
+    metadata = evmodel$metadata,
+    models = evmodel$models
+  )
+  ev_models_json <- toJSON(evmodel_lst)
+  write(ev_models_json, file = paste0(filename, ".json"))
+}
+
+#' Read an EV model JSON file and convert it to object of class `evmodel`
+#'
+#' @param file path to the JSON file
+#'
+#' @return object of class `evmodel`
+#' @export
+#'
+#' @importFrom jsonlite fromJSON
+#' @importFrom purrr map
+#' @importFrom dplyr as_tibble
+#'
+read_ev_model <- function(file) {
+  evmodel <- jsonlite::fromJSON(file)
+  class(evmodel) <- "evmodel"
+  evmodel$models <- dplyr::as_tibble(evmodel$models)
+  evmodel$models$user_profiles <- purrr::map(
+    evmodel$models$user_profiles, tidy_models
+  )
+  return(evmodel)
+}
+
+lst_df_to_tbl <- function(df_lst) {
+  purrr::map(df_lst, as_tibble)
+}
+
+tidy_models <- function(user_models_df) {
+  user_models_df <- as_tibble(user_models_df)
+  user_models_df$connection_models <- lst_df_to_tbl(user_models_df$connection_models)
+  user_models_df$energy_models <- purrr::map(
+    user_models_df$energy_models,
+    ~ .x %>%
+      as_tibble() %>%
+      mutate(energy_models = lst_df_to_tbl(energy_models))
+  )
+  user_models_df
 }
 
 
-# read_ev_model <- function(file) {
-#   obj_json <- fromJSON(file)
-# }
 
 
 #' `print` method for `evmodel` object class
 #'
 #' @param x  `evmodel` object
+#' (see this [link](https://mcanigueral.github.io/evprof/articles/evmodel.html) for more information)
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @export
@@ -332,7 +372,7 @@ save_ev_model <- function(evmodel, file = 'evmodel', fileext = '.RDS') {
 #'
 print.evmodel <- function(x, ...) {
   m <- x$models
-  cat('EV sessions model of class "evprof", created on', as.character(x$metadata$creation), '\n')
+  cat('EV sessions model of class "evmodel", created on', as.character(x$metadata$creation), '\n')
   cat('Timezone of the model:', x$metadata$tzone, '\n')
   cat('The Gaussian Mixture Models of EV user profiles are built in:\n')
   cat('  - Connection Models:', if (x$metadata$connection_log) "logarithmic" else "natural", 'scale\n')

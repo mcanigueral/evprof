@@ -21,7 +21,7 @@ get_dbscan_params(
 
 \item{eps0}{DBSCAN eps parameter corresponding to the elbow of kNN dist plot}
 
-\item{noise_th}{noise treshold}
+\item{noise_th}{noise threshold}
 
 \item{eps_offset_pct}{eps_offset_pct}
 

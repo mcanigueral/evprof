@@ -87,7 +87,7 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
 #' @param sessions sessions data set in standard format
 #' @param MinPts DBSCAN MinPts parameter
 #' @param eps0 DBSCAN eps parameter corresponding to the elbow of kNN dist plot
-#' @param noise_th noise treshold
+#' @param noise_th noise threshold
 #' @param eps_offset_pct eps_offset_pct
 #' @param eps_inc_pct eps_inc_pct
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).

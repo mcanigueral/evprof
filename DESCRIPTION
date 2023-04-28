@@ -30,7 +30,8 @@ Imports:
     rlang,
     dbscan,
     mclust,
-    MASS
+    MASS,
+    jsonlite
 Suggests: 
     knitr,
     rmarkdown,

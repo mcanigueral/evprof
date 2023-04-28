@@ -2,17 +2,16 @@
 % Please edit documentation in R/modelling.R
 \name{save_ev_model}
 \alias{save_ev_model}
-\title{Save the EV model object of class \code{evmodel} to an external file}
+\title{Save the EV model object of class \code{evmodel} to a JSON file}
 \usage{
-save_ev_model(evmodel, file = "evmodel", fileext = ".RDS")
+save_ev_model(evmodel, filename = "evmodel")
 }
 \arguments{
-\item{evmodel}{object of class \code{evmodel}}
+\item{evmodel}{object of class \code{evmodel}
+(see this \href{https://mcanigueral.github.io/evprof/articles/evmodel.html}{link} for more information)}
 
-\item{file}{character string with the path or name of the file}
-
-\item{fileext}{character string with the file extension}
+\item{filename}{character string with the path or name of the file}
 }
 \description{
-Save the EV model object of class \code{evmodel} to an external file
+Save the EV model object of class \code{evmodel} to a JSON file
 }
