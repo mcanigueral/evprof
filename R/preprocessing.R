@@ -59,7 +59,9 @@ cut_sessions <- function(sessions,
 #' @return plot
 #' @export
 #'
+#' @importFrom ggplot2 ggplot aes geom_line labs
 #' @importFrom dbscan kNNdist
+#'
 plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
   if (log) {
     sessions <- mutate_to_log(sessions)
@@ -73,7 +75,7 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
     tibble(
       x = 1:nrow(sessions),
       dist = sort(kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
-    ), aes_string("x", "dist")
+    ), aes(.data[["x"]], .data[["dist"]])
   ) +
     geom_line() +
     labs(x = "Points sorted by distance", y = paste0(MinPts, "-NN distance"))
@@ -194,7 +196,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
 #' @return ggplot2 plot
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
+#' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
 #'
 plot_outliers <- function(sessions, log = FALSE, ...) {
   outliers_pct <- round(sum(sessions[['Outlier']])/nrow(sessions)*100, 2)
@@ -203,7 +205,7 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
   } else {
     sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
   }
-  plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours", color = "Outlier")) +
+  plot <- ggplot(sessions, aes(x=.data[["ConnectionStartDateTime"]], y=.data[["ConnectionHours"]], color = .data[["Outlier"]])) +
     geom_point(...) +
     labs(x='Connection start time', y='Number of connection hours', color = "",
          subtitle = paste('Outliers level:', outliers_pct, '%')) +
@@ -231,7 +233,7 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
 drop_outliers <- function(sessions) {
   sessions %>%
     filter(!.data$Outlier) %>%
-    select(-.data$Outlier)
+    select(- "Outlier")
 }
 
 
@@ -246,7 +248,7 @@ drop_outliers <- function(sessions) {
 #' @export
 #' @keywords internal
 #'
-#' @importFrom ggplot2 geom_line aes_string
+#' @importFrom ggplot2 geom_line aes
 #' @importFrom dplyr tibble
 #' @importFrom lubridate hours days today
 #' @importFrom rlang .data
@@ -255,7 +257,7 @@ get_division_line <- function(day_n, division_hour) {
   geom_line(data = tibble(
     "dt" = seq.POSIXt(from = today() + hours(division_hour), to = today() + days(1) + hours(division_hour), by = "hour"),
     "line" = as.numeric(difftime(today()+days(day_n) + hours(division_hour), .data$dt, units = "hours"))
-  ), aes_string("dt", "line"), size = 1, color = "red", linetype = "dashed")
+  ), aes(.data[["dt"]], .data[["line"]]), linewidth = 1, color = "red", linetype = "dashed")
 }
 
 #' Iteration over evprof::plot_division_line function to plot multiple lines
@@ -302,7 +304,6 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
   return( select(sessions, -c("StartTime", "EndTime")) )
 }
 
-
 #' Divide sessions by time-cycle
 #'
 #' @param sessions sessions data set in standard format
@@ -313,7 +314,7 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 #' @export
 #'
 #' @importFrom purrr pmap
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter select everything
 #' @importFrom rlang .data
 #' @importFrom lubridate month wday
 #'
@@ -323,6 +324,7 @@ divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycl
     months = rep(months_cycles, each = length(wdays_cycles)),
     wdays = rep(wdays_cycles, times = length(months_cycles))
   )
+  print_timecycles_tbl(cycles_tbl)
 
   # shift daybreak sessions to the corresponding weekday for convert_time_to_plot_time conversion before clustering
   hours <- hour(sessions$ConnectionStartDateTime)
@@ -338,5 +340,28 @@ divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycl
              month(.data$ConnectionStartDateTime) %in% ..1,
              wdays_with_start %in% ..2),
     .id = "Timecycle"
+  ) %>%
+    select(- "Timecycle", everything(), "Timecycle")
+}
+
+print_timecycles_tbl <- function(cycles_tbl) {
+  timecycles_tbl <- purrr::pmap_dfr(
+    cycles_tbl,
+    ~ dplyr::tibble(
+      months = ifelse(length(..1) > 1, paste(..1[1], ..1[length(..1)], sep = "-"), ..1),
+      wdays = ifelse(length(..2) > 1, paste(..2[1], ..2[length(..2)], sep = "-"), ..2)
+    ),
+    .id = "Timecycle"
   )
+
+  message("The considered time-cycles are:")
+
+  if (requireNamespace("utils", quietly = TRUE) & requireNamespace("knitr", quietly = TRUE)) {
+    message(paste0(
+      utils::capture.output(knitr::kable(timecycles_tbl)),
+      collapse = "\n"
+    ))
+  } else {
+    message("[Sorry: install {utils} and {knitr} to see the table.]")
+  }
 }

@@ -36,6 +36,7 @@ Suggests:
     knitr,
     rmarkdown,
     spelling,
+    utils,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Depends: 
