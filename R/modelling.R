@@ -136,7 +136,7 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
 #'
 #' @importFrom purrr map set_names
 #' @importFrom cowplot plot_grid
-#' @importFrom ggplot2 ggplot aes_string aes geom_histogram geom_line theme_light labs theme unit after_stat
+#' @importFrom ggplot2 ggplot aes geom_histogram geom_line theme_light labs theme unit after_stat
 #' @importFrom dplyr tibble mutate %>%
 #' @importFrom mclust predict.densityMclust
 #' @importFrom grDevices extendrange
@@ -152,7 +152,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
 
     histogram_data <- unlist(purrr::map(em_df$mclust, ~ .x$data))
 
-    profile_plot <- ggplot(data = tibble(x = histogram_data), aes_string(x = "x")) +
+    profile_plot <- ggplot(data = tibble(x = histogram_data), aes(x = .data[["x"]])) +
       geom_histogram(
         aes(y = after_stat(.data$density)), color = 'darkgrey', fill = 'grey',
         alpha = 0.2, show.legend = T, binwidth = 0.03
@@ -182,7 +182,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
     profile_plot2 <- profile_plot +
       geom_line(
         data = lines_data,
-        aes_string(x = "x", y = "y", color = "charging_rate"),
+        aes(x = .data[["x"]], y = .data[["y"]], color = .data[["charging_rate"]]),
         linewidth = 1
       ) +
       labs(color = "") +
@@ -310,15 +310,17 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
 #'
 #' @export
 #'
-#' @importFrom jsonlite toJSON
-#'
-save_ev_model <- function(evmodel, filename = 'evmodel') {
+save_ev_model <- function(evmodel, filename = 'evmodel.json') {
   evmodel_lst <- list(
     metadata = evmodel$metadata,
     models = evmodel$models
   )
-  ev_models_json <- toJSON(evmodel_lst)
-  write(ev_models_json, file = paste0(filename, ".json"))
+  ev_models_json <- jsonlite::toJSON(evmodel_lst)
+  if (grepl(".json", filename)) {
+    write(ev_models_json, file = filename)
+  } else {
+    write(ev_models_json, file = paste0(filename, ".json"))
+  }
 }
 
 #' Read an EV model JSON file and convert it to object of class `evmodel`
@@ -541,80 +543,6 @@ print_gaussian_features <- function(gaussian) {
     round(gaussian$mu, 6),
     round(gaussian$sigma, 6),
     round(gaussian$ratio*100)
-  )
-}
-
-
-
-
-# NOT EXPORTED: Print Model tables (ALL MODELS FROM THE SAME TIME CYCLE TOGETHER) ------------------------------------------------------
-
-#' Get LaTeX code for the energy GMM features (mu and sigma)
-#'
-#' @param GMM Gaussian Mixture Models obtained from function `get_energy_models`
-#' @param label character, e.g. "tab:gmm"
-#' @param caption character, table caption
-#' @param full_width logical, if true the "*" will be added next to the "table" tag
-#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
-#' If it is NULL, then the character string is returned instead of writing a file.
-#'
-#' @return character, LaTeX code
-#' @keywords internal
-#'
-#' @importFrom purrr pmap_chr
-.print_energy_models_table <- function(GMM, label, caption, full_width, path = NULL) {
-  latex_table <- paste(
-    sep = "\n",
-    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
-    "\\resizebox{\\linewidth}{!} {",
-    "\\begin{tabular}{l|c|c|c|c}",
-    "\\hline",
-    "User profile & Charging power (kW) & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
-    "\\hline",
-    paste(
-      collapse = "\n",
-      pmap_chr(
-        GMM,
-        ~ .print_profile_energy_models(..1, ..2)
-      )
-    ),
-    "\\end{tabular}}",
-    paste0("\\caption{\\label{", label, "}", caption, "}"),
-    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
-  )
-  if (is.null(path)) {
-    return( latex_table )
-  } else {
-    writeLines(latex_table, path)
-  }
-}
-
-.print_profile_energy_models <- function(profile_name, energy_models) {
-  n_models <- sum(map_dbl(energy_models$energy_models, ~ nrow(.x)))
-  paste(
-    paste0("\\multirow{", n_models, "}{*}{", profile_name, "}&"),
-    paste(
-      collapse = "\\\\ \\cline{2-5} & \n",
-      pmap_chr(
-        energy_models,
-        ~ .print_power_energy_models(..1, ..2)
-      )
-    ),
-    "\\\\ \\hline"
-  )
-}
-
-.print_power_energy_models <- function(charging_power, energy_models) {
-  paste(
-    paste0("\\multirow{", nrow(energy_models), "}{*}{", charging_power, "}&"),
-    paste(
-      collapse = "\\\\ \\cline{3-5} & & ",
-      purrr::map_chr(
-        energy_models %>%
-          split(1:nrow(energy_models)),
-        print_gaussian_features
-      )
-    )
   )
 }
 
