@@ -148,7 +148,7 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #'
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_point scale_x_datetime labs theme_light
+#' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime labs theme_light
 #'
 plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FALSE, ...) {
   if (!log) {
@@ -157,7 +157,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
     sessions <- mutate_to_log(sessions)
   }
 
-  plot <- ggplot(sessions, aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
+  plot <- ggplot(sessions, aes(x=.data[["ConnectionStartDateTime"]], y=.data[["ConnectionHours"]])) +
     geom_point(...) +
     labs(x='Connection start time', y='Number of connection hours') +
     theme_light()
@@ -181,7 +181,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' @export
 #'
 #' @importFrom lubridate wday month year
-#' @importFrom ggplot2 aes_string stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat facet_wrap vars
+#' @importFrom ggplot2 aes stat_density2d scale_fill_viridis_c scale_x_datetime xlab ylab theme_light stat facet_wrap vars
 #' @importFrom rlang .data
 #'
 plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), start=getOption("evprof.start.hour"), log = FALSE) {
@@ -194,7 +194,7 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
     sessions <- mutate_to_log(sessions)
   }
   density_plot <- sessions %>%
-    ggplot(aes_string(x="ConnectionStartDateTime", y="ConnectionHours")) +
+    ggplot(aes(x=.data[["ConnectionStartDateTime"]], y=.data[["ConnectionHours"]])) +
     stat_density2d(geom = "polygon", aes(fill = stat(.data$nlevel)), bins = bins) +
     scale_fill_viridis_c(name = 'Density of \nsessions\n') +
     # scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour') +
@@ -273,11 +273,11 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
 #' @return Summary table
 #' @export
 #'
-#' @importFrom dplyr %>% select summarise_all
+#' @importFrom dplyr %>% select summarise_all any_of
 #'
 summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_feature_names) {
   sessions %>%
-    select(vars) %>%
+    select(any_of(vars)) %>%
     summarise_all(.funs)
 }
 
@@ -290,7 +290,7 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 #' @return ggplot plot
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes_string aes geom_histogram after_stat theme_light
+#' @importFrom ggplot2 ggplot aes geom_histogram after_stat theme_light
 #' @importFrom rlang .data
 #' @importFrom tibble tibble
 #'
@@ -301,7 +301,7 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 #' plot_histogram(sessions, "Power", binwidth = 0.1)
 #'
 plot_histogram <- function(sessions, var, binwidth=1) {
-  ggplot(sessions, aes_string(x=var)) +
+  ggplot(sessions, aes(x=.data[[var]])) +
     geom_histogram(aes(y=after_stat(.data$count)/sum(after_stat(.data$count))*100),
                    binwidth = binwidth, color = 'navy', fill = 'navy', alpha = 0.7) +
     labs(x = "", y = "Count (%)", title = var) +
