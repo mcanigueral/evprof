@@ -151,12 +151,12 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #'
 #' @importFrom dbscan dbscan
 #'
-detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = FALSE) {
+detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = TRUE) {
 
   if (is.null(MinPts) | is.null(eps)) {
     if (is.null(MinPts)) MinPts <- 200
     if (is.null(eps)) {
-      if (log) eps <- 0.1 else eps <- 1.5 # Before it was 0.07 and 1
+      if (log) eps <- 0.1 else eps <- 1.5
     }
   }
   dbscan_params <- 0

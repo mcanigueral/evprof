@@ -4,7 +4,7 @@
 \alias{detect_outliers}
 \title{Detect outliers}
 \usage{
-detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = FALSE)
+detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = TRUE)
 }
 \arguments{
 \item{sessions}{sessions data set in standard format}

@@ -47,20 +47,6 @@ convert_time_num_to_chr <- function(time_num) {
   )
 }
 
-#' Convert numeric time value to sorted factor considering a start time
-#'
-#' @param time_num Numeric time value (hour-based)
-#' @param interval Time interval of the time sequence. It can be 0.5 (30 minutes) or 1 (1 hour).
-#' @param start Start hour (int)
-#'
-convert_time_num_to_plot_factor <- function(time_num, interval=0.5, start=getOption("evprof.start.hour")) {
-  if (interval == 0.5) dt_to_num = convert_time_num_to_chr(round_to_half(time_num))
-  if (interval == 1) dt_to_num = convert_time_num_to_chr(round(time_num))
-  factor(
-    dt_to_num,
-    levels = convert_time_num_to_chr(c(seq(start, 23.5, interval), seq(0, start-0.5, interval)))
-  )
-}
 
 #' Modify datetime values according evprof.start.hour
 #'
@@ -98,15 +84,6 @@ convert_time_num_to_period <- function(time_num) {
   hours(as.integer(h)) + minutes(as.integer(m))
 }
 
-#' Convert datetime value to sorted factor considering a start time
-#'
-#' @param time_dt Datetime value
-#' @param interval Time interval of the time sequence. It can be 0.5 (30 minutes) or 1 (1 hour).
-#' @param start Start hour (int)
-#'
-convert_time_dt_to_plot_factor <- function(time_dt, interval=0.5, start=getOption("evprof.start.hour")) {
-  convert_time_num_to_plot_factor(convert_time_dt_to_num(time_dt), interval, start)
-}
 
 #' Convert datetime values to sorted numeric values considering a start time
 #'
@@ -117,10 +94,6 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
   convert_time_num_to_plot_num(convert_time_dt_to_num(time_dt), start)
 }
 
-# convert_datetime_dt_to_num <- function(time_dt, date_0) {
-#   date_offset <- as.numeric(date(time_dt) - date_0, units = "hours")
-#   hour(time_dt) + minute(time_dt)/60 + date_offset
-# }
 
 
 # Logarithmic scale -------------------------------------------------------
