@@ -11,7 +11,7 @@
 #' @param connection_start_max numeric, maximum hour of connection start (hour as numeric). If NA the maximum value is considered.
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return session dataframe
+#' @returns session dataframe
 #' @export
 #'
 #' @importFrom dplyr between
@@ -56,7 +56,7 @@ cut_sessions <- function(sessions,
 #' @param MinPts integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return plot
+#' @returns plot
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_line labs
@@ -94,7 +94,7 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
 #' @param eps_inc_pct eps_inc_pct
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return tibble with minPts and eps parameters, and the corresponding noise
+#' @returns tibble with minPts and eps parameters, and the corresponding noise
 #' @export
 #'
 #' @importFrom dbscan dbscan
@@ -146,7 +146,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 #' @param noise_th noise threshold
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return sessions tibble with extra boolean column `Outlier`
+#' @returns sessions tibble with extra boolean column `Outlier`
 #' @export
 #'
 #' @importFrom dbscan dbscan
@@ -193,7 +193,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #' @param ... arguments to pass to function ggplot2::plot_point
 #'
-#' @return ggplot2 plot
+#' @returns ggplot2 plot
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
@@ -224,7 +224,7 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
 #'
 #' @param sessions sessions data set in standard format
 #'
-#' @return sessions without outliers nor column `Outlier`
+#' @returns sessions without outliers nor column `Outlier`
 #' @export
 #'
 #' @importFrom dplyr filter select %>%
@@ -244,7 +244,7 @@ drop_outliers <- function(sessions) {
 #' @param day_n Number of the day below the line
 #' @param division_hour Hour to divide the groups according to disconnection time
 #'
-#' @return ggplot2 function
+#' @returns ggplot2 function
 #' @export
 #' @keywords internal
 #'
@@ -266,7 +266,7 @@ get_division_line <- function(day_n, division_hour) {
 #' @param n_lines number of lines to plot
 #' @param division_hour Hour to divide the groups according to disconnection time
 #'
-#' @return ggplot2 function
+#' @returns ggplot2 function
 #' @export
 #'
 plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
@@ -283,7 +283,7 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @param days number of disconnection days to select
 #' @param division_hour Hour to divide the groups according to disconnection time
 #'
-#' @return same sessions data set with extra column "Disconnection"
+#' @returns same sessions data set with extra column "Disconnection"
 #' @export
 #'
 #' @importFrom dplyr select
@@ -310,7 +310,7 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 #' @param months_cycles list containing Monthly cycles
 #' @param wdays_cycles list containing Weekdays cycles
 #'
-#' @return same sessions data set with extra column "Timecycle"
+#' @returns same sessions data set with extra column "Timecycle"
 #' @export
 #'
 #' @importFrom purrr pmap

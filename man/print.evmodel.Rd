@@ -12,6 +12,9 @@
 
 \item{...}{further arguments passed to or from other methods.}
 }
+\value{
+nothing but prints information about the \code{evmodel} object
+}
 \description{
 \code{print} method for \code{evmodel} object class
 }

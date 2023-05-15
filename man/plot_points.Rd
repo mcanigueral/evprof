@@ -15,6 +15,9 @@ plot_points(sessions, start = getOption("evprof.start.hour"), log = FALSE, ...)
 
 \item{...}{arguments to \code{ggplot2::geom_point} function}
 }
+\value{
+ggplot scatter plot
+}
 \description{
 Scatter plot of sessions
 }

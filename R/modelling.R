@@ -7,7 +7,7 @@
 #' @param subsets_clustering list with clustering results of each subset to aggregate
 #' @param clusters_interpretations list with clusters interpretations of each subset
 #'
-#' @return tibble
+#' @returns tibble
 #' @export
 #'
 #' @importFrom purrr map_dbl pmap_dfr
@@ -43,7 +43,7 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' @param energy_vct numeric vector, energy from sessions
 #' @param log logical, true to perform logarithmic transformation (base = exp(1))
 #'
-#' @return object of class `dnstyMcl`
+#' @returns object of class `dnstyMcl`
 #' @keywords internal
 #'
 #' @importFrom mclust densityMclust cdfMclust
@@ -66,7 +66,7 @@ get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
 #'
 #' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
 #'
-#' @return tibble
+#' @returns tibble
 #' @keywords internal
 #'
 #' @importFrom purrr map_dfr
@@ -87,7 +87,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #' @param by_power Logical, true to fit the energy models for every charging rate separately
 #'
-#' @return tibble
+#' @returns tibble
 #' @export
 #'
 #' @importFrom dplyr %>% group_by summarise mutate select rename all_of
@@ -131,7 +131,7 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
 #' @param energy_models energy models returned by function `get_energy_models`
 #' @param nrow integer, number of rows in the plot grid (passed to `cowplot::plot_grid`)
 #'
-#' @return ggplot
+#' @returns ggplot
 #' @export
 #'
 #' @importFrom purrr map set_names
@@ -214,7 +214,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
 #' @param profiles_ratios tibble with columns `profile` and `ratio`
 #' @param log Logical, true to perform logarithmic transformation (base = exp(1))
 #'
-#' @return ggplot2
+#' @returns ggplot2
 #' @export
 #'
 #' @importFrom purrr map map_dbl pmap_dfr
@@ -256,7 +256,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @param energy_log Logical, true if energy models have logarithmic transformations
 #' @param data_tz character, time zone of the original data (necessary to properly simulate new sessions)
 #'
-#' @return object of class `evmodel`
+#' @returns object of class `evmodel`
 #' @export
 #'
 #' @importFrom purrr map map2
@@ -308,6 +308,7 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
 #' (see this [link](https://mcanigueral.github.io/evprof/articles/evmodel.html) for more information)
 #' @param filename character string with the path or name of the file
 #'
+#' @returns nothing but saves the `evmodel` object in a JSON file
 #' @export
 #'
 save_ev_model <- function(evmodel, filename = 'evmodel.json') {
@@ -327,7 +328,7 @@ save_ev_model <- function(evmodel, filename = 'evmodel.json') {
 #'
 #' @param file path to the JSON file
 #'
-#' @return object of class `evmodel`
+#' @returns object of class `evmodel`
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
@@ -369,6 +370,7 @@ tidy_models <- function(user_models_df) {
 #' (see this [link](https://mcanigueral.github.io/evprof/articles/evmodel.html) for more information)
 #' @param ... further arguments passed to or from other methods.
 #'
+#' @returns nothing but prints information about the `evmodel` object
 #' @export
 #' @keywords internal
 #'
@@ -406,7 +408,7 @@ print.evmodel <- function(x, ...) {
 #' @param path character, file path to write the latex table to. Is must have ".tex" extension.
 #' If it is NULL, then the character string is returned instead of writing a file.
 #'
-#' @return character, LaTeX code
+#' @returns character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr
@@ -491,7 +493,7 @@ print_biGMM_mu_matrix <- function(mu) {
 #' @param path character, file path to write the latex table to. Is must have ".tex" extension.
 #' If it is NULL, then the character string is returned instead of writing a file.
 #'
-#' @return character, LaTeX code
+#' @returns character, LaTeX code
 #' @export
 #'
 #' @importFrom purrr pmap_chr

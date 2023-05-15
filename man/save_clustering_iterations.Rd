@@ -38,6 +38,9 @@ save_clustering_iterations(
 
 \item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
+\value{
+description No returns but a PDF file is saved in the path specified by parameter \code{filename}
+}
 \description{
 Save iteration plots in PDF file
 }

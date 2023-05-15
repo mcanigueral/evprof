@@ -8,7 +8,7 @@
 #' @param profile_names vector with user profile assigned to each cluster (arranged by cluster number)
 #' @param log Logical. Whether ConnectionStartDateTime and ConnectionHours variables are in natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return tibble object
+#' @returns tibble object
 #' @export
 #'
 #' @importFrom dplyr %>% tibble arrange
@@ -39,7 +39,7 @@ define_clusters <- function (models, interpretations = NULL, profile_names = NUL
 #' @param sessions_clustered list of tibbles with sessions clustered (output from function `cluser_sessions`) from each sub-set
 #' @param clusters_definition list of tibbles with clusters definitions (output from function `define_clusters`) of each sub-set
 #'
-#' @return tibble
+#' @returns tibble
 #' @export
 #'
 #' @importFrom dplyr %>% left_join select everything rename

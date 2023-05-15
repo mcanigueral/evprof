@@ -10,7 +10,7 @@
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @keywords internal
-#' @return mclust object
+#' @returns mclust object
 #'
 #' @importFrom mclust Mclust emControl
 #'
@@ -52,7 +52,7 @@ get_connection_model_params <- function(mclust_obj) {
 #' @param mclust_itmax maximum number of iterations
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return BIC plot
+#' @returns BIC plot
 #' @export
 #'
 #' @importFrom graphics plot
@@ -73,7 +73,7 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log
 #' @param mclust_itmax maximum number of iterations
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return list with two attributes: sessions and models
+#' @returns list with two attributes: sessions and models
 #' @export
 #'
 cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
@@ -101,6 +101,7 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @export
+#' @returns description No returns but a PDF file is saved in the path specified by parameter `filename`
 #'
 #' @importFrom ggplot2 ggtitle scale_color_discrete ggsave
 #' @importFrom cowplot plot_grid
@@ -162,7 +163,7 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #' @param legend_nrow number of rows in legend
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return ggplot2 plot
+#' @returns ggplot2 plot
 #' @export
 #'
 #' @importFrom purrr map_dfr set_names

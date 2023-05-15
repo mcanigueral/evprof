@@ -15,7 +15,7 @@ round_to_half <- function(time_num) {
 #' @param dbl number to round
 #' @param interval rounding interval
 #'
-#' @return numeric value
+#' @returns numeric value
 #'
 round_to_interval <- function(dbl, interval) {
   round(dbl/interval)*interval
@@ -119,6 +119,7 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #' @param ... arguments to `ggplot2::geom_point` function
 #'
+#' @returns ggplot scatter plot
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime labs theme_light
@@ -150,7 +151,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' @param by variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
 #'
-#' @return ggplot2 plot
+#' @returns ggplot2 plot
 #' @export
 #'
 #' @importFrom lubridate wday month year
@@ -211,7 +212,8 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #' @param start start hour (int)
 #' @param eye list containing x, y and z points of view. Example: `list(x = -1.5, y = -1.5, z = 1.5)`#'
 #' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
-#' @return plotly plot (html)
+#'
+#' @returns plotly plot (html)
 #' @export
 #'
 #' @importFrom MASS kde2d
@@ -243,7 +245,7 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
 #' @param .funs A function `fun`
 #' @param vars variables to compute the histogram for
 #'
-#' @return Summary table
+#' @returns Summary table
 #' @export
 #'
 #' @importFrom dplyr %>% select summarise_all any_of
@@ -260,7 +262,7 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 #' @param var variable to compute the histogram for
 #' @param binwidth with of histogram bins
 #'
-#' @return ggplot plot
+#' @returns ggplot plot
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_histogram after_stat theme_light
@@ -291,7 +293,7 @@ plot_histogram <- function(sessions, var, binwidth=1) {
 #' @param nrow number of rows of the plot grid
 #' @param ncol number of columns of the plot grid
 #'
-#' @return grid plot
+#' @returns grid plot
 #' @export
 #'
 #' @importFrom purrr map2
@@ -312,7 +314,7 @@ plot_histogram_grid <- function(sessions, vars=evprof::sessions_summary_feature_
 #' @param sessions sessions data set in standard format
 #' @param unit lubridate `floor_date` unit parameter
 #'
-#' @return tibble
+#' @returns tibble
 #' @export
 #'
 #' @importFrom dplyr %>% select mutate group_by ungroup summarise n all_of
@@ -350,7 +352,7 @@ get_charging_rates_distribution <- function(sessions, unit="year") {
 #' @param months range of months to consider (int)
 #' @param wdays range of weekdays to consider (int)
 #'
-#' @return tibble with the number of sessions of each date in the given time period
+#' @returns tibble with the number of sessions of each date in the given time period
 #' @export
 #'
 #' @importFrom dplyr %>% filter group_by summarise n
@@ -375,7 +377,7 @@ get_daily_n_sessions <- function(sessions, years, months, wdays) {
 #' @param months range of months to consider (int)
 #' @param wdays range of weekdays to consider (int)
 #'
-#' @return tibble with the number of sessions of each date in the given time period
+#' @returns tibble with the number of sessions of each date in the given time period
 #' @export
 #'
 #' @importFrom dplyr %>% pull

@@ -12,6 +12,9 @@ save_ev_model(evmodel, filename = "evmodel.json")
 
 \item{filename}{character string with the path or name of the file}
 }
+\value{
+nothing but saves the \code{evmodel} object in a JSON file
+}
 \description{
 Save the EV model object of class \code{evmodel} to a JSON file
 }
