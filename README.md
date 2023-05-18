@@ -4,10 +4,12 @@
 # evprof <a href='https://mcanigueral.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
-<!-- [![CRAN status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof) -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof)
 [![R-CMD-check](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcanigueral/evprof/actions/workflows/R-CMD-check.yaml)
-<!-- [![Codecov test coverage](https://codecov.io/gh/mcanigueral/evprof/branch/master/graph/badge.svg)](https://app.codecov.io/gh/mcanigueral/evprof?branch=master) -->
+[![Codecov test
+coverage](https://codecov.io/gh/mcanigueral/evprof/branch/master/graph/badge.svg)](https://app.codecov.io/gh/mcanigueral/evprof?branch=master)
 <!-- badges: end -->
 
 ## Overview
@@ -31,7 +33,7 @@ aims to accomplish two different tasks that can be useful for multiple
 purposes:
 
 1.  Classification of EV charging sessions into generic user profiles
-    (e.g. worktime, dinner, commuter, etc.), allowing to:
+    (e.g. working time, dinner, commuters, etc.), allowing to:
 
 - Increase the knowledge on the different flexibility potential patterns
   from a real data set
@@ -53,8 +55,22 @@ purposes:
 To use this package you will need a data set of EV charging sessions
 with at least two fundamental variables: **connection start** time and
 **connection duration**. With these two variables you will be able to
-classify the sessions into generic user profiles, but to generate the EV
-Gaussian Models you will also need the **energy** values.
+classify the sessions into different user profiles, but to generate the
+EV Gaussian Models you will also need the **energy** values.
+
+The package also provides an example open data set of EV charging
+sessions from the California Technological Institute (Caltech), which
+can be downloaded from the [ACN-Data
+website](https://ev.caltech.edu/dataset). For more information about
+this data set and how to use it, visit the [ACN
+documentation](https://acnportal.readthedocs.io/en/latest/). Moreover,
+an example `evmodel` object (EV Gaussian Mixture Models) built with
+`evprof` functions and the California open data set (see the [California
+case
+study](https://mcanigueral.github.io/evprof/articles/california.html)
+article) is also provided. These two demo data objects are provided
+together with package functions for a better interactive user
+experience.
 
 If you have your own data set, the best place to start is the [Get
 started
@@ -63,11 +79,14 @@ the package website.
 
 ## Installation
 
-Since the package is not yet in CRAN, you can install the development
-version of {evprof} from GitHub:
+You can install the package from CRAN or the development version from
+GitHub:
 
 ``` r
-# install.packages("devtools")
+# CRAN stable release
+install.packages("evprof")
+
+# Latest development version
 devtools::install_github("mcanigueral/evprof")
 ```
 
@@ -94,6 +113,10 @@ articles about the methodology used in this paper:
   limiting charging power**. CIRED Porto Workshop 2022: E-mobility and
   power distribution systems. Institution of Engineering and
   Technology, 2022. DOI: [10.1049/icp.2022.0744](10.1049/icp.2022.0744).
+- **Assessment of electric vehicle charging hub based on stochastic
+  models of user profiles**. Expert Systems with Applications (Vol. 227,
+  p. 120318). Elsevier BV. May 2023. DOI:
+  [10.1016/j.eswa.2023.120318](https://doi.org/10.1016/j.eswa.2023.120318)
 
 ## Acknowledgements
 

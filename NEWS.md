@@ -5,9 +5,13 @@
 * Bug fix in the `evmodel` printing function
 * Default `log` value of function `detect_outliers` set to `TRUE`
 * Replace all deprecated `aes_string` functions by using `.data[[var]]`
-* Remove un-used functions
-* Print a message with timecycles' table in function `divide_by_timecycle`
+* Remove unused functions
+* Remove `days` parameter from function `divide_by_disconnection`
+* Print a message with time-cycles' table in function `divide_by_timecycle`
 * Complete tests
+* Including California EV sessions when loading the package
+* Include examples in all exported functions
+* CRAN release
 
 
 # evprof 0.1.0
