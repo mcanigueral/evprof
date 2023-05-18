@@ -9,11 +9,13 @@ get_connection_model_mclust_object(
   k,
   mclust_tol = 1e-08,
   mclust_itmax = 10000,
-  log = TRUE
+  log = FALSE,
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{k}{number of clusters}
 
@@ -21,7 +23,11 @@ get_connection_model_mclust_object(
 
 \item{mclust_itmax}{maximum number of iterations}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 mclust object

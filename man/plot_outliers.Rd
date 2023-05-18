@@ -7,9 +7,11 @@
 plot_outliers(sessions, log = FALSE, ...)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 
 \item{...}{arguments to pass to function ggplot2::plot_point}
 }
@@ -18,4 +20,10 @@ ggplot2 plot
 }
 \description{
 Plot outlying sessions
+}
+\examples{
+sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
+plot_outliers(sessions_outliers)
+plot_outliers(sessions_outliers, log = TRUE)
+
 }

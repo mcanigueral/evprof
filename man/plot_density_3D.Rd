@@ -8,21 +8,28 @@ plot_density_3D(
   sessions,
   start = getOption("evprof.start.hour"),
   eye = list(x = -1.5, y = -1.5, z = 1.5),
-  log = TRUE
+  log = FALSE
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{start}{start hour (int)}
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 
-\item{eye}{list containing x, y and z points of view. Example: \code{list(x = -1.5, y = -1.5, z = 1.5)}#'}
+\item{eye}{list containing x, y and z points of view. Example: \code{list(x = -1.5, y = -1.5, z = 1.5)}}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 plotly plot (html)
 }
 \description{
 Density plot in 3D, considering Start time and Connection duration as variables
+}
+\examples{
+plot_density_3D(california_ev_sessions, start = 3)
+
 }

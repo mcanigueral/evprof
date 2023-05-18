@@ -4,10 +4,18 @@
 \alias{detect_outliers}
 \title{Detect outliers}
 \usage{
-detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = TRUE)
+detect_outliers(
+  sessions,
+  MinPts = NULL,
+  eps = NULL,
+  noise_th = 2,
+  log = FALSE,
+  start = getOption("evprof.start.hour")
+)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{MinPts}{MinPts parameter for DBSCAN clustering}
 
@@ -15,11 +23,20 @@ detect_outliers(sessions, MinPts = NULL, eps = NULL, noise_th = 2, log = TRUE)
 
 \item{noise_th}{noise threshold}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 sessions tibble with extra boolean column \code{Outlier}
 }
 \description{
 Detect outliers
+}
+\examples{
+sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5, log = TRUE)
+
+
 }

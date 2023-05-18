@@ -11,15 +11,22 @@ summarise_sessions(
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{.funs}{A function \code{fun}}
+\item{.funs}{A function to compute, e.g. \code{mean}, \code{max}, etc.}
 
-\item{vars}{variables to compute the histogram for}
+\item{vars}{character vector, variables to compute the histogram for}
 }
 \value{
 Summary table
 }
 \description{
 Statistic summary of sessions features
+}
+\examples{
+summarise_sessions(california_ev_sessions, mean)
+
+
 }

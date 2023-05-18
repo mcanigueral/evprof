@@ -4,10 +4,18 @@
 \alias{choose_k_GMM}
 \title{Visualize BIC indicator to choose the number of clusters}
 \usage{
-choose_k_GMM(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000, log = TRUE)
+choose_k_GMM(
+  sessions,
+  k,
+  mclust_tol = 1e-08,
+  mclust_itmax = 10000,
+  log = FALSE,
+  start = getOption("evprof.start.hour")
+)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{k}{sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.}
 
@@ -15,11 +23,20 @@ choose_k_GMM(sessions, k, mclust_tol = 1e-08, mclust_itmax = 10000, log = TRUE)
 
 \item{mclust_itmax}{maximum number of iterations}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 BIC plot
 }
 \description{
 Visualize BIC indicator to choose the number of clusters
+}
+\examples{
+choose_k_GMM(california_ev_sessions, k = 1:4, start = 3)
+
+
 }

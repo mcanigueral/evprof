@@ -4,17 +4,23 @@
 \alias{save_ev_model}
 \title{Save the EV model object of class \code{evmodel} to a JSON file}
 \usage{
-save_ev_model(evmodel, filename = "evmodel.json")
+save_ev_model(evmodel, file = "evmodel.json")
 }
 \arguments{
 \item{evmodel}{object of class \code{evmodel}
 (see this \href{https://mcanigueral.github.io/evprof/articles/evmodel.html}{link} for more information)}
 
-\item{filename}{character string with the path or name of the file}
+\item{file}{character string with the path or name of the file}
 }
 \value{
 nothing but saves the \code{evmodel} object in a JSON file
 }
 \description{
 Save the EV model object of class \code{evmodel} to a JSON file
+}
+\examples{
+ev_model <- california_ev_model # Model of example
+
+save_ev_model(ev_model, file = file.path(tempdir(), "evmodel.json"))
+
 }

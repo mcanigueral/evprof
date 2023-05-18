@@ -18,4 +18,9 @@ nothing but prints information about the \code{evmodel} object
 \description{
 \code{print} method for \code{evmodel} object class
 }
+\examples{
+print(california_ev_model)
+
+
+}
 \keyword{internal}

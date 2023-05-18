@@ -10,11 +10,13 @@ cut_sessions(
   connection_hours_max = NA,
   connection_start_min = NA,
   connection_start_max = NA,
-  log = FALSE
+  log = FALSE,
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{connection_hours_min}{numeric, minimum of connection hours (duration). If NA the minimum value is considered.}
 
@@ -24,11 +26,28 @@ cut_sessions(
 
 \item{connection_start_max}{numeric, maximum hour of connection start (hour as numeric). If NA the maximum value is considered.}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 session dataframe
 }
 \description{
 Cut outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
+}
+\examples{
+# Localize the outlying sessions above a certain threshold
+plot_points(california_ev_sessions, start = 3)
+
+# For example sessions that start before 5 AM or that are
+# longer than 20 hours are considered outliers
+sessions_clean <- cut_sessions(
+  california_ev_sessions, start = 3,
+  connection_hours_max = 20, connection_start_min = 5,
+)
+plot_points(sessions_clean, start = 3)
+
 }

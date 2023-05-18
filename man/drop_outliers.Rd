@@ -7,11 +7,20 @@
 drop_outliers(sessions)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 }
 \value{
 sessions without outliers nor column \code{Outlier}
 }
 \description{
 Drop outliers
+}
+\examples{
+sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
+plot_outliers(sessions_outliers)
+sessions_clean <- drop_outliers(sessions_outliers)
+plot_points(sessions_clean)
+
+
 }

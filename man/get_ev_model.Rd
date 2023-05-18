@@ -22,13 +22,13 @@ get_ev_model(
 
 \item{wdays_lst}{list of integer vectors with the corresponding days of the week for each model (week start = 1)}
 
-\item{connection_GMM}{list of different connection bivariate GMM}
+\item{connection_GMM}{list of different connection bivariate GMM obtained from \code{get_connection_models}}
 
-\item{energy_GMM}{list of different energy univariate GMM}
+\item{energy_GMM}{list of different energy univariate GMM obtained from \code{get_energy_models}}
 
-\item{connection_log}{Logical, true if connection models have logarithmic transformations}
+\item{connection_log}{logical, true if connection models have logarithmic transformations}
 
-\item{energy_log}{Logical, true if energy models have logarithmic transformations}
+\item{energy_log}{logical, true if energy models have logarithmic transformations}
 
 \item{data_tz}{character, time zone of the original data (necessary to properly simulate new sessions)}
 }
@@ -37,4 +37,74 @@ object of class \code{evmodel}
 }
 \description{
 Get the EV model object of class \code{evmodel}
+}
+\examples{
+library(dplyr)
+
+# Select working day sessions (`Timecycle == 1`) that
+# disconnect the same day (`Disconnection == 1`)
+sessions_day <- california_ev_sessions \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12), # Not differentiation between months
+    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+  ) \%>\%
+  divide_by_disconnection(
+    division_hour = 10, start = 3
+  ) \%>\%
+  filter(
+    Disconnection == 1, Timecycle == 1
+  )
+plot_points(sessions_day, start = 3)
+
+# Identify two clusters
+sessions_clusters <- cluster_sessions(
+  sessions_day, k=2, seed = 1234, log = TRUE
+)
+
+# Plot the clusters found
+plot_bivarGMM(
+  sessions = sessions_clusters$sessions,
+  models = sessions_clusters$models,
+  log = TRUE, start = 3
+)
+
+# Define the clusters with user profile interpretations
+clusters_definitions <- define_clusters(
+  models = sessions_clusters$models,
+  interpretations = c(
+    "Connections during working hours",
+    "Connections during all day (high variability)"
+  ),
+  profile_names = c("Workers", "Visitors"),
+  log = TRUE
+)
+
+# Get connection GMM parameters
+connection_models <- get_connection_models(
+  subsets_clustering = list(sessions_clusters),
+  clusters_definition = list(clusters_definitions)
+)
+
+# Classify each session to the corresponding user profile
+sessions_profiles <- set_profiles(
+  sessions_clustered = list(sessions_clusters$sessions),
+  clusters_definition = list(clusters_definitions)
+)
+
+# Get energy GMM parameters
+energy_models <- get_energy_models(sessions_profiles, log = TRUE)
+
+# Get the whole model
+ev_model <- get_ev_model(
+  names = c("Working days"),
+  months_lst = list(1:12),
+  wdays_lst = list(1:5),
+  connection_GMM = list(connection_models),
+  energy_GMM = list(energy_models),
+  connection_log = TRUE,
+  energy_log = TRUE,
+  data_tz = "America/Los_Angeles"
+)
+
+
 }

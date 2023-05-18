@@ -3,20 +3,25 @@
 
 #' Perform `mclust::Mclust` clustering for multivariate GMM
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k number of clusters
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @keywords internal
 #' @returns mclust object
 #'
 #' @importFrom mclust Mclust emControl
 #'
-get_connection_model_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+get_connection_model_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
+                                               log = FALSE, start = getOption("evprof.start.hour")) {
   if (!log) {
-    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   } else {
     sessions <- mutate_to_log(sessions)
   }
@@ -46,11 +51,15 @@ get_connection_model_params <- function(mclust_obj) {
 
 #' Visualize BIC indicator to choose the number of clusters
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns BIC plot
 #' @export
@@ -58,27 +67,71 @@ get_connection_model_params <- function(mclust_obj) {
 #' @importFrom graphics plot
 #' @importFrom mclust mclustBIC
 #'
-choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
-  mod <- get_connection_model_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+#' @examples
+#' choose_k_GMM(california_ev_sessions, k = 1:4, start = 3)
+#'
+#'
+choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
+                         log = FALSE, start = getOption("evprof.start.hour")) {
+  mod <- get_connection_model_mclust_object(
+    sessions, k = k, mclust_tol = mclust_tol,
+    mclust_itmax = mclust_itmax, log = log, start = start
+  )
   plot(mod, what = "BIC")
 }
 
 
 #' Cluster sessions with `mclust` package
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k number of clusters
 #' @param seed random seed
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns list with two attributes: sessions and models
 #' @export
 #'
-cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # The column `Cluster` has been added
+#' names(sessions_clusters)
+#' plot_points(sessions_clusters$sessions) +
+#'   ggplot2::aes(color = Cluster)
+#'
+cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax = 1e4,
+                             log = FALSE, start = getOption("evprof.start.hour")) {
   set.seed(seed)
-  mclust_obj <- get_connection_model_mclust_object(sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+  mclust_obj <- get_connection_model_mclust_object(
+    sessions, k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax,
+    log = log, start = start
+  )
   sessions["Cluster"] <- factor(mclust_obj$classification)
   list(
     sessions = sessions,
@@ -89,7 +142,8 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 
 #' Save iteration plots in PDF file
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k number of clusters
 #' @param it number of iterations
 #' @param seeds seed for each iteration
@@ -98,27 +152,39 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param points_size integer, size of points in the scatter plot
 #' @param mclust_tol tolerance parameter for clustering
 #' @param mclust_itmax maximum number of iterations
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @export
-#' @returns description No returns but a PDF file is saved in the path specified by parameter `filename`
+#' @returns nothing, but a PDF file is saved in the path specified by parameter `filename`
 #'
 #' @importFrom ggplot2 ggtitle scale_color_discrete ggsave
 #' @importFrom cowplot plot_grid
 #' @importFrom stats runif
 #'
+#' @examples
+#' temp_file <- file.path(tempdir(), "iteration.pdf")
+#' save_clustering_iterations(california_ev_sessions, k = 2, it = 4, filename = temp_file)
+#'
+#'
 save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),
                                     filename = paste0("iteration_", k, "_clusters.pdf"), plot_scale = 2,
-                                    points_size = 0.25, mclust_tol = 1e-8, mclust_itmax = 1e4, log = TRUE) {
+                                    points_size = 0.25, mclust_tol = 1e-8, mclust_itmax = 1e4,
+                                    log = FALSE, start = getOption("evprof.start.hour")) {
   ellipses_plots <- list()
   IC_values <- tibble(
     seed = seeds,
     BIC = 0
   )
 
-  for (i in 1:length(seeds)) {
+  for (i in seq_len(length(seeds))) {
     set.seed(seeds[i])
-    mod <- get_connection_model_mclust_object(sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax, log = log)
+    mod <- get_connection_model_mclust_object(
+      sessions, k = k, mclust_tol = mclust_tol, mclust_itmax = mclust_itmax,
+      log = log, start = start
+    )
     mod_params <- get_connection_model_params(mod)
     ellipses_plots[[i]] <- plot_bivarGMM(sessions, mod_params, log = log, points_size = points_size) +
       ggtitle(paste0("Seed: ", seeds[i], ", BIC: ", round(mod$bic))) +
@@ -146,7 +212,7 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
   r1 <- sqrt(stats::qchisq(1 - alpha, 2))
   theta <- seq(0, 2 * pi, len = npoints)
   v1 <- cbind(r1 * cos(theta), r1 * sin(theta))
-  pts = t(mu - (e1 %*% t(v1)))
+  pts <- t(mu - (e1 %*% t(v1)))
   dplyr::tibble(
     x = pts[, 1],
     y = pts[, 2]
@@ -155,13 +221,18 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 
 #' Plot Bivariate Gaussian Mixture Models
 #'
-#' @param sessions sessions data set in standard format
-#' @param bivarGMM_params parameters of the clusters' GMM models
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param models tibble, parameters of the clusters' GMM models obtained with
+#' function `cluster_sessions` (object `models` of the returned list)
 #' @param profiles_names names of profiles
 #' @param points_size size of scatter points in the plot
 #' @param lines_size size of lines in the plot
 #' @param legend_nrow number of rows in legend
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns ggplot2 plot
 #' @export
@@ -170,16 +241,48 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #' @importFrom ggplot2 ggplot aes geom_point geom_path labs theme_light theme guides guide_legend scale_x_continuous scale_y_continuous
 #' @importFrom rlang .data
 #'
-plot_bivarGMM <- function(sessions, bivarGMM_params, profiles_names = seq(1, nrow(bivarGMM_params)), points_size = 0.25, lines_size = 1, legend_nrow = 2, log = TRUE) {
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+plot_bivarGMM <- function(sessions, models, profiles_names = seq(1, nrow(models)),
+                          points_size = 0.25, lines_size = 1, legend_nrow = 2,
+                          log = FALSE, start = getOption("evprof.start.hour")) {
   ellipses <- purrr::map_dfr(
-    set_names(seq(1, nrow(bivarGMM_params)), nm = profiles_names),
-    ~ get_ellipse(bivarGMM_params$mu[[.x]], bivarGMM_params$sigma[[.x]]),
+    set_names(seq(1, nrow(models)), nm = profiles_names),
+    ~ get_ellipse(models$mu[[.x]], models$sigma[[.x]]),
     .id = "profile"
   )
   ellipses$profile <- factor(ellipses$profile, levels = unique(profiles_names))
 
   if (!log) {
-    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   } else {
     sessions <- mutate_to_log(sessions)
   }

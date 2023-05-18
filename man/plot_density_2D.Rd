@@ -13,19 +13,27 @@ plot_density_2D(
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{bins}{parameter to pass to \code{ggplot2::stat_density_2d}}
+\item{bins}{integer, parameter to pass to \code{ggplot2::stat_density_2d}}
 
 \item{by}{variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.}
 
-\item{start}{start hour (int)}
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 ggplot2 plot
 }
 \description{
 Density plot in 2D, considering Start time and Connection duration as variables
+}
+\examples{
+plot_density_2D(california_ev_sessions, by = "wday", start = 3, bins = 20)
+plot_density_2D(california_ev_sessions, by = "month", start = 2, log = TRUE)
+
 }

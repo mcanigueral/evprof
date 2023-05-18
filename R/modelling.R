@@ -4,8 +4,10 @@
 
 #' Get a tibble of connection GMM for every user profile
 #'
-#' @param subsets_clustering list with clustering results of each subset to aggregate
-#' @param clusters_interpretations list with clusters interpretations of each subset
+#' @param subsets_clustering list with clustering results of each subset
+#' (direct output from function `cluser_sessions()`)
+#' @param clusters_definition list of tibbles with clusters definitions
+#' (direct output from function `define_clusters()`) of each sub-set
 #'
 #' @returns tibble
 #' @export
@@ -14,13 +16,61 @@
 #' @importFrom dplyr tibble arrange mutate select group_by summarise rename
 #' @importFrom rlang .data
 #'
-get_connection_models <- function(subsets_clustering = list(), clusters_interpretations = list()) {
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Create a table with the connection GMM parameters
+#' get_connection_models(
+#'   subsets_clustering = list(sessions_clusters),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#'
+get_connection_models <- function(subsets_clustering = list(), clusters_definition = list()) {
 
   subsets_n_sessions <- map_dbl(subsets_clustering, ~ nrow(.x[["sessions"]]))
   subsets_ratios <- subsets_n_sessions/sum(subsets_n_sessions)
 
   pmap_dfr(
-    tibble(subsets_clustering, clusters_interpretations, subsets_ratios),
+    tibble(subsets_clustering, clusters_definition, subsets_ratios),
     ~ ..1[["models"]] %>%
       arrange(.data$cluster) %>%
       mutate(profile = ..2[["profile"]]) %>%
@@ -41,7 +91,8 @@ get_connection_models <- function(subsets_clustering = list(), clusters_interpre
 #' Get Mclust object of univariate Gaussian Mixture Models
 #'
 #' @param energy_vct numeric vector, energy from sessions
-#' @param log logical, true to perform logarithmic transformation (base = exp(1))
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @returns object of class `dnstyMcl`
 #' @keywords internal
@@ -54,12 +105,12 @@ get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
     energy_vct <- energy_vct[!is.infinite(energy_vct)]
   }
   # Discard the 2% thresholds
-  uvGMM <- densityMclust(energy_vct, plot = F)
+  uvGMM <- densityMclust(energy_vct, plot = FALSE)
   cdf_uvGMM <- cdfMclust(uvGMM)
   th_min <- cdf_uvGMM$x[which(cdf_uvGMM$y >= 0.02)[1]]
   th_max <- cdf_uvGMM$x[which(cdf_uvGMM$y <= 0.98)[length(which(cdf_uvGMM$y <= 0.98))]]
   energy_vct <- energy_vct[energy_vct >= th_min & energy_vct <= th_max]
-  densityMclust(energy_vct, plot = F)
+  densityMclust(energy_vct, plot = FALSE)
 }
 
 #' Get energy univariate Gaussian Mixture Model
@@ -83,8 +134,11 @@ get_energy_model_parameters <- function(mclust_obj) {
 
 #' Get a tibble of energy GMM for every user profile
 #'
-#' @param sessions_profiles sessions data set with user profile attribute
-#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
+#' @param sessions_profiles tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html)
+#' with user profile attribute `Profile`
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param by_power Logical, true to fit the energy models for every charging rate separately
 #'
 #' @returns tibble
@@ -95,14 +149,74 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @importFrom purrr map
 #' @importFrom rlang .data
 #'
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Classify each session to the corresponding user profile
+#' sessions_profiles <- set_profiles(
+#'   sessions_clustered = list(sessions_clusters$sessions),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Create a table with the energy GMM parameters
+#' get_energy_models(sessions_profiles, log = TRUE)
+#'
+#' # If there is a `Power` variable in the data set
+#' # you can create an energy model per power rate and user profile
+#' # First it is convenient to round the `Power` values for more generic models
+#' sessions_profiles <- sessions_profiles %>%
+#'   mutate(Power = round_to_interval(Power, 3.7)) %>%
+#'   filter(Power < 11)
+#' sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
+#' get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
+#'
+#'
 get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
   if (by_power) {
-    sessions_profiles <- sessions_profiles %>%
-      mutate(
-        ChargingRate = round_to_interval(.data$Power, 3.7)
-      )
-    sessions_profiles$ChargingRate[sessions_profiles$ChargingRate == 0] <- 3.7
-    sessions_profiles$ChargingRate[sessions_profiles$ChargingRate > 11] <- 11
+    n_different_power <- unique(sessions_profiles$Power)
+    if (length(n_different_power) > 5) {
+      message("Warning: more than 5 different charging rates in the data.
+              You may have to round the `Power` values for more generic models.")
+    }
+    sessions_profiles$ChargingRate <- sessions_profiles$Power
   } else {
     sessions_profiles$ChargingRate <- "Unknown"
   }
@@ -142,6 +256,60 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
 #' @importFrom grDevices extendrange
 #' @importFrom rlang .data
 #'
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Classify each session to the corresponding user profile
+#' sessions_profiles <- set_profiles(
+#'   sessions_clustered = list(sessions_clusters$sessions),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Create energy models
+#' energy_models <- get_energy_models(sessions_profiles, log = TRUE)
+#'
+#' # Plot energy models
+#' plot_energy_models(energy_models)
+#'
+#'
 plot_energy_models <- function(energy_models, nrow=2) {
 
   plot_list <- list()
@@ -155,7 +323,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
     profile_plot <- ggplot(data = tibble(x = histogram_data), aes(x = .data[["x"]])) +
       geom_histogram(
         aes(y = after_stat(.data$density)), color = 'darkgrey', fill = 'grey',
-        alpha = 0.2, show.legend = T, binwidth = 0.03
+        alpha = 0.2, show.legend = TRUE, binwidth = 0.03
       ) +
       labs(x = "Energy charged", y = "Density", title = prof) +
       theme_light()
@@ -205,14 +373,19 @@ plot_energy_models <- function(energy_models, nrow=2) {
 }
 
 
-# Plot all clusters of the models -----------------------------------------
+# Plot all clusters of every user profile -----------------------------------------
 
-#' Aggregate clusters GMM into profiles GMM
+#' Plot all bi-variable GMM (clusters) with the colors corresponding
+#' to the assigned user profile. This shows which clusters correspond to which
+#' user profile, and the proportion of every user profile.
 #'
-#' @param subsets_clustering list with clustering results of each subset to aggregate
-#' @param clusters_interpretations list with clusters interpretations of each subset
+#' @param subsets_clustering list with clustering results of each subset
+#' (direct output from function `cluser_sessions()`)
+#' @param clusters_definition list of tibbles with clusters definitions
+#' (direct output from function `define_clusters()`) of each sub-set
 #' @param profiles_ratios tibble with columns `profile` and `ratio`
-#' @param log Logical, true to perform logarithmic transformation (base = exp(1))
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #'
 #' @returns ggplot2
 #' @export
@@ -221,9 +394,66 @@ plot_energy_models <- function(energy_models, nrow=2) {
 #' @importFrom dplyr tibble arrange mutate select group_by summarise
 #' @importFrom rlang .data
 #'
-plot_model_clusters <- function(subsets_clustering = list(), clusters_interpretations = list(), profiles_ratios, log = TRUE) {
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Create a table with the connection GMM parameters
+#' connection_models <- get_connection_models(
+#'   subsets_clustering = list(sessions_clusters),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Plot all bi-variable GMM (clusters) with the colors corresponding
+#' # to their assigned user profile
+#' plot_model_clusters(
+#'   subsets_clustering = list(sessions_clusters),
+#'   clusters_definition = list(clusters_definitions),
+#'   profiles_ratios = connection_models[c("profile", "ratio")]
+#' )
+#'
+#'
+plot_model_clusters <- function(subsets_clustering = list(), clusters_definition = list(),
+                                profiles_ratios, log = TRUE) {
 
-  cluster_profiles_names <- unlist(map(clusters_interpretations, ~ .x[["profile"]]))
+  cluster_profiles_names <- unlist(map(clusters_definition, ~ .x[["profile"]]))
 
   plot_bivarGMM(
     map_dfr(subsets_clustering, ~ .x[["sessions"]]),
@@ -241,19 +471,19 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 }
 
 
+
+
 # Save the models ---------------------------------------------------------
-
-
 
 #' Get the EV model object of class `evmodel`
 #'
 #' @param names character vector with the given names of each time-cycle model
 #' @param months_lst list of integer vectors with the corresponding months of the year for each time-cycle model
 #' @param wdays_lst list of integer vectors with the corresponding days of the week for each model (week start = 1)
-#' @param connection_GMM list of different connection bivariate GMM
-#' @param energy_GMM list of different energy univariate GMM
-#' @param connection_log Logical, true if connection models have logarithmic transformations
-#' @param energy_log Logical, true if energy models have logarithmic transformations
+#' @param connection_GMM list of different connection bivariate GMM obtained from `get_connection_models`
+#' @param energy_GMM list of different energy univariate GMM obtained from `get_energy_models`
+#' @param connection_log logical, true if connection models have logarithmic transformations
+#' @param energy_log logical, true if energy models have logarithmic transformations
 #' @param data_tz character, time zone of the original data (necessary to properly simulate new sessions)
 #'
 #' @returns object of class `evmodel`
@@ -262,9 +492,78 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_interpreta
 #' @importFrom purrr map map2
 #' @importFrom dplyr tibble left_join select mutate %>%
 #'
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Get connection GMM parameters
+#' connection_models <- get_connection_models(
+#'   subsets_clustering = list(sessions_clusters),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Classify each session to the corresponding user profile
+#' sessions_profiles <- set_profiles(
+#'   sessions_clustered = list(sessions_clusters$sessions),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Get energy GMM parameters
+#' energy_models <- get_energy_models(sessions_profiles, log = TRUE)
+#'
+#' # Get the whole model
+#' ev_model <- get_ev_model(
+#'   names = c("Working days"),
+#'   months_lst = list(1:12),
+#'   wdays_lst = list(1:5),
+#'   connection_GMM = list(connection_models),
+#'   energy_GMM = list(energy_models),
+#'   connection_log = TRUE,
+#'   energy_log = TRUE,
+#'   data_tz = "America/Los_Angeles"
+#' )
+#'
+#'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
                          connection_GMM, energy_GMM, connection_log, energy_log,
-                         data_tz=getOption("evprof.tzone", "Europe/Amsterdam")) {
+                         data_tz = getOption("evprof.tzone", "Europe/Amsterdam")) {
 
   # Remove `mclust` component from energy models tibble
   energy_GMM <- map(
@@ -306,21 +605,26 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
 #'
 #' @param evmodel object of class `evmodel`
 #' (see this [link](https://mcanigueral.github.io/evprof/articles/evmodel.html) for more information)
-#' @param filename character string with the path or name of the file
+#' @param file character string with the path or name of the file
 #'
 #' @returns nothing but saves the `evmodel` object in a JSON file
 #' @export
 #'
-save_ev_model <- function(evmodel, filename = 'evmodel.json') {
+#' @examples
+#' ev_model <- california_ev_model # Model of example
+#'
+#' save_ev_model(ev_model, file = file.path(tempdir(), "evmodel.json"))
+#'
+save_ev_model <- function(evmodel, file = 'evmodel.json') {
   evmodel_lst <- list(
     metadata = evmodel$metadata,
     models = evmodel$models
   )
   ev_models_json <- jsonlite::toJSON(evmodel_lst)
-  if (grepl(".json", filename)) {
-    write(ev_models_json, file = filename)
+  if (grepl(".json", file)) {
+    write(ev_models_json, file = file)
   } else {
-    write(ev_models_json, file = paste0(filename, ".json"))
+    write(ev_models_json, file = paste0(file, ".json"))
   }
 }
 
@@ -334,6 +638,13 @@ save_ev_model <- function(evmodel, filename = 'evmodel.json') {
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr map
 #' @importFrom dplyr as_tibble
+#'
+#' @examples
+#' ev_model <- california_ev_model # Model of example
+#'
+#' save_ev_model(ev_model, file = file.path(tempdir(), "evmodel.json"))
+#'
+#' read_ev_model(file = file.path(tempdir(), "evmodel.json"))
 #'
 read_ev_model <- function(file) {
   evmodel <- jsonlite::fromJSON(file)
@@ -374,6 +685,10 @@ tidy_models <- function(user_models_df) {
 #' @export
 #' @keywords internal
 #'
+#' @examples
+#' print(california_ev_model)
+#'
+#'
 print.evmodel <- function(x, ...) {
   m <- x$models
   cat('EV sessions model of class "evmodel", created on', as.character(x$metadata$creation), '\n')
@@ -382,7 +697,7 @@ print.evmodel <- function(x, ...) {
   cat('  - Connection Models:', if (x$metadata$connection_log) "logarithmic" else "natural", 'scale\n')
   cat('  - Energy Models:', if (x$metadata$energy_log) "logarithmic" else "natural", 'scale\n')
   cat('\nModel composed by', nrow(m), 'time-cycles:\n')
-  for (n in 1:nrow(m)) {
+  for (n in seq_len(nrow(m))) {
     cat(
       '  ', n, '. ', m[['time_cycle']][n], ':',
       '\n     Months = ', if (length(m[['months']][[n]]) == 1) m[['months']][[n]][1] else
@@ -412,6 +727,63 @@ print.evmodel <- function(x, ...) {
 #' @export
 #'
 #' @importFrom purrr pmap_chr
+#'
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Create a table with the connection GMM parameters
+#' connection_models <- get_connection_models(
+#'   subsets_clustering = list(sessions_clusters),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Print connection GMM tables
+#' print_connection_models_table(
+#'   GMM = connection_models,
+#'   label = "tab:con-gmm",
+#'   caption = "Connection GMM",
+#'   full_width = TRUE
+#' )
+#'
+#'
 print_connection_models_table <- function(GMM, label, caption, full_width, path = NULL) {
   latex_table <- paste(
     sep = "\n",
@@ -446,7 +818,7 @@ print_profile_connection_models <- function(profile_name, connection_models) {
       collapse = "\\\\ \\cline{2-4} & ",
       purrr::map_chr(
         connection_models %>%
-          split(1:nrow(connection_models)),
+          split(seq_len(nrow(connection_models))),
         print_cluster_features
       )
     ),
@@ -497,6 +869,70 @@ print_biGMM_mu_matrix <- function(mu) {
 #' @export
 #'
 #' @importFrom purrr pmap_chr
+#'
+#' @examples
+#' library(dplyr)
+#'
+#' # Select working day sessions (`Timecycle == 1`) that
+#' # disconnect the same day (`Disconnection == 1`)
+#' sessions_day <- california_ev_sessions %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12), # Not differentiation between months
+#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+#'   ) %>%
+#'   divide_by_disconnection(
+#'     division_hour = 10, start = 3
+#'   ) %>%
+#'   filter(
+#'     Disconnection == 1, Timecycle == 1
+#'   )
+#' plot_points(sessions_day, start = 3)
+#'
+#' # Identify two clusters
+#' sessions_clusters <- cluster_sessions(
+#'   sessions_day, k=2, seed = 1234, log = TRUE
+#' )
+#'
+#' # Plot the clusters found
+#' plot_bivarGMM(
+#'   sessions = sessions_clusters$sessions,
+#'   models = sessions_clusters$models,
+#'   log = TRUE, start = 3
+#' )
+#'
+#' # Define the clusters with user profile interpretations
+#' clusters_definitions <- define_clusters(
+#'   models = sessions_clusters$models,
+#'   interpretations = c(
+#'     "Connections during working hours",
+#'     "Connections during all day (high variability)"
+#'   ),
+#'   profile_names = c("Workers", "Visitors"),
+#'   log = TRUE
+#' )
+#'
+#' # Classify each session to the corresponding user profile
+#' sessions_profiles <- set_profiles(
+#'   sessions_clustered = list(sessions_clusters$sessions),
+#'   clusters_definition = list(clusters_definitions)
+#' )
+#'
+#' # Create energy models by power charging rate
+#' sessions_profiles <- sessions_profiles %>%
+#'   mutate(Power = round_to_interval(Power, 3.7)) %>%
+#'   filter(Power < 11)
+#' sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
+#' energy_models <- get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
+#'
+#' # Print energy GMM table
+#' print_user_profile_energy_models_table(
+#'   user_profile_GMM = energy_models$energy_models[[1]], # GMM from user profile 1
+#'   label = "tab:energy-gmm-profile-1",
+#'   caption = "Energy GMM from user profile 1",
+#'   full_width = TRUE
+#' )
+#'
+#'
 print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, path = NULL) {
   latex_table <- paste(
     sep = "\n",
@@ -531,7 +967,7 @@ print_profile_energy_models <- function(profile_name, energy_models) {
       collapse = "\\\\ \\cline{2-4} & ",
       purrr::map_chr(
         energy_models %>%
-          split(1:nrow(energy_models)),
+          split(seq_len(nrow(energy_models))),
         print_gaussian_features
       )
     ),

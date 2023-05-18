@@ -15,3 +15,11 @@ object of class \code{evmodel}
 \description{
 Read an EV model JSON file and convert it to object of class \code{evmodel}
 }
+\examples{
+ev_model <- california_ev_model # Model of example
+
+save_ev_model(ev_model, file = file.path(tempdir(), "evmodel.json"))
+
+read_ev_model(file = file.path(tempdir(), "evmodel.json"))
+
+}

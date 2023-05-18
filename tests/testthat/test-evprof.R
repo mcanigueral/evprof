@@ -13,22 +13,23 @@ library(ggplot2)
 
 # Get the example `evmodel` included in the package
 ev_model <- evprof::california_ev_model
+sessions <- evprof::california_ev_sessions
 
-# Simulating 1000 sessions of two normal distributions
-set.seed(1234)
-sessions <- tibble(
-  ConnectionStartDateTime = c(
-    dmy_hm("01/01/2023 00:00") + minutes(abs(round(rnorm(1000, 9*60, 60)))),
-    dmy_hm("01/01/2023 05:00") + minutes(abs(round(rnorm(1000, 9*60, 60))))
-  )
-) %>%
-  mutate(
-    ConnectionHours = evprof:::round_to_half(abs(rnorm(nrow(.), 8*60, 60)/60)), # 30 minutes resolution
-    ConnectionEndDateTime = ConnectionStartDateTime + evprof:::convert_time_num_to_period(ConnectionHours),
-    Energy = abs(rnorm(nrow(.), 30, 10)),
-    Power = sample(c(3.7, 7.4, 11), nrow(.), replace = T, prob =c(0.2, 0.3, 0.5)),
-    Session = paste0("S", row_number())
-  )
+# # Simulating 1000 sessions of two normal distributions
+# set.seed(1234)
+# sessions <- tibble(
+#   ConnectionStartDateTime = c(
+#     dmy_hm("01/01/2023 00:00") + minutes(abs(round(rnorm(1000, 9*60, 60)))),
+#     dmy_hm("01/01/2023 05:00") + minutes(abs(round(rnorm(1000, 9*60, 60))))
+#   )
+# ) %>%
+#   mutate(
+#     ConnectionHours = evprof:::round_to_half(abs(rnorm(nrow(.), 8*60, 60)/60)), # 30 minutes resolution
+#     ConnectionEndDateTime = ConnectionStartDateTime + evprof:::convert_time_num_to_period(ConnectionHours),
+#     Energy = abs(rnorm(nrow(.), 30, 10)),
+#     Power = sample(c(3.7, 7.4, 11), nrow(.), replace = T, prob =c(0.2, 0.3, 0.5)),
+#     Session = paste0("S", row_number())
+#   )
 
 
 # Test exploration --------------------------------------------------------
@@ -57,10 +58,22 @@ plot_density_3D(sessions, log = TRUE)
 # Test preprocessing ------------------------------------------------------
 # Cut outlying sessions from threshold
 test_that("The outliers are removed by cutting", {
-  sessions2_log <- cut_sessions(sessions, connection_start_max = 3, log = TRUE)
-  sessions2 <- cut_sessions(sessions, connection_start_max = 20, log = FALSE)
-  expect_true(nrow(sessions2_log) < nrow(sessions))
+
+  sessions2 <- cut_sessions(sessions, connection_start_min = 3, log = FALSE)
   expect_true(nrow(sessions2) < nrow(sessions))
+
+  sessions2 <- cut_sessions(sessions, connection_start_max = 24, log = FALSE, start = 3)
+  expect_true(nrow(sessions2) < nrow(sessions))
+
+  sessions2 <- cut_sessions(sessions, connection_hours_max = 20, log = FALSE)
+  expect_true(nrow(sessions2) < nrow(sessions))
+
+  sessions2_log <- cut_sessions(sessions, connection_start_min = 1, log = TRUE)
+  expect_true(nrow(sessions2_log) < nrow(sessions))
+
+  sessions2_log <- cut_sessions(sessions, connection_hours_min = -2, log = TRUE)
+  expect_true(nrow(sessions2_log) < nrow(sessions))
+
 })
 
 # kNN plot
@@ -85,12 +98,12 @@ test_that("The outliers are removed by filtering", {
 
 # Disconnection day division lines
 plot_points(sessions) %>%
-  plot_division_lines(n_lines = 1, division_hour = 3)
+  plot_division_lines(n_lines = 1, division_hour = 10)
 
 # Divisions by Disconnection day and Time-cycle
 test_that("The divisions are done", {
   sessions_divided <- sessions %>%
-    divide_by_disconnection(days = 1, division_hour = 3) %>%
+    divide_by_disconnection(division_hour = 10) %>%
     divide_by_timecycle()
   expect_true(ncol(sessions_divided) > ncol(sessions))
 })
@@ -146,23 +159,33 @@ test_that("Get the connection models", {
 print_connection_models_table(connection_GMM, full_width = TRUE, label = "tab:conn", caption = "connection GMM")
 plot_model_clusters(list(sessions_clusters), list(clusters_definition), connection_GMM)
 
-test_that("Get the energy models with `by_power = FALSE`", {
+test_that("Get and plot the energy models with `by_power = FALSE`", {
   energy_GMM <<- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
   expect_true(is.data.frame(energy_GMM))
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
   expect_true(all.equal(c("charging_rate", "energy_models", "mclust"), names(energy_GMM$energy_models[[1]])))
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(energy_GMM$energy_models[[1]]$energy_models[[1]])))
+
+  print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
+  energy_plot <- plot_energy_models(energy_GMM)
+  expect_true(is.ggplot(energy_plot))
 })
 
-print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
-plot_energy_models(energy_GMM)
 
-test_that("Get the energy models with `by_power = TRUE`", {
+test_that("Get and plot the energy models with `by_power = TRUE`", {
+  sessions_profiles <- sessions_profiles %>%
+    mutate(Power = round_to_interval(Power, 3.7)) %>%
+    filter(Power < 11)
+  sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
+  # sessions_profiles %>% get_charging_rates_distribution()
   energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
   expect_true(is.data.frame(energy_GMM))
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
   expect_true(all.equal(c("charging_rate", "energy_models", "mclust"), names(energy_GMM$energy_models[[1]])))
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(energy_GMM$energy_models[[1]]$energy_models[[1]])))
+
+  energy_plot <- plot_energy_models(energy_GMM)
+  expect_true(is.ggplot(energy_plot))
 })
 
 test_that("Model file is saved correctly",  {
@@ -178,11 +201,11 @@ test_that("Model file is saved correctly",  {
   print(evmodel)
 
   temp_model_file <<- file.path(tempdir(), "model.json")
-  save_ev_model(evmodel, filename = temp_model_file)
+  save_ev_model(evmodel, file = temp_model_file)
   expect_true(file.exists(temp_model_file))
 })
 
 test_that("Model file is read correctly",  {
-  evmodel <- read_ev_model(temp_model_file)
+  evmodel <- read_ev_model(file = temp_model_file)
   expect_true(class(evmodel) == "evmodel")
 })

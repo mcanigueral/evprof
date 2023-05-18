@@ -2,27 +2,74 @@
 % Please edit documentation in R/profiling.R
 \name{define_clusters}
 \alias{define_clusters}
-\title{Tabulate clusters interpretation}
+\title{Define each cluster with a user profile interpretation}
 \usage{
 define_clusters(
   models,
   interpretations = NULL,
   profile_names = NULL,
-  log = TRUE
+  log = FALSE
 )
 }
 \arguments{
-\item{models}{clusters bivariate Gaussian mixture models}
+\item{models}{tibble, parameters of the clusters' GMM models obtained with
+function \code{cluster_sessions()} (object \code{models} of the returned list)}
 
-\item{interpretations}{vector with interpretation sentences of each cluster (arranged by cluster number)}
+\item{interpretations}{character vector with interpretation sentences of each cluster (arranged by cluster number)}
 
-\item{profile_names}{vector with user profile assigned to each cluster (arranged by cluster number)}
+\item{profile_names}{character vector with user profile assigned to each cluster (arranged by cluster number)}
 
-\item{log}{Logical. Whether ConnectionStartDateTime and ConnectionHours variables are in natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 tibble object
 }
 \description{
-Tabulate clusters interpretation
+Every cluster has a centroid (i.e. average start time and duration) that can
+be related to a daily human behaviour or connection pattern
+(e.g. Worktime, Dinner, etc.). In this function, a user profile name is
+assigned to every cluster.
+}
+\examples{
+library(dplyr)
+
+# Select working day sessions (`Timecycle == 1`) that
+# disconnect the same day (`Disconnection == 1`)
+sessions_day <- california_ev_sessions \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12), # Not differentiation between months
+    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+  ) \%>\%
+  divide_by_disconnection(
+    division_hour = 10, start = 3
+  ) \%>\%
+  filter(
+    Disconnection == 1, Timecycle == 1
+  )
+plot_points(sessions_day, start = 3)
+
+# Identify two clusters
+sessions_clusters <- cluster_sessions(
+  sessions_day, k=2, seed = 1234, log = TRUE
+)
+
+# Plot the clusters found
+plot_bivarGMM(
+  sessions = sessions_clusters$sessions,
+  models = sessions_clusters$models,
+  log = TRUE, start = 3
+)
+
+# Define the clusters with user profile interpretations
+define_clusters(
+  models = sessions_clusters$models,
+  interpretations = c(
+    "Connections during working hours",
+    "Connections during all day (high variability)"
+  ),
+  profile_names = c("Workers", "Visitors"),
+  log = TRUE
+)
+
 }

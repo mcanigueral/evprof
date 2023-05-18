@@ -6,17 +6,68 @@
 \usage{
 get_connection_models(
   subsets_clustering = list(),
-  clusters_interpretations = list()
+  clusters_definition = list()
 )
 }
 \arguments{
-\item{subsets_clustering}{list with clustering results of each subset to aggregate}
+\item{subsets_clustering}{list with clustering results of each subset
+(direct output from function \code{cluser_sessions()})}
 
-\item{clusters_interpretations}{list with clusters interpretations of each subset}
+\item{clusters_definition}{list of tibbles with clusters definitions
+(direct output from function \code{define_clusters()}) of each sub-set}
 }
 \value{
 tibble
 }
 \description{
 Get a tibble of connection GMM for every user profile
+}
+\examples{
+library(dplyr)
+
+# Select working day sessions (`Timecycle == 1`) that
+# disconnect the same day (`Disconnection == 1`)
+sessions_day <- california_ev_sessions \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12), # Not differentiation between months
+    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+  ) \%>\%
+  divide_by_disconnection(
+    division_hour = 10, start = 3
+  ) \%>\%
+  filter(
+    Disconnection == 1, Timecycle == 1
+  )
+plot_points(sessions_day, start = 3)
+
+# Identify two clusters
+sessions_clusters <- cluster_sessions(
+  sessions_day, k=2, seed = 1234, log = TRUE
+)
+
+# Plot the clusters found
+plot_bivarGMM(
+  sessions = sessions_clusters$sessions,
+  models = sessions_clusters$models,
+  log = TRUE, start = 3
+)
+
+# Define the clusters with user profile interpretations
+clusters_definitions <- define_clusters(
+  models = sessions_clusters$models,
+  interpretations = c(
+    "Connections during working hours",
+    "Connections during all day (high variability)"
+  ),
+  profile_names = c("Workers", "Visitors"),
+  log = TRUE
+)
+
+# Create a table with the connection GMM parameters
+get_connection_models(
+  subsets_clustering = list(sessions_clusters),
+  clusters_definition = list(clusters_definitions)
+)
+
+
 }

@@ -4,18 +4,37 @@
 \alias{divide_by_disconnection}
 \title{Divide sessions by disconnection day}
 \usage{
-divide_by_disconnection(sessions, days, division_hour)
+divide_by_disconnection(
+  sessions,
+  division_hour,
+  start = getOption("evprof.start.hour")
+)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
-
-\item{days}{number of disconnection days to select}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{division_hour}{Hour to divide the groups according to disconnection time}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 same sessions data set with extra column "Disconnection"
 }
 \description{
 Divide sessions by disconnection day
+}
+\examples{
+sessions_disconnection <- divide_by_disconnection(
+  california_ev_sessions, division_hour = 10
+)
+
+# The column `Disconnection` has been added
+names(sessions_disconnection)
+
+library(ggplot2)
+plot_points(sessions_disconnection) +
+  facet_wrap(vars(Disconnection))
+
 }

@@ -17,3 +17,9 @@ numeric value
 \description{
 Round to nearest interval
 }
+\examples{
+set.seed(1)
+random_vct <- rnorm(10, 5, 5)
+round_to_interval(random_vct, 2.5)
+
+}

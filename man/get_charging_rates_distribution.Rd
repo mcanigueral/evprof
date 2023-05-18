@@ -7,13 +7,19 @@
 get_charging_rates_distribution(sessions, unit = "year")
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{unit}{lubridate \code{floor_date} unit parameter}
+\item{unit}{character, lubridate \code{floor_date} unit parameter}
 }
 \value{
 tibble
 }
 \description{
 Get charging rates distribution in percentages
+}
+\examples{
+get_charging_rates_distribution(california_ev_sessions, unit="month")
+get_charging_rates_distribution(california_ev_sessions, unit="month")
+
 }

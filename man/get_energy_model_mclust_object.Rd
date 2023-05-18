@@ -9,7 +9,8 @@ get_energy_model_mclust_object(energy_vct, log = TRUE)
 \arguments{
 \item{energy_vct}{numeric vector, energy from sessions}
 
-\item{log}{logical, true to perform logarithmic transformation (base = exp(1))}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 }
 \value{
 object of class \code{dnstyMcl}

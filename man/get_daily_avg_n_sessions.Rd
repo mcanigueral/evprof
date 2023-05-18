@@ -7,17 +7,25 @@
 get_daily_avg_n_sessions(sessions, years, months, wdays)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{years}{range of years to consider (int)}
+\item{years}{vector of integers, range of years to consider}
 
-\item{months}{range of months to consider (int)}
+\item{months}{vector of integers, range of months to consider}
 
-\item{wdays}{range of weekdays to consider (int)}
+\item{wdays}{vector of integers, range of weekdays to consider}
 }
 \value{
 tibble with the number of sessions of each date in the given time period
 }
 \description{
 Get the daily average number of sessions given a range of years, months and weekdays
+}
+\examples{
+get_daily_avg_n_sessions(
+  california_ev_sessions,
+  year = 2018, months = c(5, 6), wdays = 1
+)
+
 }

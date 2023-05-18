@@ -4,18 +4,34 @@
 \alias{plot_kNNdist}
 \title{Plot kNNdist}
 \usage{
-plot_kNNdist(sessions, MinPts = NULL, log = FALSE)
+plot_kNNdist(
+  sessions,
+  MinPts = NULL,
+  log = FALSE,
+  start = getOption("evprof.start.hour")
+)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{MinPts}{integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 plot
 }
 \description{
 Plot kNNdist
+}
+\examples{
+plot_kNNdist(california_ev_sessions, start = 3)
+plot_kNNdist(california_ev_sessions, start = 3, log = TRUE)
+
+
 }

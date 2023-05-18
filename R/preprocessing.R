@@ -4,22 +4,38 @@
 
 #' Cut outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param connection_hours_min numeric, minimum of connection hours (duration). If NA the minimum value is considered.
 #' @param connection_hours_max numeric, maximum of connection hours (duration). If NA the maximum value is considered.
 #' @param connection_start_min numeric, minimum hour of connection start (hour as numeric). If NA the minimum value is considered.
 #' @param connection_start_max numeric, maximum hour of connection start (hour as numeric). If NA the maximum value is considered.
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns session dataframe
 #' @export
 #'
 #' @importFrom dplyr between
 #'
+#' @examples
+#' # Localize the outlying sessions above a certain threshold
+#' plot_points(california_ev_sessions, start = 3)
+#'
+#' # For example sessions that start before 5 AM or that are
+#' # longer than 20 hours are considered outliers
+#' sessions_clean <- cut_sessions(
+#'   california_ev_sessions, start = 3,
+#'   connection_hours_max = 20, connection_start_min = 5,
+#' )
+#' plot_points(sessions_clean, start = 3)
+#'
 cut_sessions <- function(sessions,
-                           connection_hours_min = NA, connection_hours_max = NA,
-                           connection_start_min = NA, connection_start_max = NA,
-                           log = FALSE) {
+                         connection_hours_min = NA, connection_hours_max = NA,
+                         connection_start_min = NA, connection_start_max = NA,
+                         log = FALSE, start = getOption("evprof.start.hour")) {
 
   if (log) {
     sessions_log <- mutate_to_log(sessions)
@@ -27,7 +43,7 @@ cut_sessions <- function(sessions,
     connection_start <- sessions_log[['ConnectionStartDateTime']]
   } else {
     connection_hours <- sessions[['ConnectionHours']]
-    connection_start <- convert_time_dt_to_plot_num(sessions[['ConnectionStartDateTime']])
+    connection_start <- convert_time_dt_to_plot_num(sessions[['ConnectionStartDateTime']], start)
   }
 
   if (is.na(connection_hours_min))
@@ -52,9 +68,13 @@ cut_sessions <- function(sessions,
 
 #' Plot kNNdist
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param MinPts integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns plot
 #' @export
@@ -62,18 +82,24 @@ cut_sessions <- function(sessions,
 #' @importFrom ggplot2 ggplot aes geom_line labs
 #' @importFrom dbscan kNNdist
 #'
-plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
+#' @examples
+#' plot_kNNdist(california_ev_sessions, start = 3)
+#' plot_kNNdist(california_ev_sessions, start = 3, log = TRUE)
+#'
+#'
+plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE,
+                         start = getOption("evprof.start.hour")) {
   if (log) {
     sessions <- mutate_to_log(sessions)
   } else {
-    sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+    sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   }
   if (is.null(MinPts)) {
     MinPts <- 200
   }
   ggplot(
     tibble(
-      x = 1:nrow(sessions),
+      x = seq_len(nrow(sessions)),
       dist = sort(kNNdist(sessions[c("ConnectionStartDateTime", "ConnectionHours")], k = MinPts))
     ), aes(.data[["x"]], .data[["dist"]])
   ) +
@@ -86,13 +112,17 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
 
 #' Get the minPts and eps values for DBSCAN to label only a specific percentage as noise
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param MinPts DBSCAN MinPts parameter
 #' @param eps0 DBSCAN eps parameter corresponding to the elbow of kNN dist plot
 #' @param noise_th noise threshold
 #' @param eps_offset_pct eps_offset_pct
 #' @param eps_inc_pct eps_inc_pct
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns tibble with minPts and eps parameters, and the corresponding noise
 #' @export
@@ -100,11 +130,13 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE) {
 #' @importFrom dbscan dbscan
 #' @importFrom dplyr tibble bind_rows arrange sym
 #'
-get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_pct = 0.9, eps_inc_pct = 0.02, log = FALSE) {
+get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2,
+                              eps_offset_pct = 0.9, eps_inc_pct = 0.02,
+                              log = FALSE, start = getOption("evprof.start.hour")) {
   if (log) {
     sessions <- mutate_to_log(sessions)
   } else {
-    sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]])
+    sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   }
 
   noise_table <- tibble()
@@ -140,18 +172,27 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2, eps_offset_p
 
 #' Detect outliers
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param MinPts MinPts parameter for DBSCAN clustering
 #' @param eps eps parameter for DBSCAN clustering
 #' @param noise_th noise threshold
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns sessions tibble with extra boolean column `Outlier`
 #' @export
 #'
 #' @importFrom dbscan dbscan
 #'
-detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log = TRUE) {
+#' @examples
+#' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5, log = TRUE)
+#'
+#'
+detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2,
+                            log = FALSE, start = getOption("evprof.start.hour")) {
 
   if (is.null(MinPts) | is.null(eps)) {
     if (is.null(MinPts)) MinPts <- 200
@@ -169,7 +210,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
       eps <- eps*1.5
     }
     message(paste("Trying with MinPts =", MinPts, "and eps =", eps))
-    dbscan_params <- get_dbscan_params(sessions, MinPts = MinPts, eps0 = eps, noise_th = noise_th, log = log)
+    dbscan_params <- get_dbscan_params(sessions, MinPts = MinPts, eps0 = eps, noise_th = noise_th, log = log, start = start)
   }
 
   message(paste("Solution found: MinPts=", dbscan_params$MinPts, ", eps =", dbscan_params$eps))
@@ -178,7 +219,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
   if (log) {
     sessions_cluster <- mutate_to_log(sessions_cluster)
   } else {
-    sessions_cluster[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]])
+    sessions_cluster[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_num(sessions_cluster[["ConnectionStartDateTime"]], start)
   }
 
   dbscan_clusters <- dbscan::dbscan(sessions_cluster, dbscan_params$eps, dbscan_params$MinPts)
@@ -189,14 +230,21 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2, log =
 
 #' Plot outlying sessions
 #'
-#' @param sessions sessions data set in standard format
-#' @param log Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = `exp(1)`).
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param log logical, whether to transform `ConnectionStartDateTime` and
+#' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param ... arguments to pass to function ggplot2::plot_point
 #'
 #' @returns ggplot2 plot
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
+#'
+#' @examples
+#' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
+#' plot_outliers(sessions_outliers)
+#' plot_outliers(sessions_outliers, log = TRUE)
 #'
 plot_outliers <- function(sessions, log = FALSE, ...) {
   outliers_pct <- round(sum(sessions[['Outlier']])/nrow(sessions)*100, 2)
@@ -222,13 +270,21 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
 
 #' Drop outliers
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #'
 #' @returns sessions without outliers nor column `Outlier`
 #' @export
 #'
 #' @importFrom dplyr filter select %>%
 #' @importFrom rlang .data
+#'
+#' @examples
+#' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
+#' plot_outliers(sessions_outliers)
+#' sessions_clean <- drop_outliers(sessions_outliers)
+#' plot_points(sessions_clean)
+#'
 #'
 drop_outliers <- function(sessions) {
   sessions %>%
@@ -269,6 +325,11 @@ get_division_line <- function(day_n, division_hour) {
 #' @returns ggplot2 function
 #' @export
 #'
+#' @examples
+#' library(dplyr)
+#' plot_points(california_ev_sessions) %>%
+#'   plot_division_lines(n_lines = 1, division_hour = 10)
+#'
 plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
   ggplot_points_lines <- ggplot_points
   for (d in 1:n_lines) {
@@ -279,9 +340,11 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 
 #' Divide sessions by disconnection day
 #'
-#' @param sessions sessions data set in standard format
-#' @param days number of disconnection days to select
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param division_hour Hour to divide the groups according to disconnection time
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns same sessions data set with extra column "Disconnection"
 #' @export
@@ -289,12 +352,26 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @importFrom dplyr select
 #' @importFrom lubridate days hours today
 #'
-divide_by_disconnection <- function(sessions, days, division_hour) {
-  sessions[["StartTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]])
-  sessions[["EndTime"]] <- sessions[["StartTime"]] + convert_time_num_to_period(sessions[["ConnectionHours"]])
-  sessions[['Disconnection']] <- NA
+#' @examples
+#' sessions_disconnection <- divide_by_disconnection(
+#'   california_ev_sessions, division_hour = 10
+#' )
+#'
+#' # The column `Disconnection` has been added
+#' names(sessions_disconnection)
+#'
+#' library(ggplot2)
+#' plot_points(sessions_disconnection) +
+#'   facet_wrap(vars(Disconnection))
+#'
+divide_by_disconnection <- function(sessions, division_hour, start = getOption("evprof.start.hour")) {
+  sessions$StartTime <- convert_time_dt_to_plot_dt(sessions$ConnectionStartDateTime, start)
+  sessions$EndTime <- sessions$StartTime + convert_time_num_to_period(sessions$ConnectionHours)
+  sessions$Disconnection <- NA
 
-  for (day in days) {
+  n_max_disconnection_days <- ceiling(max(sessions$ConnectionHours)/24) + 1
+
+  for (day in 1:n_max_disconnection_days) {
     sessions$Disconnection[
       (sessions$EndTime > today() + days(day-1) + hours(division_hour)) &
         (sessions$EndTime <= today() + days(day) + hours(division_hour))
@@ -306,7 +383,8 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 
 #' Divide sessions by time-cycle
 #'
-#' @param sessions sessions data set in standard format
+#' @param sessions tibble, sessions data set in evprof
+#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param months_cycles list containing Monthly cycles
 #' @param wdays_cycles list containing Weekdays cycles
 #'
@@ -317,6 +395,20 @@ divide_by_disconnection <- function(sessions, days, division_hour) {
 #' @importFrom dplyr filter select everything
 #' @importFrom rlang .data
 #' @importFrom lubridate month wday
+#'
+#' @examples
+#' sessions_timecycles <- divide_by_timecycle(
+#'   california_ev_sessions,
+#'   months_cycles = list(1:12),
+#'   wdays_cycles = list(1:5, 6:7)
+#' )
+#'
+#' # The column `Timecycle` has been added
+#' names(sessions_timecycles)
+#'
+#' library(ggplot2)
+#' plot_points(sessions_timecycles) +
+#'   facet_wrap(vars(Timecycle))
 #'
 divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycles = list(1:5, 6:7)) {
 

@@ -14,11 +14,13 @@ save_clustering_iterations(
   points_size = 0.25,
   mclust_tol = 1e-08,
   mclust_itmax = 10000,
-  log = TRUE
+  log = FALSE,
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{k}{number of clusters}
 
@@ -36,11 +38,21 @@ save_clustering_iterations(
 
 \item{mclust_itmax}{maximum number of iterations}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
-description No returns but a PDF file is saved in the path specified by parameter \code{filename}
+nothing, but a PDF file is saved in the path specified by parameter \code{filename}
 }
 \description{
 Save iteration plots in PDF file
+}
+\examples{
+temp_file <- file.path(tempdir(), "iteration.pdf")
+save_clustering_iterations(california_ev_sessions, k = 2, it = 4, filename = temp_file)
+
+
 }

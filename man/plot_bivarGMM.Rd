@@ -6,18 +6,21 @@
 \usage{
 plot_bivarGMM(
   sessions,
-  bivarGMM_params,
-  profiles_names = seq(1, nrow(bivarGMM_params)),
+  models,
+  profiles_names = seq(1, nrow(models)),
   points_size = 0.25,
   lines_size = 1,
   legend_nrow = 2,
-  log = TRUE
+  log = FALSE,
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{bivarGMM_params}{parameters of the clusters' GMM models}
+\item{models}{tibble, parameters of the clusters' GMM models obtained with
+function \code{cluster_sessions} (object \code{models} of the returned list)}
 
 \item{profiles_names}{names of profiles}
 
@@ -27,11 +30,46 @@ plot_bivarGMM(
 
 \item{legend_nrow}{number of rows in legend}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 ggplot2 plot
 }
 \description{
 Plot Bivariate Gaussian Mixture Models
+}
+\examples{
+library(dplyr)
+
+# Select working day sessions (`Timecycle == 1`) that
+# disconnect the same day (`Disconnection == 1`)
+sessions_day <- california_ev_sessions \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12), # Not differentiation between months
+    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+  ) \%>\%
+  divide_by_disconnection(
+    division_hour = 10, start = 3
+  ) \%>\%
+  filter(
+    Disconnection == 1, Timecycle == 1
+  )
+plot_points(sessions_day, start = 3)
+
+# Identify two clusters
+sessions_clusters <- cluster_sessions(
+  sessions_day, k=2, seed = 1234, log = TRUE
+)
+
+# Plot the clusters found
+plot_bivarGMM(
+  sessions = sessions_clusters$sessions,
+  models = sessions_clusters$models,
+  log = TRUE, start = 3
+)
+
 }

@@ -7,11 +7,14 @@
 plot_points(sessions, start = getOption("evprof.start.hour"), log = FALSE, ...)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format.}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{start}{start hour (int)}
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 
 \item{...}{arguments to \code{ggplot2::geom_point} function}
 }
@@ -20,4 +23,10 @@ ggplot scatter plot
 }
 \description{
 Scatter plot of sessions
+}
+\examples{
+plot_points(california_ev_sessions)
+plot_points(california_ev_sessions, start = 3)
+plot_points(california_ev_sessions, log = TRUE)
+
 }

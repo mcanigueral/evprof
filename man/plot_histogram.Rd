@@ -7,11 +7,12 @@
 plot_histogram(sessions, var, binwidth = 1)
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{var}{variable to compute the histogram for}
+\item{var}{character, column name to compute the histogram for}
 
-\item{binwidth}{with of histogram bins}
+\item{binwidth}{integer, with of histogram bins}
 }
 \value{
 ggplot plot
@@ -20,9 +21,7 @@ ggplot plot
 Histogram of a variable from sessions data set
 }
 \examples{
-library(dplyr)
-sessions <- tibble(Power = rnorm(100, mean = 30))
-plot_histogram(sessions, "Power", binwidth = 2)
-plot_histogram(sessions, "Power", binwidth = 0.1)
+plot_histogram(california_ev_sessions, "Power", binwidth = 2)
+plot_histogram(california_ev_sessions, "Power", binwidth = 0.1)
 
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/exploration.R
 \name{plot_histogram_grid}
 \alias{plot_histogram_grid}
-\title{Title}
+\title{Grid of multiple variable histograms}
 \usage{
 plot_histogram_grid(
   sessions,
@@ -13,19 +13,26 @@ plot_histogram_grid(
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{vars}{variables to plot}
+\item{vars}{vector of characters, variables to plot}
 
-\item{binwidths}{binwidths of each variable histogram}
+\item{binwidths}{vector of integers, binwidths of each variable histogram.
+The length of the vector must correspond to the length of the \code{vars} parameter.}
 
-\item{nrow}{number of rows of the plot grid}
+\item{nrow}{integer, number of rows of the plot grid}
 
-\item{ncol}{number of columns of the plot grid}
+\item{ncol}{integer, number of columns of the plot grid}
 }
 \value{
 grid plot
 }
 \description{
-Title
+Grid of multiple variable histograms
+}
+\examples{
+plot_histogram_grid(california_ev_sessions)
+plot_histogram_grid(california_ev_sessions, vars = c("Energy", "Power"))
+
 }

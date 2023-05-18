@@ -10,11 +10,13 @@ cluster_sessions(
   seed,
   mclust_tol = 1e-08,
   mclust_itmax = 10000,
-  log = TRUE
+  log = FALSE,
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
-\item{sessions}{sessions data set in standard format}
+\item{sessions}{tibble, sessions data set in evprof
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
 \item{k}{number of clusters}
 
@@ -24,11 +26,44 @@ cluster_sessions(
 
 \item{mclust_itmax}{maximum number of iterations}
 
-\item{log}{Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = \code{exp(1)}).}
+\item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
+\code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 list with two attributes: sessions and models
 }
 \description{
 Cluster sessions with \code{mclust} package
+}
+\examples{
+library(dplyr)
+
+# Select working day sessions (`Timecycle == 1`) that
+# disconnect the same day (`Disconnection == 1`)
+sessions_day <- california_ev_sessions \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12), # Not differentiation between months
+    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
+  ) \%>\%
+  divide_by_disconnection(
+    division_hour = 10, start = 3
+  ) \%>\%
+  filter(
+    Disconnection == 1, Timecycle == 1
+  )
+plot_points(sessions_day, start = 3)
+
+# Identify two clusters
+sessions_clusters <- cluster_sessions(
+  sessions_day, k=2, seed = 1234, log = TRUE
+)
+
+# The column `Cluster` has been added
+names(sessions_clusters)
+plot_points(sessions_clusters$sessions) +
+  ggplot2::aes(color = Cluster)
+
 }
