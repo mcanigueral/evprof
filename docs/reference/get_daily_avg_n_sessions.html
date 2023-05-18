@@ -77,19 +77,20 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sessions</dt>
-<dd><p>sessions data set in standard format</p></dd>
+<dd><p>tibble, sessions data set in evprof
+<a href="https://mcanigueral.github.io/evprof/articles/sessions-format.html">standard format</a>.</p></dd>
 
 
 <dt>years</dt>
-<dd><p>range of years to consider (int)</p></dd>
+<dd><p>vector of integers, range of years to consider</p></dd>
 
 
 <dt>months</dt>
-<dd><p>range of months to consider (int)</p></dd>
+<dd><p>vector of integers, range of months to consider</p></dd>
 
 
 <dt>wdays</dt>
-<dd><p>range of weekdays to consider (int)</p></dd>
+<dd><p>vector of integers, range of weekdays to consider</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -99,6 +100,16 @@
 <p>tibble with the number of sessions of each date in the given time period</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_daily_avg_n_sessions</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">california_ev_sessions</span>,</span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fl">2018</span>, months <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, wdays <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 60</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

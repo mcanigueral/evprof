@@ -165,7 +165,15 @@ station of every charging sessions.</li>
 <strong>Socket</strong>: number of the socket in the charging
 station (normally being 1 or 2).</li>
 </ul>
-<p>Some advices about these variables:</p>
+<p>Additionally to these variables, the <code>sessions</code> tibble
+will incorporate other variables from the methodology
+(e.g. <code>Disconnection</code>, <code>Timecycle</code>,
+<code>Cluster</code>, <code>Profile</code>, etc.) and every use case may
+have specific variables like the ID of users, postalcode, etc. Of course
+that there is no problem to add extra variables to the data set, the
+only condition is that the variables described above must have these
+specific names.</p>
+<p>Some notes about these variables:</p>
 <ul>
 <li><p>All <code>datetime</code> variables
 (<code>ConnectionStartDateTime</code>,

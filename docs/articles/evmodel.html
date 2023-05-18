@@ -109,7 +109,7 @@ created in the <a href="https://mcanigueral.github.io/evprof/articles/california
 study case article</a>, using the charging sessions data provided by <a href="https://acnportal.readthedocs.io/en/latest/" class="external-link">ACN</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">evprof</span><span class="fu">::</span><span class="va"><a href="../reference/california_ev_model.html">california_ev_model</a></span></span></code></pre></div>
-<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2023-01-28 </span></span>
+<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2023-05-16 </span></span>
 <span><span class="co">## Timezone of the model: America/Los_Angeles </span></span>
 <span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
 <span><span class="co">##   - Connection Models: logarithmic scale</span></span>
@@ -209,7 +209,7 @@ provides a nice table.</p>
 <span><span class="co">## \hline</span></span>
 <span><span class="co">## User profile &amp; Centroid ($\mu$) &amp; Covariance ($\Sigma$) &amp; Share (\%) \\</span></span>
 <span><span class="co">## \hline</span></span>
-<span><span class="co">## \multirow{3}{*}{Worktime}&amp; $\begin{array}{cc} 1.988369 \\ 2.260861 \end{array}$&amp;$\begin{array}{cc} 0.001819 &amp; -0.00138 \\ -0.00138 &amp; 0.009553 \end{array}$&amp;29\\ \cline{2-4} &amp; $\begin{array}{cc} 1.887171 \\ 2.268155 \end{array}$&amp;$\begin{array}{cc} 0.009629 &amp; -0.001792 \\ -0.001792 &amp; 0.006395 \end{array}$&amp;34\\ \cline{2-4} &amp; $\begin{array}{cc} 2.2242 \\ 2.119886 \end{array}$&amp;$\begin{array}{cc} 0.013847 &amp; -0.015517 \\ -0.015517 &amp; 0.038308 \end{array}$&amp;37 \\ \hline</span></span>
+<span><span class="co">## \multirow{3}{*}{Worktime}&amp; $\begin{array}{cc} 1.9884 \\ 2.2609 \end{array}$&amp;$\begin{array}{cc} 0.0018 &amp; -0.0014 \\ -0.0014 &amp; 0.0096 \end{array}$&amp;29\\ \cline{2-4} &amp; $\begin{array}{cc} 1.8872 \\ 2.2682 \end{array}$&amp;$\begin{array}{cc} 0.0096 &amp; -0.0018 \\ -0.0018 &amp; 0.0064 \end{array}$&amp;34\\ \cline{2-4} &amp; $\begin{array}{cc} 2.2242 \\ 2.1199 \end{array}$&amp;$\begin{array}{cc} 0.0138 &amp; -0.0155 \\ -0.0155 &amp; 0.0383 \end{array}$&amp;37 \\ \hline</span></span>
 <span><span class="co">## \end{tabular}}</span></span>
 <span><span class="co">## \caption{\label{tab:connection}Worktime connection Gaussian Models}</span></span>
 <span><span class="co">## \end{table}</span></span></code></pre>
@@ -228,23 +228,22 @@ tibble:</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
 <span><span class="co">##   charging_rate energy_models   </span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>          </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Unknown       <span style="color: #949494;">&lt;tibble [9 × 3]&gt;</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> Unknown       <span style="color: #949494;">&lt;tibble [8 × 3]&gt;</span></span></span></code></pre>
 <p>Thus, the energy model of all Worktime sessions is a mixture of 9
 Gaussian models:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">worktime_model</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">energy_models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 9 × 3</span></span></span>
-<span><span class="co">##      mu sigma  ratio</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.514 0.427 0.051<span style="text-decoration: underline;">7</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1.59  0.296 0.155 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1.80  0.101 0.104 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2.09  0.106 0.105 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2.41  0.134 0.115 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2.55  0.109 0.116 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">7</span> 2.78  0.183 0.147 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">8</span> 3.25  0.226 0.125 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">9</span> 3.64  0.112 0.080<span style="text-decoration: underline;">7</span></span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
+<span><span class="co">##      mu  sigma  ratio</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.366 0.354  0.039<span style="text-decoration: underline;">2</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1.64  0.408  0.182 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1.83  0.157  0.140 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2.20  0.155  0.115 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2.49  0.091<span style="text-decoration: underline;">2</span> 0.127 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2.67  0.130  0.116 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span> 3.07  0.275  0.186 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">8</span> 3.62  0.124  0.094<span style="text-decoration: underline;">9</span></span></span></code></pre>
 <p>The function <code>print_user_profile_energy_models_table</code> is
 provided to print the energy models in LaTeX and properly visualize the
 content of the models. It has to be specifically for a single user
@@ -260,7 +259,7 @@ charging rates.</p>
 <span><span class="co">## \hline</span></span>
 <span><span class="co">## Charging rate (kW) &amp; Mean ($\mu$) &amp; Std. deviation ($\sigma$) &amp; Share (\%) \\</span></span>
 <span><span class="co">## \hline</span></span>
-<span><span class="co">## \multirow{9}{*}{Unknown}&amp; 0.51429&amp;0.426911&amp;5\\ \cline{2-4} &amp; 1.588592&amp;0.29619&amp;15\\ \cline{2-4} &amp; 1.803055&amp;0.10091&amp;10\\ \cline{2-4} &amp; 2.086168&amp;0.105895&amp;11\\ \cline{2-4} &amp; 2.406657&amp;0.133595&amp;12\\ \cline{2-4} &amp; 2.545667&amp;0.108505&amp;12\\ \cline{2-4} &amp; 2.779488&amp;0.183284&amp;15\\ \cline{2-4} &amp; 3.25302&amp;0.225542&amp;13\\ \cline{2-4} &amp; 3.644371&amp;0.111778&amp;8 \\ \hline</span></span>
+<span><span class="co">## \multirow{8}{*}{Unknown}&amp; 0.3664&amp;0.3542&amp;4\\ \cline{2-4} &amp; 1.637&amp;0.4077&amp;18\\ \cline{2-4} &amp; 1.827&amp;0.1566&amp;14\\ \cline{2-4} &amp; 2.1967&amp;0.1551&amp;12\\ \cline{2-4} &amp; 2.4934&amp;0.0912&amp;13\\ \cline{2-4} &amp; 2.6708&amp;0.1303&amp;12\\ \cline{2-4} &amp; 3.0745&amp;0.2747&amp;19\\ \cline{2-4} &amp; 3.6219&amp;0.1243&amp;9 \\ \hline</span></span>
 <span><span class="co">## \end{tabular}}</span></span>
 <span><span class="co">## \caption{\label{tab:energy}Worktime energy Gaussian Models}</span></span>
 <span><span class="co">## \end{table}</span></span></code></pre>

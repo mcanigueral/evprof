@@ -66,8 +66,21 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="evprof-100">evprof 1.0.0<a class="anchor" aria-label="anchor" href="#evprof-100"></a></h2>
-<ul><li>Added functions to save and read the model in JSON instead of RDS files.</li>
-<li>Bug fix in the <code>evmodel</code> printing function.</li>
+<ul><li>Added functions to save and read the model in JSON instead of RDS files</li>
+<li>Bug fix in the <code>evmodel</code> printing function</li>
+<li>Default <code>log</code> value of function <code>detect_outliers</code> set to <code>TRUE</code>
+</li>
+<li>Replace all deprecated <code>aes_string</code> functions by using <code>.data[[var]]</code>
+</li>
+<li>Remove unused functions</li>
+<li>Remove <code>days</code> parameter from function <code>divide_by_disconnection</code>
+</li>
+<li>Print a message with time-cycles’ table in function <code>divide_by_timecycle</code>
+</li>
+<li>Complete tests</li>
+<li>Including California EV sessions when loading the package</li>
+<li>Include examples in all exported functions</li>
+<li>CRAN release</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="evprof-010">evprof 0.1.0<a class="anchor" aria-label="anchor" href="#evprof-010"></a></h2>

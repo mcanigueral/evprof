@@ -7,7 +7,8 @@
 divide_by_timecycle(
   sessions,
   months_cycles = list(1:12),
-  wdays_cycles = list(1:5, 6:7)
+  wdays_cycles = list(1:5, 6:7),
+  start = getOption("evprof.start.hour")
 )
 }
 \arguments{
@@ -17,6 +18,9 @@ divide_by_timecycle(
 \item{months_cycles}{list containing Monthly cycles}
 
 \item{wdays_cycles}{list containing Weekdays cycles}
+
+\item{start}{integer, start hour in the x axis of the plot.
+This is only used when \code{log = FALSE}.}
 }
 \value{
 same sessions data set with extra column "Timecycle"

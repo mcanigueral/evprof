@@ -16,10 +16,12 @@ reference:
 - subtitle: Datetime conversions
 - contents:
   - starts_with("convert_time")
+
 - subtitle: Numeric conversions
 - contents:
   - starts_with("round_to")
   - mutate_to_log
+
 - subtitle: Plots
 - contents:
   - plot_points
@@ -49,7 +51,6 @@ reference:
   - plot_division_lines
   - divide_by_disconnection
   - divide_by_timecycle
-  - plot_divisions
 
 - title: Clustering
 - contents:

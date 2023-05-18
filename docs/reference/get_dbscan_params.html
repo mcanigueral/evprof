@@ -78,14 +78,16 @@
 <span>  noise_th <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  eps_offset_pct <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  eps_inc_pct <span class="op">=</span> <span class="fl">0.02</span>,</span>
-<span>  log <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"evprof.start.hour"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sessions</dt>
-<dd><p>sessions data set in standard format</p></dd>
+<dd><p>tibble, sessions data set in evprof
+<a href="https://mcanigueral.github.io/evprof/articles/sessions-format.html">standard format</a>.</p></dd>
 
 
 <dt>MinPts</dt>
@@ -109,7 +111,13 @@
 
 
 <dt>log</dt>
-<dd><p>Logical. Whether to transform ConnectionStartDateTime and ConnectionHours variables to natural logarithmic scale (base = <code>exp(1)</code>).</p></dd>
+<dd><p>logical, whether to transform <code>ConnectionStartDateTime</code> and
+<code>ConnectionHours</code> variables to natural logarithmic scale (base = <code>exp(1)</code>).</p></dd>
+
+
+<dt>start</dt>
+<dd><p>integer, start hour in the x axis of the plot.
+This is only used when <code>log = FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

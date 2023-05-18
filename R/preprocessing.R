@@ -387,6 +387,8 @@ divide_by_disconnection <- function(sessions, division_hour, start = getOption("
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param months_cycles list containing Monthly cycles
 #' @param wdays_cycles list containing Weekdays cycles
+#' @param start integer, start hour in the x axis of the plot.
+#' This is only used when `log = FALSE`.
 #'
 #' @returns same sessions data set with extra column "Timecycle"
 #' @export
@@ -410,7 +412,7 @@ divide_by_disconnection <- function(sessions, division_hour, start = getOption("
 #' plot_points(sessions_timecycles) +
 #'   facet_wrap(vars(Timecycle))
 #'
-divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycles = list(1:5, 6:7)) {
+divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycles = list(1:5, 6:7), start = getOption("evprof.start.hour")) {
 
   cycles_tbl <- tibble(
     months = rep(months_cycles, each = length(wdays_cycles)),
@@ -421,7 +423,7 @@ divide_by_timecycle <- function(sessions, months_cycles = list(1:12), wdays_cycl
   # shift daybreak sessions to the corresponding weekday for convert_time_to_plot_time conversion before clustering
   hours <- hour(sessions$ConnectionStartDateTime)
   wdays <- wday(sessions$ConnectionStartDateTime, week_start = 1)
-  sessions_backshift_wday <- hours < getOption("evprof.start.hour")
+  sessions_backshift_wday <- hours < start
   wdays_with_start <- wdays
   wdays_with_start[sessions_backshift_wday] <- wdays_with_start[sessions_backshift_wday] - 1
   wdays_with_start[wdays_with_start == 0] <- 7
@@ -440,8 +442,8 @@ print_timecycles_tbl <- function(cycles_tbl) {
   timecycles_tbl <- purrr::pmap_dfr(
     cycles_tbl,
     ~ dplyr::tibble(
-      months = ifelse(length(..1) > 1, paste(..1[1], ..1[length(..1)], sep = "-"), ..1),
-      wdays = ifelse(length(..2) > 1, paste(..2[1], ..2[length(..2)], sep = "-"), ..2)
+      months = ifelse(length(..1) > 1, paste(..1[1], ..1[length(..1)], sep = "-"), as.character(..1)),
+      wdays = ifelse(length(..2) > 1, paste(..2[1], ..2[length(..2)], sep = "-"), as.character(..2))
     ),
     .id = "Timecycle"
   )
@@ -454,6 +456,6 @@ print_timecycles_tbl <- function(cycles_tbl) {
       collapse = "\n"
     ))
   } else {
-    message("[Sorry: install {utils} and {knitr} to see the table.]")
+    message("[Warning: install {utils} and {knitr} to see the table.]")
   }
 }

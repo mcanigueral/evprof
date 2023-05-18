@@ -77,15 +77,16 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sessions</dt>
-<dd><p>sessions data set in standard format</p></dd>
+<dd><p>tibble, sessions data set in evprof
+<a href="https://mcanigueral.github.io/evprof/articles/sessions-format.html">standard format</a>.</p></dd>
 
 
 <dt>var</dt>
-<dd><p>variable to compute the histogram for</p></dd>
+<dd><p>character, column name to compute the histogram for</p></dd>
 
 
 <dt>binwidth</dt>
-<dd><p>with of histogram bins</p></dd>
+<dd><p>integer, with of histogram bins</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -97,19 +98,9 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
-<span class="r-in"><span><span class="va">sessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>Power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span>, mean <span class="op">=</span> <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_histogram</span><span class="op">(</span><span class="va">sessions</span>, <span class="st">"Power"</span>, binwidth <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">plot_histogram</span><span class="op">(</span><span class="va">california_ev_sessions</span>, <span class="st">"Power"</span>, binwidth <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_histogram-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">plot_histogram</span><span class="op">(</span><span class="va">sessions</span>, <span class="st">"Power"</span>, binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_histogram</span><span class="op">(</span><span class="va">california_ev_sessions</span>, <span class="st">"Power"</span>, binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_histogram-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

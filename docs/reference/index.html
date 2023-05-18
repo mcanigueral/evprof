@@ -92,11 +92,6 @@
         <dd>Modify datetime values according evprof.start.hour</dd>
       </dl><dl><dt>
           
-          <code><a href="convert_time_dt_to_plot_factor.html">convert_time_dt_to_plot_factor()</a></code> 
-        </dt>
-        <dd>Convert datetime value to sorted factor considering a start time</dd>
-      </dl><dl><dt>
-          
           <code><a href="convert_time_dt_to_plot_num.html">convert_time_dt_to_plot_num()</a></code> 
         </dt>
         <dd>Convert datetime values to sorted numeric values considering a start time</dd>
@@ -110,11 +105,6 @@
           <code><a href="convert_time_num_to_period.html">convert_time_num_to_period()</a></code> 
         </dt>
         <dd>Convert numeric time value to a datetime period (hour-based)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="convert_time_num_to_plot_factor.html">convert_time_num_to_plot_factor()</a></code> 
-        </dt>
-        <dd>Convert numeric time value to sorted factor considering a start time</dd>
       </dl><dl><dt>
           
           <code><a href="convert_time_num_to_plot_num.html">convert_time_num_to_plot_num()</a></code> 
@@ -181,7 +171,7 @@
           
           <code><a href="plot_histogram_grid.html">plot_histogram_grid()</a></code> 
         </dt>
-        <dd>Title</dd>
+        <dd>Grid of multiple variable histograms</dd>
       </dl></div><div class="section level2">
       
       <h3 id="sessions-data-set-analysis">Sessions data set analysis<a class="anchor" aria-label="anchor" href="#sessions-data-set-analysis"></a></h3>
@@ -291,11 +281,6 @@
           <code><a href="divide_by_timecycle.html">divide_by_timecycle()</a></code> 
         </dt>
         <dd>Divide sessions by time-cycle</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plot_divisions.html">plot_divisions()</a></code> 
-        </dt>
-        <dd>Plot divisions in a wrapped ggplot</dd>
       </dl></div><div class="section level2">
       <h2 id="clustering">Clustering<a class="anchor" aria-label="anchor" href="#clustering"></a></h2>
       
@@ -342,12 +327,12 @@
           
           <code><a href="define_clusters.html">define_clusters()</a></code> 
         </dt>
-        <dd>Tabulate clusters interpretation</dd>
+        <dd>Define each cluster with a user profile interpretation</dd>
       </dl><dl><dt>
           
           <code><a href="set_profiles.html">set_profiles()</a></code> 
         </dt>
-        <dd>Classify sessions of sub-sets into profiles</dd>
+        <dd>Classify sessions into user profiles</dd>
       </dl></div><div class="section level2">
       <h2 id="modeling">Modeling<a class="anchor" aria-label="anchor" href="#modeling"></a></h2>
       
@@ -374,7 +359,9 @@
           
           <code><a href="plot_model_clusters.html">plot_model_clusters()</a></code> 
         </dt>
-        <dd>Aggregate clusters GMM into profiles GMM</dd>
+        <dd>Plot all bi-variable GMM (clusters) with the colors corresponding
+to the assigned user profile. This shows which clusters correspond to which
+user profile, and the proportion of every user profile.</dd>
       </dl><dl><dt>
           
           <code><a href="print_connection_models_table.html">print_connection_models_table()</a></code> 

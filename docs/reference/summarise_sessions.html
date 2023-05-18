@@ -81,15 +81,17 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sessions</dt>
-<dd><p>sessions data set in standard format</p></dd>
+<dd><p>tibble, sessions data set in evprof
+<a href="https://mcanigueral.github.io/evprof/articles/sessions-format.html">standard format</a>.
+<a href="https://mcanigueral.github.io/evprof/articles/sessions-format.html">standard format</a>.</p></dd>
 
 
 <dt>.funs</dt>
-<dd><p>A function <code>fun</code></p></dd>
+<dd><p>A function to compute, e.g. <code>mean</code>, <code>max</code>, etc.</p></dd>
 
 
 <dt>vars</dt>
-<dd><p>variables to compute the histogram for</p></dd>
+<dd><p>character vector, variables to compute the histogram for</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -99,6 +101,17 @@
 <p>Summary table</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">summarise_sessions</span><span class="op">(</span><span class="va">california_ev_sessions</span>, <span class="va">mean</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Power Energy ConnectionHours ChargingHours FlexibilityHours</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  3.48   11.5            6.32          3.63             2.69</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

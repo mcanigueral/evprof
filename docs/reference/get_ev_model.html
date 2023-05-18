@@ -98,19 +98,19 @@
 
 
 <dt>connection_GMM</dt>
-<dd><p>list of different connection bivariate GMM</p></dd>
+<dd><p>list of different connection bivariate GMM obtained from <code>get_connection_models</code></p></dd>
 
 
 <dt>energy_GMM</dt>
-<dd><p>list of different energy univariate GMM</p></dd>
+<dd><p>list of different energy univariate GMM obtained from <code>get_energy_models</code></p></dd>
 
 
 <dt>connection_log</dt>
-<dd><p>Logical, true if connection models have logarithmic transformations</p></dd>
+<dd><p>logical, true if connection models have logarithmic transformations</p></dd>
 
 
 <dt>energy_log</dt>
-<dd><p>Logical, true if energy models have logarithmic transformations</p></dd>
+<dd><p>logical, true if energy models have logarithmic transformations</p></dd>
 
 
 <dt>data_tz</dt>
@@ -126,6 +126,87 @@
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Select working day sessions (`Timecycle == 1`) that</span></span></span>
+<span class="r-in"><span><span class="co"># disconnect the same day (`Disconnection == 1`)</span></span></span>
+<span class="r-in"><span><span class="va">sessions_day</span> <span class="op">&lt;-</span> <span class="va">california_ev_sessions</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="divide_by_timecycle.html">divide_by_timecycle</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    months_cycles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, <span class="co"># Not differentiation between months</span></span></span>
+<span class="r-in"><span>    wdays_cycles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span> <span class="co"># Differentiation between workdays/weekends</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="divide_by_disconnection.html">divide_by_disconnection</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    division_hour <span class="op">=</span> <span class="fl">10</span>, start <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">Disconnection</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">Timecycle</span> <span class="op">==</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The considered time-cycles are:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |Timecycle |months |wdays |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |:---------|:------|:-----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |1         |1-12   |1-5   |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |2         |1-12   |6-7   |</span>
+<span class="r-in"><span><span class="fu"><a href="plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">sessions_day</span>, start <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_ev_model-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Identify two clusters</span></span></span>
+<span class="r-in"><span><span class="va">sessions_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="cluster_sessions.html">cluster_sessions</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">sessions_day</span>, k<span class="op">=</span><span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1234</span>, log <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot the clusters found</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plot_bivarGMM.html">plot_bivarGMM</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  sessions <span class="op">=</span> <span class="va">sessions_clusters</span><span class="op">$</span><span class="va">sessions</span>,</span></span>
+<span class="r-in"><span>  models <span class="op">=</span> <span class="va">sessions_clusters</span><span class="op">$</span><span class="va">models</span>,</span></span>
+<span class="r-in"><span>  log <span class="op">=</span> <span class="cn">TRUE</span>, start <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_ev_model-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Define the clusters with user profile interpretations</span></span></span>
+<span class="r-in"><span><span class="va">clusters_definitions</span> <span class="op">&lt;-</span> <span class="fu"><a href="define_clusters.html">define_clusters</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  models <span class="op">=</span> <span class="va">sessions_clusters</span><span class="op">$</span><span class="va">models</span>,</span></span>
+<span class="r-in"><span>  interpretations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"Connections during working hours"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"Connections during all day (high variability)"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  profile_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Workers"</span>, <span class="st">"Visitors"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  log <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get connection GMM parameters</span></span></span>
+<span class="r-in"><span><span class="va">connection_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_connection_models.html">get_connection_models</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  subsets_clustering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sessions_clusters</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  clusters_definition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">clusters_definitions</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Classify each session to the corresponding user profile</span></span></span>
+<span class="r-in"><span><span class="va">sessions_profiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="set_profiles.html">set_profiles</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  sessions_clustered <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sessions_clusters</span><span class="op">$</span><span class="va">sessions</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  clusters_definition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">clusters_definitions</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get energy GMM parameters</span></span></span>
+<span class="r-in"><span><span class="va">energy_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_energy_models.html">get_energy_models</a></span><span class="op">(</span><span class="va">sessions_profiles</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the whole model</span></span></span>
+<span class="r-in"><span><span class="va">ev_model</span> <span class="op">&lt;-</span> <span class="fu">get_ev_model</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Working days"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  months_lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  wdays_lst <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  connection_GMM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">connection_models</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  energy_GMM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">energy_models</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  connection_log <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  energy_log <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  data_tz <span class="op">=</span> <span class="st">"America/Los_Angeles"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
