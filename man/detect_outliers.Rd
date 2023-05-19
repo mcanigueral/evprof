@@ -36,7 +36,9 @@ sessions tibble with extra boolean column \code{Outlier}
 Detect outliers
 }
 \examples{
+\donttest{
 sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5, log = TRUE)
+}
 
 
 }

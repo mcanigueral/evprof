@@ -17,10 +17,12 @@ sessions without outliers nor column \code{Outlier}
 Drop outliers
 }
 \examples{
+\donttest{
 sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
 plot_outliers(sessions_outliers)
 sessions_clean <- drop_outliers(sessions_outliers)
 plot_points(sessions_clean)
+}
 
 
 }

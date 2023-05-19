@@ -23,6 +23,7 @@ tibble
 Get a tibble of energy GMM for every user profile
 }
 \examples{
+\donttest{
 library(dplyr)
 
 # Select working day sessions (`Timecycle == 1`) that
@@ -80,6 +81,8 @@ sessions_profiles <- sessions_profiles \%>\%
   filter(Power < 11)
 sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
 get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
+}
+
 
 
 }

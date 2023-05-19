@@ -68,7 +68,9 @@ get_connection_model_params <- function(mclust_obj) {
 #' @importFrom mclust mclustBIC
 #'
 #' @examples
+#' \donttest{
 #' choose_k_GMM(california_ev_sessions, k = 1:4, start = 3)
+#' }
 #'
 #'
 choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
@@ -165,8 +167,10 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @importFrom stats runif
 #'
 #' @examples
+#' \donttest{
 #' temp_file <- file.path(tempdir(), "iteration.pdf")
 #' save_clustering_iterations(california_ev_sessions, k = 2, it = 4, filename = temp_file)
+#' }
 #'
 #'
 save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),

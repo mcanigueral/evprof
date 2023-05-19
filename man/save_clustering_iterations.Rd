@@ -51,8 +51,10 @@ nothing, but a PDF file is saved in the path specified by parameter \code{filena
 Save iteration plots in PDF file
 }
 \examples{
+\donttest{
 temp_file <- file.path(tempdir(), "iteration.pdf")
 save_clustering_iterations(california_ev_sessions, k = 2, it = 4, filename = temp_file)
+}
 
 
 }

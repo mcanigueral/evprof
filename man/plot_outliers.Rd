@@ -22,8 +22,10 @@ ggplot2 plot
 Plot outlying sessions
 }
 \examples{
+\donttest{
 sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
 plot_outliers(sessions_outliers)
 plot_outliers(sessions_outliers, log = TRUE)
+}
 
 }

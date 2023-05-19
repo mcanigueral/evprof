@@ -188,7 +188,9 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2,
 #' @importFrom dbscan dbscan
 #'
 #' @examples
+#' \donttest{
 #' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5, log = TRUE)
+#' }
 #'
 #'
 detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2,
@@ -242,9 +244,11 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2,
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime theme_light scale_color_manual guides guide_legend
 #'
 #' @examples
+#' \donttest{
 #' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
 #' plot_outliers(sessions_outliers)
 #' plot_outliers(sessions_outliers, log = TRUE)
+#' }
 #'
 plot_outliers <- function(sessions, log = FALSE, ...) {
   outliers_pct <- round(sum(sessions[['Outlier']])/nrow(sessions)*100, 2)
@@ -280,10 +284,12 @@ plot_outliers <- function(sessions, log = FALSE, ...) {
 #' @importFrom rlang .data
 #'
 #' @examples
+#' \donttest{
 #' sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
 #' plot_outliers(sessions_outliers)
 #' sessions_clean <- drop_outliers(sessions_outliers)
 #' plot_points(sessions_clean)
+#' }
 #'
 #'
 drop_outliers <- function(sessions) {

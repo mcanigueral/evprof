@@ -36,7 +36,9 @@ BIC plot
 Visualize BIC indicator to choose the number of clusters
 }
 \examples{
+\donttest{
 choose_k_GMM(california_ev_sessions, k = 1:4, start = 3)
+}
 
 
 }
