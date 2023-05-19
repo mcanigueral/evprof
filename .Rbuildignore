@@ -17,3 +17,4 @@ vignettes/california.Rmd
 vignettes/outliers.RData
 vignettes/outliers.Rmd
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
