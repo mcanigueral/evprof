@@ -103,20 +103,21 @@ articles about the methodology used in this paper:
 
 - **Electric vehicle user profiles for aggregated flexibility
   planning**. IEEE PES Innovative Smart Grid Technologies Europe (ISGT
-  Europe). IEEE, Oct. 18, 2021. DOI:
-  [10.1109/isgteurope52324.2021.9639931](10.1109/isgteurope52324.2021.9639931).
+  Europe). IEEE, Oct. 18, 2021. [DOI
+  link](https://doi.org/10.1109/isgteurope52324.2021.9639931).
 - **Flexibility management of electric vehicles based on user profiles:
   The Arnhem case study**. International Journal of Electrical Power and
-  Energy Systems, vol. 133. Elsevier BV, p. 107195, Dec. 2021. DOI:
-  [10.1016/j.ijepes.2021.107195](10.1016/j.ijepes.2021.107195).
+  Energy Systems, vol. 133. Elsevier BV, p. 107195, Dec. 2021. [DOI
+  link](https://doi.org/10.1016/j.ijepes.2021.107195).
 - **Potential benefits of scheduling electric vehicle sessions over
   limiting charging power**. CIRED Porto Workshop 2022: E-mobility and
   power distribution systems. Institution of Engineering and
-  Technology, 2022. DOI: [10.1049/icp.2022.0744](10.1049/icp.2022.0744).
+  Technology, 2022. [DOI
+  link](https://ieeexplore.ieee.org/abstract/document/9841653).
 - **Assessment of electric vehicle charging hub based on stochastic
   models of user profiles**. Expert Systems with Applications (Vol. 227,
-  p. 120318). Elsevier BV. May 2023. DOI:
-  [10.1016/j.eswa.2023.120318](https://doi.org/10.1016/j.eswa.2023.120318)
+  p. 120318). Elsevier BV. May 2023. [DOI
+  link](https://doi.org/10.1016/j.eswa.2023.120318)
 
 ## Acknowledgements
 

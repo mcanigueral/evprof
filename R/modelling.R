@@ -144,7 +144,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' @returns tibble
 #' @export
 #'
-#' @importFrom dplyr %>% group_by summarise mutate select rename all_of
+#' @importFrom dplyr %>% group_by summarise mutate select rename all_of n
 #' @importFrom tidyr nest
 #' @importFrom purrr map
 #' @importFrom rlang .data
@@ -228,6 +228,7 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
     mutate(Energy = round(.data$Energy, 3)) %>%
     filter(.data$Energy > 0) %>%
     group_by(profile = .data$Profile, charging_rate = .data$ChargingRate) %>%
+    filter(n() > 1) %>% # At least more than one observation per group
     summarise(
       energy = list(.data$Energy)
     ) %>%
@@ -303,11 +304,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
           y = predict.densityMclust(.x, .data$x)
         ),
       .id = "charging_rate"
-    ) %>%
-      mutate(
-        charging_rate = plyr::mapvalues(.data$charging_rate, c("3.7", "7.4", "11", "Unknown"), c("3.7kW", "7.4kW", "11kW", "Unknown"), warn_missing = F),
-        charging_rate = factor(.data$charging_rate, levels = c("3.7kW", "7.4kW", "11kW", "Unknown"))
-      )
+    )
 
     profile_plot2 <- profile_plot +
       geom_line(
@@ -315,7 +312,7 @@ plot_energy_models <- function(energy_models, nrow=2) {
         aes(x = .data[["x"]], y = .data[["y"]], color = .data[["charging_rate"]]),
         linewidth = 1
       ) +
-      labs(color = "") +
+      labs(color = "Charging rate (kW)") +
       theme(
         legend.position = "bottom",
         plot.margin = unit(c(1, 0.5, 0.5, 0.5), "cm")
