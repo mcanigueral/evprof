@@ -1,58 +1,77 @@
 library(testthat)        # load testthat package
-library(evprof)       # load our package
+library(evprof)
 library(dplyr)
+library(tibble)
 library(lubridate)
 library(purrr)
 library(ggplot2)
 
-
-# Simulate EV charging sessions -------------------------------------------------------
-# The test of this package is done in a single script since all functions must
-# use an EV charging sessions data set. For these tests, this data set is
-# simulated at the beginning of the script and used in all functions below.
-
-# Get the example `evmodel` included in the package
+# Get the example `evmodel` and `sessions` included in the package
 ev_model <- evprof::california_ev_model
 sessions <- evprof::california_ev_sessions
-
-# # Simulating 1000 sessions of two normal distributions
-# set.seed(1234)
-# sessions <- tibble(
-#   ConnectionStartDateTime = c(
-#     dmy_hm("01/01/2023 00:00") + minutes(abs(round(rnorm(1000, 9*60, 60)))),
-#     dmy_hm("01/01/2023 05:00") + minutes(abs(round(rnorm(1000, 9*60, 60))))
-#   )
-# ) %>%
-#   mutate(
-#     ConnectionHours = evprof:::round_to_half(abs(rnorm(nrow(.), 8*60, 60)/60)), # 30 minutes resolution
-#     ConnectionEndDateTime = ConnectionStartDateTime + evprof:::convert_time_num_to_period(ConnectionHours),
-#     Energy = abs(rnorm(nrow(.), 30, 10)),
-#     Power = sample(c(3.7, 7.4, 11), nrow(.), replace = T, prob =c(0.2, 0.3, 0.5)),
-#     Session = paste0("S", row_number())
-#   )
-
+temp_dir <- tempdir()
 
 # Test exploration --------------------------------------------------------
 test_that("Charging rates ratios calculation", {
-  expect_true(is.data.frame(get_charging_rates_distribution(sessions)))
+  expect_true(is_tibble(get_charging_rates_distribution(sessions)))
 })
 test_that("Average daily sessions calculation", {
   expect_true(is.numeric(get_daily_avg_n_sessions(sessions, 2023, 1, 7)))
 })
 
 # Exploration plots
-summarise_sessions(sessions, mean, vars = c("Power", "Energy", "ConnectionHours"))
-plot_histogram_grid(sessions, vars = c("Power", "Energy", "ConnectionHours"))
-plot_points(sessions, log = FALSE)
-plot_points(sessions, log = TRUE)
-plot_density_2D(sessions, by = "wday", log = FALSE)
-plot_density_2D(sessions, by = "month", log = FALSE)
-plot_density_2D(sessions, by = "year", log = FALSE)
-plot_density_2D(sessions, by = "wday", log = TRUE)
-plot_density_2D(sessions, by = "month", log = TRUE)
-plot_density_2D(sessions, by = "year", log = TRUE)
-plot_density_3D(sessions, log = FALSE)
-plot_density_3D(sessions, log = TRUE)
+test_that("Statistic summary of sessions' features", {
+  expect_true(is_tibble(
+    summarise_sessions(sessions, mean, vars = c("Power", "Energy", "ConnectionHours"))
+  ))
+})
+
+test_that("Statistic plot of sessions' features", {
+  expect_true(is.ggplot(
+    plot_histogram_grid(sessions, vars = c("Power", "Energy", "ConnectionHours"))
+  ))
+})
+
+test_that("Points plot", {
+  expect_true(is.ggplot(
+    plot_points(sessions, log = FALSE)
+  ))
+  expect_true(is.ggplot(
+    plot_points(sessions, log = TRUE)
+  ))
+})
+
+test_that("Density 2D plots", {
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "wday", log = FALSE)
+  ))
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "month", log = FALSE)
+  ))
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "year", log = FALSE)
+  ))
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "wday", log = TRUE)
+  ))
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "month", log = TRUE)
+  ))
+  expect_true(is.ggplot(
+    plot_density_2D(sessions, by = "year", log = TRUE)
+  ))
+})
+
+test_that("Density 3D plots", {
+  expect_true("plotly" %in% class(
+    plot_density_3D(sessions, log = FALSE)
+  ))
+  expect_true("plotly" %in% class(
+    plot_density_3D(sessions, log = TRUE)
+  ))
+})
+
+
 
 
 # Test preprocessing ------------------------------------------------------
@@ -76,29 +95,50 @@ test_that("The outliers are removed by cutting", {
 
 })
 
+
 # kNN plot
-plot_kNNdist(sessions, log = TRUE)
-plot_kNNdist(sessions, log = FALSE)
+test_that("kNN plots", {
+  expect_true(is.ggplot(
+    plot_kNNdist(sessions, log = FALSE)
+  ))
+  expect_true(is.ggplot(
+    plot_kNNdist(sessions, log = TRUE)
+  ))
+})
+
 
 # In the outliers detection function we depend on DBSCAN package
 test_that("The outliers are detected properly with automatic MinPts and eps setting", {
-  sessions_outliers <<- detect_outliers(sessions, noise_th = 1, log = TRUE)
-  sessions_outliers2 <- detect_outliers(sessions, noise_th = 1, log = FALSE)
+  sessions_outliers <<- detect_outliers(sessions, noise_th = 1, log = TRUE, MinPts = 200, eps = 0.33)
+  sessions_outliers2 <- detect_outliers(sessions, noise_th = 1, log = FALSE, MinPts = 200, eps = 2)
   expect_true(is.logical(sessions_outliers$Outlier))
   expect_true(is.logical(sessions_outliers2$Outlier))
 })
 
-plot_outliers(sessions_outliers, log = TRUE)
-plot_outliers(sessions_outliers, log = FALSE)
+# Outliers plots
+test_that("Outliers plots", {
+  expect_true(is.ggplot(
+    plot_outliers(sessions_outliers, log = TRUE)
+  ))
+  expect_true(is.ggplot(
+    plot_outliers(sessions_outliers, log = FALSE)
+  ))
+})
 
+# Remove outliers
 test_that("The outliers are removed by filtering", {
   sessions_outliers2 <- drop_outliers(sessions_outliers)
   expect_true(nrow(sessions_outliers2) < nrow(sessions_outliers))
 })
 
 # Disconnection day division lines
-plot_points(sessions) %>%
-  plot_division_lines(n_lines = 1, division_hour = 10)
+test_that("Disconnection day division lines plot", {
+  expect_true(is.ggplot(
+    plot_points(sessions) %>%
+      plot_division_lines(n_lines = 1, division_hour = 10)
+  ))
+})
+
 
 # Divisions by Disconnection day and Time-cycle
 test_that("The divisions are done", {
@@ -111,18 +151,23 @@ test_that("The divisions are done", {
 
 # Test clustering ---------------------------------------------------------
 # BIC plot
-choose_k_GMM(sessions, 1:3)
+test_that("BIC plot is executed without errors", {
+  expect_no_error(
+    choose_k_GMM(sessions, 1:3)
+  )
+})
 
+# Clustering iteration
 test_that("Clustering iteration file is saved correctly",  {
-  temp_file <- file.path(tempdir(), "iteration.pdf")
+  temp_file <- file.path(temp_dir, "iteration.pdf")
   save_clustering_iterations(sessions, 2, 2, filename = temp_file)
   expect_true(file.exists(temp_file))
 })
 
 # In the clustering function we depend on MCLUST package
 test_that("Clusers are found correctly", {
-  sessions_clusters <<- cluster_sessions(sessions, k = 2, seed = 1234, log = TRUE)
-  sessions_clusters2 <- cluster_sessions(sessions, k = 2, seed = 1234, log = FALSE)
+  sessions_clusters <<- cluster_sessions(sessions, k = 2, seed = 123, log = TRUE)
+  sessions_clusters2 <- cluster_sessions(sessions, k = 2, seed = 123, log = FALSE)
   expect_equal(names(sessions_clusters), c("sessions", "models"))
   expect_true("Cluster" %in% names(sessions_clusters$sessions))
   expect_true(nrow(sessions_clusters$models) == 2) # Number of clusters == k
@@ -156,8 +201,16 @@ test_that("Get the connection models", {
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(connection_GMM$connection_models[[1]])))
 })
 
-print_connection_models_table(connection_GMM, full_width = TRUE, label = "tab:conn", caption = "connection GMM")
-plot_model_clusters(list(sessions_clusters), list(clusters_definition), connection_GMM)
+test_that("Tables and plot of connection GMM are generated without errors", {
+  expect_no_error(
+    print_connection_models_table(connection_GMM, full_width = TRUE, label = "tab:conn", caption = "connection GMM")
+  )
+  expect_true(is.ggplot(
+    plot_model_clusters(list(sessions_clusters), list(clusters_definition), connection_GMM)
+  ))
+})
+
+
 
 test_that("Get and plot the energy models with `by_power = FALSE`", {
   energy_GMM <<- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
@@ -165,10 +218,15 @@ test_that("Get and plot the energy models with `by_power = FALSE`", {
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
   expect_true(all.equal(c("charging_rate", "energy_models", "mclust"), names(energy_GMM$energy_models[[1]])))
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(energy_GMM$energy_models[[1]]$energy_models[[1]])))
+})
 
-  print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
-  energy_plot <- plot_energy_models(energy_GMM)
-  expect_true(is.ggplot(energy_plot))
+test_that("Tables and plot of energy GMM are generated without errors", {
+  expect_no_error(
+    print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
+  )
+  expect_true(is.ggplot(
+    plot_energy_models(energy_GMM)
+  ))
 })
 
 
@@ -196,16 +254,17 @@ test_that("Model file is saved correctly",  {
     connection_GMM = list(connection_GMM, connection_GMM),
     energy_GMM = list(energy_GMM, energy_GMM),
     connection_log = T, energy_log = T,
-    data_tz = "UTC"
+    data_tz = "America/Los_Angeles"
   )
-  print(evmodel)
 
-  temp_model_file <<- file.path(tempdir(), "model.json")
+  temp_model_file <- file.path(temp_dir, "model.json")
   save_ev_model(evmodel, file = temp_model_file)
   expect_true(file.exists(temp_model_file))
 })
 
 test_that("Model file is read correctly",  {
+  temp_model_file <- file.path(temp_dir, "model.json")
   evmodel <- read_ev_model(file = temp_model_file)
   expect_true(class(evmodel) == "evmodel")
 })
+

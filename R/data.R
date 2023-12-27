@@ -80,3 +80,16 @@
 #' @keywords internal
 #'
 "california_ev_model"
+
+
+#' Clustered EV charging sessions example
+#'
+#' Example of an charging sessions data set that has been clustered by `{evprof}` functions.
+#' (see [this article](https://mcanigueral.github.io/evprof/articles/california.html#sessions-classification-into-user-profiles)).
+#'
+#' @format ## `california_ev_sessions_profiles`
+#' A `tibble` object with standard variable names defined by `evprof`
+#' @source <https://ev.caltech.edu/dataset>
+#' @keywords internal
+#'
+"california_ev_sessions_profiles"

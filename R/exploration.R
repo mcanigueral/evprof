@@ -74,7 +74,7 @@ convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.ho
 #' @param start Start hour (int)
 #'
 convert_time_num_to_plot_num <- function(time_num, start=getOption("evprof.start.hour")) {
-  time_num[time_num < start] <- time_num[time_num < start] + 24
+  time_num[time_num <= start] <- time_num[time_num <= start] + 24
   time_num
 }
 
@@ -242,7 +242,7 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #'
 #' @importFrom MASS kde2d
 #' @importFrom plotly plot_ly add_surface layout hide_colorbar
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% filter
 #'
 #' @examples
 #' plot_density_3D(california_ev_sessions, start = 3)
@@ -253,6 +253,9 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
   } else {
     sessions <- mutate_to_log(sessions)
   }
+  sessions <- sessions %>%
+    filter(!is.infinite(.data$ConnectionStartDateTime), !is.infinite(.data$ConnectionHours),
+           !is.na(.data$ConnectionStartDateTime), !is.na(.data$ConnectionHours))
   density <- MASS::kde2d(sessions[["ConnectionStartDateTime"]], sessions[["ConnectionHours"]])
   plot_ly(x = density$x, y = density$y, z = t(density$z)) %>%
     add_surface() %>%
