@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 evprof is part of a suite of packages to analyse, model and simulate the charging behavior of electric vehicle users:
 
 * [evprof](https://mcanigueral.github.io/evprof/): Electric Vehicle PROFiling
-* [{evsim}](https://mcanigueral.github.io/evsim/): Electric Vehicle SIMulation
+* [evsim](https://mcanigueral.github.io/evsim/): Electric Vehicle SIMulation
 
 evprof aims to provide tools for classifying EV charging sessions into generic groups with similar connection patterns named "user profiles", using the Gaussian Mixture Models (GMM) clustering method. Moreover, functions to build stochastic models (based on GMM) for every user profile are also provided in order to simulate new EV sessions.
 

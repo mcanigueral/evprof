@@ -14,15 +14,15 @@ coverage](https://codecov.io/gh/mcanigueral/evprof/branch/master/graph/badge.svg
 
 ## Overview
 
-{evprof} is part of a suite of packages to analyse, model and simulate
-the charging behavior of electric vehicle users:
+evprof is part of a suite of packages to analyse, model and simulate the
+charging behavior of electric vehicle users:
 
-- [{evprof}](https://mcanigueral.github.io/evprof/): Electric Vehicle
+- [evprof](https://mcanigueral.github.io/evprof/): Electric Vehicle
   PROFiling
-- [{evsim}](https://mcanigueral.github.io/evsim/): Electric Vehicle
+- [evsim](https://mcanigueral.github.io/evsim/): Electric Vehicle
   SIMulation
 
-{evprof} aims to provide tools for classifying EV charging sessions into
+evprof aims to provide tools for classifying EV charging sessions into
 generic groups with similar connection patterns named “user profiles”,
 using the Gaussian Mixture Models (GMM) clustering method. Moreover,
 functions to build stochastic models (based on GMM) for every user
@@ -117,7 +117,7 @@ articles about the methodology used in this paper:
 - **Assessment of electric vehicle charging hub based on stochastic
   models of user profiles**. Expert Systems with Applications (Vol. 227,
   p. 120318). Elsevier BV. May 2023. [DOI
-  link](https://doi.org/10.1016/j.eswa.2023.120318)
+  link](https://doi.org/10.1016/j.eswa.2023.120318).
 
 ## Acknowledgements
 
