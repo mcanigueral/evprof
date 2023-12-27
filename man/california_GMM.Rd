@@ -25,7 +25,7 @@ Example of connection and energy GMM obtained from functions
 \code{get_connection_models} and \code{get_energy_models} respectively.
 They have been created using an Open source data set of EV charging sessions
 provided by \href{https://acnportal.readthedocs.io/en/latest/}{ACN}.
-More information about the development of the model in the {evprof} website:
+More information about the development of the model in the evprof website:
 \url{https://mcanigueral.github.io/evprof/articles/california.html}
 }
 \keyword{internal}

@@ -3,7 +3,7 @@
 \docType{data}
 \name{sessions_summary_feature_names}
 \alias{sessions_summary_feature_names}
-\title{Names of features to summarise in {evprof} functions}
+\title{Names of features to summarise in evprof functions}
 \format{
 A vector
 }
