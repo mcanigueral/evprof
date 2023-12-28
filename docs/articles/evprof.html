@@ -438,22 +438,22 @@ over these 5 disconnection days is:</p>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
-<td align="right">108109</td>
-<td align="right">51.31</td>
+<td align="right">107805</td>
+<td align="right">51.16</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
-<td align="right">96680</td>
-<td align="right">45.88</td>
+<td align="right">96980</td>
+<td align="right">46.03</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
-<td align="right">4802</td>
+<td align="right">4805</td>
 <td align="right">2.28</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
-<td align="right">906</td>
+<td align="right">907</td>
 <td align="right">0.43</td>
 </tr>
 <tr class="odd">
@@ -2000,7 +2000,7 @@ built the energy models in a logarithmic scale</li>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ev_model</span></span></code></pre></div>
-<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2023-09-06 </span></span>
+<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2023-12-28 </span></span>
 <span><span class="co">## Timezone of the model: Europe/Amsterdam </span></span>
 <span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
 <span><span class="co">##   - Connection Models: logarithmic scale</span></span>
@@ -2049,7 +2049,7 @@ be obtained with <a href="https://github.com/mcanigueral/evsim/" class="external
 <span><span class="va">dttm_seq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.POSIXt.html" class="external-link">seq.POSIXt</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">start_date</span>, to <span class="op">=</span> <span class="va">end_date</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">interval_mins</span>, <span class="st">'min'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sessions_demand</span> <span class="op">&lt;-</span> <span class="va">sessions_profiles</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/between.html" class="external-link">between</a></span><span class="op">(</span><span class="va">ConnectionStartDateTime</span>, <span class="va">start_date</span>, <span class="va">end_date</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/between.html" class="external-link">between</a></span><span class="op">(</span><span class="va">ConnectionStartDateTime</span>, <span class="va">start_date</span>, <span class="va">end_date</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">demand</span> <span class="op">&lt;-</span> <span class="va">sessions_demand</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/evsim/man/get_demand.html" class="external-link">get_demand</a></span><span class="op">(</span><span class="va">dttm_seq</span><span class="op">)</span></span></code></pre></div>
