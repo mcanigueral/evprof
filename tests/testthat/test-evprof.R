@@ -108,10 +108,13 @@ test_that("kNN plots", {
 
 
 # In the outliers detection function we depend on DBSCAN package
-test_that("The outliers are detected properly with automatic MinPts and eps setting", {
+test_that("The outliers are detected properly with automatic MinPts and eps setting with log", {
   sessions_outliers <<- detect_outliers(sessions, noise_th = 1, log = TRUE, MinPts = 200, eps = 0.33)
-  sessions_outliers2 <- detect_outliers(sessions, noise_th = 1, log = FALSE, MinPts = 200, eps = 2)
   expect_true(is.logical(sessions_outliers$Outlier))
+})
+test_that("The outliers are detected properly with automatic MinPts and eps setting", {
+  skip_on_cran()
+  sessions_outliers2 <- detect_outliers(sessions, noise_th = 1, log = FALSE, MinPts = 200, eps = 2)
   expect_true(is.logical(sessions_outliers2$Outlier))
 })
 
@@ -152,6 +155,7 @@ test_that("The divisions are done", {
 # Test clustering ---------------------------------------------------------
 # BIC plot
 test_that("BIC plot is executed without errors", {
+  skip_on_cran()
   expect_no_error(
     choose_k_GMM(sessions, 1:3)
   )
@@ -159,18 +163,25 @@ test_that("BIC plot is executed without errors", {
 
 # Clustering iteration
 test_that("Clustering iteration file is saved correctly",  {
+  skip_on_cran()
   temp_file <- file.path(temp_dir, "iteration.pdf")
   save_clustering_iterations(sessions, 2, 2, filename = temp_file)
   expect_true(file.exists(temp_file))
 })
 
 # In the clustering function we depend on MCLUST package
-test_that("Clusers are found correctly", {
+test_that("Clusers are found correctly with log", {
   sessions_clusters <<- cluster_sessions(sessions, k = 2, seed = 123, log = TRUE)
-  sessions_clusters2 <- cluster_sessions(sessions, k = 2, seed = 123, log = FALSE)
   expect_equal(names(sessions_clusters), c("sessions", "models"))
   expect_true("Cluster" %in% names(sessions_clusters$sessions))
   expect_true(nrow(sessions_clusters$models) == 2) # Number of clusters == k
+})
+test_that("Clusers are found correctly", {
+  skip_on_cran()
+  sessions_clusters2 <- cluster_sessions(sessions, k = 2, seed = 123, log = FALSE)
+  expect_equal(names(sessions_clusters2), c("sessions", "models"))
+  expect_true("Cluster" %in% names(sessions_clusters2$sessions))
+  expect_true(nrow(sessions_clusters2$models) == 2) # Number of clusters == k
 })
 
 test_that("Clusers are plotted correctly", {
@@ -211,8 +222,8 @@ test_that("Tables and plot of connection GMM are generated without errors", {
 })
 
 
-
 test_that("Get and plot the energy models with `by_power = FALSE`", {
+  skip_on_cran()
   energy_GMM <<- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
   expect_true(is.data.frame(energy_GMM))
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
@@ -221,6 +232,7 @@ test_that("Get and plot the energy models with `by_power = FALSE`", {
 })
 
 test_that("Tables and plot of energy GMM are generated without errors", {
+  skip_on_cran()
   expect_no_error(
     print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
   )
@@ -231,6 +243,7 @@ test_that("Tables and plot of energy GMM are generated without errors", {
 
 
 test_that("Get and plot the energy models with `by_power = TRUE`", {
+  skip_on_cran()
   sessions_profiles <- sessions_profiles %>%
     mutate(Power = round_to_interval(Power, 3.7)) %>%
     filter(Power < 11)
@@ -247,6 +260,7 @@ test_that("Get and plot the energy models with `by_power = TRUE`", {
 })
 
 test_that("Model file is saved correctly",  {
+  skip_on_cran()
   evmodel <<- get_ev_model(
     names = c("Weekday", "Weekend"),
     months_lst = list(1:12),
@@ -263,6 +277,7 @@ test_that("Model file is saved correctly",  {
 })
 
 test_that("Model file is read correctly",  {
+  skip_on_cran()
   temp_model_file <- file.path(temp_dir, "model.json")
   evmodel <- read_ev_model(file = temp_model_file)
   expect_true(class(evmodel) == "evmodel")
