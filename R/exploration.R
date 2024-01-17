@@ -176,8 +176,11 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' @importFrom rlang .data
 #'
 #' @examples
-#' plot_density_2D(california_ev_sessions, by = "wday", start = 3, bins = 20)
-#' plot_density_2D(california_ev_sessions, by = "month", start = 2, log = TRUE)
+#' library(dplyr)
+#'
+#' california_ev_sessions %>%
+#'   sample_frac(0.1) %>%
+#'   plot_density_2D(by = "wday", start = 3, bins = 15, log = FALSE)
 #'
 plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), start=getOption("evprof.start.hour"), log = FALSE) {
   sessions[["wday"]] <- factor(wday(sessions[["ConnectionStartDateTime"]], week_start = 1))

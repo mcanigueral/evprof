@@ -31,7 +31,8 @@
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
 #' # Identify two clusters
@@ -368,7 +369,8 @@ plot_energy_models <- function(energy_models, nrow=2) {
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
 #' # Identify two clusters

@@ -34,7 +34,8 @@
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
 #' # Identify two clusters
@@ -109,7 +110,8 @@ define_clusters <- function (models, interpretations = NULL, profile_names = NUL
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #'
 #' # Identify two clusters
 #' sessions_clusters <- cluster_sessions(

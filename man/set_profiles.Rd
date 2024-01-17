@@ -34,7 +34,8 @@ sessions_day <- california_ev_sessions \%>\%
   ) \%>\%
   filter(
     Disconnection == 1, Timecycle == 1
-  )
+  ) \%>\%
+  sample_frac(0.05)
 
 # Identify two clusters
 sessions_clusters <- cluster_sessions(

@@ -114,7 +114,8 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
 #' # Identify two clusters
@@ -123,7 +124,7 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
 #' )
 #'
 #' # The column `Cluster` has been added
-#' names(sessions_clusters)
+#' names(sessions_clusters$sessions)
 #' plot_points(sessions_clusters$sessions) +
 #'   ggplot2::aes(color = Cluster)
 #'
@@ -260,7 +261,8 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #'   ) %>%
 #'   filter(
 #'     Disconnection == 1, Timecycle == 1
-#'   )
+#'   ) %>%
+#'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
 #' # Identify two clusters

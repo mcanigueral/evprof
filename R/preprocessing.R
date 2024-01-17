@@ -68,6 +68,9 @@ cut_sessions <- function(sessions,
 
 #' Plot kNNdist
 #'
+#' Plot the kNN (k-nearest neighbors) distance plot to visually detect the
+#' "elbow" and define an appropriate value for `eps` DBSCAN parameter.
+#'
 #' @param sessions tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param MinPts integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.
@@ -79,13 +82,26 @@ cut_sessions <- function(sessions,
 #' @returns plot
 #' @export
 #'
+#' @details
+#' The kNN (k-nearest neighbors) distance plot can provide insights into
+#' setting the `eps` parameter in DBSCAN. The "elbow" in the kNN distance plot
+#' is the point where the distances start to increase significantly. At the
+#' same time, for DBSCAN, the eps parameter defines the radius within which a
+#' specified number of points must exist for a data point to be considered a
+#' core point. Therefore, the "elbow" of the kNN distance plot can provide a
+#' sense of the scale of the data and help you choose a reasonable range for
+#' the `eps` parameter in DBSCAN.
+#'
+#'
 #' @importFrom ggplot2 ggplot aes geom_line labs
 #' @importFrom dbscan kNNdist
 #'
 #' @examples
-#' plot_kNNdist(california_ev_sessions, start = 3)
-#' plot_kNNdist(california_ev_sessions, start = 3, log = TRUE)
+#' library(dplyr)
 #'
+#' california_ev_sessions %>%
+#'   sample_frac(0.1) %>%
+#'   plot_kNNdist(start = 3, log = TRUE)
 #'
 plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE,
                          start = getOption("evprof.start.hour")) {

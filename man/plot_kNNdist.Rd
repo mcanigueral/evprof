@@ -27,11 +27,24 @@ This is only used when \code{log = FALSE}.}
 plot
 }
 \description{
-Plot kNNdist
+Plot the kNN (k-nearest neighbors) distance plot to visually detect the
+"elbow" and define an appropriate value for \code{eps} DBSCAN parameter.
+}
+\details{
+The kNN (k-nearest neighbors) distance plot can provide insights into
+setting the \code{eps} parameter in DBSCAN. The "elbow" in the kNN distance plot
+is the point where the distances start to increase significantly. At the
+same time, for DBSCAN, the eps parameter defines the radius within which a
+specified number of points must exist for a data point to be considered a
+core point. Therefore, the "elbow" of the kNN distance plot can provide a
+sense of the scale of the data and help you choose a reasonable range for
+the \code{eps} parameter in DBSCAN.
 }
 \examples{
-plot_kNNdist(california_ev_sessions, start = 3)
-plot_kNNdist(california_ev_sessions, start = 3, log = TRUE)
+library(dplyr)
 
+california_ev_sessions \%>\%
+  sample_frac(0.1) \%>\%
+  plot_kNNdist(start = 3, log = TRUE)
 
 }

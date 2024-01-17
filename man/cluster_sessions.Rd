@@ -53,7 +53,8 @@ sessions_day <- california_ev_sessions \%>\%
   ) \%>\%
   filter(
     Disconnection == 1, Timecycle == 1
-  )
+  ) \%>\%
+  sample_frac(0.05)
 plot_points(sessions_day, start = 3)
 
 # Identify two clusters
@@ -62,7 +63,7 @@ sessions_clusters <- cluster_sessions(
 )
 
 # The column `Cluster` has been added
-names(sessions_clusters)
+names(sessions_clusters$sessions)
 plot_points(sessions_clusters$sessions) +
   ggplot2::aes(color = Cluster)
 
