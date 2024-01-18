@@ -9,7 +9,7 @@ print_user_profile_energy_models_table(
   label,
   caption,
   full_width,
-  path = NULL
+  filename = NULL
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ print_user_profile_energy_models_table(
 
 \item{full_width}{logical, if true the "*" will be added next to the "table" tag}
 
-\item{path}{character, file path to write the latex table to. Is must have ".tex" extension.
+\item{filename}{character, file path to write the latex table to. Is must have ".tex" extension.
 If it is NULL, then the character string is returned instead of writing a file.}
 }
 \value{

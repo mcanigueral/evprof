@@ -148,9 +148,9 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param sessions tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k number of clusters
+#' @param filename string defining the PDF output file path (with extension .pdf)
 #' @param it number of iterations
 #' @param seeds seed for each iteration
-#' @param filename PDF output file (with extension .pdf)
 #' @param plot_scale scale of each iteration plot for a good visualization in pdf file
 #' @param points_size integer, size of points in the scatter plot
 #' @param mclust_tol tolerance parameter for clustering
@@ -174,10 +174,11 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' }
 #'
 #'
-save_clustering_iterations <- function(sessions, k, it=12, seeds = round(runif(it, min=1, max=1000)),
-                                    filename = paste0("iteration_", k, "_clusters.pdf"), plot_scale = 2,
-                                    points_size = 0.25, mclust_tol = 1e-8, mclust_itmax = 1e4,
-                                    log = FALSE, start = getOption("evprof.start.hour")) {
+save_clustering_iterations <- function(sessions, k, filename, it=12,
+                                       seeds = round(runif(it, min=1, max=1000)),
+                                       plot_scale = 2, points_size = 0.25,
+                                       mclust_tol = 1e-8, mclust_itmax = 1e4,
+                                       log = FALSE, start = getOption("evprof.start.hour")) {
   ellipses_plots <- list()
   IC_values <- tibble(
     seed = seeds,

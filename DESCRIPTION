@@ -4,11 +4,11 @@ Version: 1.0.0
 Authors@R: 
     person("Marc", "Cañigueral", , "marc.canigueral@udg.edu", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-9724-5829"))
-Description: Tools for classifying electric vehicle charging sessions into
-    generic groups with similar connection patterns named "user profiles",
-    using Gaussian Mixture Models clustering.  Functions to build Gaussian
-    models for every user profile are also provided to simulate new
-    charging sessions.
+Description: Tools for modelling electric vehicle charging sessions into
+    generic groups with similar connection patterns called "user profiles",
+    using Gaussian Mixture Models clustering. The clustering and profiling
+    methodology is described in Cañigueral and Meléndez (2021, ISBN:0142-0615) 
+    <doi:10.1016/j.ijepes.2021.107195>.
 License: GPL-3
 URL: https://github.com/mcanigueral/evprof/
 BugReports: https://github.com/mcanigueral/evprof/issues

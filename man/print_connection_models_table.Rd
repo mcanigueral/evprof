@@ -4,7 +4,7 @@
 \alias{print_connection_models_table}
 \title{Get LaTeX code for the connection bivariate GMM features (mu and sigma)}
 \usage{
-print_connection_models_table(GMM, label, caption, full_width, path = NULL)
+print_connection_models_table(GMM, label, caption, full_width, filename = NULL)
 }
 \arguments{
 \item{GMM}{Gaussian Mixture Models obtained from function \code{get_connection_models}}
@@ -15,7 +15,7 @@ print_connection_models_table(GMM, label, caption, full_width, path = NULL)
 
 \item{full_width}{logical, if true the "*" will be added next to the "table" tag}
 
-\item{path}{character, file path to write the latex table to. Is must have ".tex" extension.
+\item{filename}{character, file path to write the latex table to. Is must have ".tex" extension.
 If it is NULL, then the character string is returned instead of writing a file.}
 }
 \value{

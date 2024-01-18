@@ -109,17 +109,23 @@ test_that("kNN plots", {
 
 # In the outliers detection function we depend on DBSCAN package
 test_that("The outliers are detected properly with automatic MinPts and eps setting with log", {
-  sessions_outliers <<- detect_outliers(sessions, noise_th = 1, log = TRUE, MinPts = 200, eps = 0.33)
+  sessions_outliers <- sessions %>%
+    head(1000) %>%
+    detect_outliers(noise_th = 1, log = TRUE, MinPts = 200, eps = 0.66)
   expect_true(is.logical(sessions_outliers$Outlier))
 })
 test_that("The outliers are detected properly with automatic MinPts and eps setting", {
-  skip_on_cran()
-  sessions_outliers2 <- detect_outliers(sessions, noise_th = 1, log = FALSE, MinPts = 200, eps = 2)
+  sessions_outliers2 <- sessions %>%
+    head(1000) %>%
+    detect_outliers(noise_th = 1, log = FALSE, MinPts = 200, eps = 3.3)
   expect_true(is.logical(sessions_outliers2$Outlier))
 })
 
 # Outliers plots
 test_that("Outliers plots", {
+  sessions_outliers <- sessions %>%
+    head(1000) %>%
+    detect_outliers(noise_th = 1, log = TRUE, MinPts = 200, eps = 0.66)
   expect_true(is.ggplot(
     plot_outliers(sessions_outliers, log = TRUE)
   ))
@@ -130,6 +136,9 @@ test_that("Outliers plots", {
 
 # Remove outliers
 test_that("The outliers are removed by filtering", {
+  sessions_outliers <- sessions %>%
+    head(1000) %>%
+    detect_outliers(noise_th = 1, log = TRUE, MinPts = 200, eps = 0.66)
   sessions_outliers2 <- drop_outliers(sessions_outliers)
   expect_true(nrow(sessions_outliers2) < nrow(sessions_outliers))
 })
@@ -137,7 +146,9 @@ test_that("The outliers are removed by filtering", {
 # Disconnection day division lines
 test_that("Disconnection day division lines plot", {
   expect_true(is.ggplot(
-    plot_points(sessions) %>%
+    sessions %>%
+      head(1000) %>%
+      plot_points() %>%
       plot_division_lines(n_lines = 1, division_hour = 10)
   ))
 })
@@ -146,6 +157,7 @@ test_that("Disconnection day division lines plot", {
 # Divisions by Disconnection day and Time-cycle
 test_that("The divisions are done", {
   sessions_divided <- sessions %>%
+    head(1000) %>%
     divide_by_disconnection(division_hour = 10) %>%
     divide_by_timecycle()
   expect_true(ncol(sessions_divided) > ncol(sessions))
@@ -157,7 +169,9 @@ test_that("The divisions are done", {
 test_that("BIC plot is executed without errors", {
   skip_on_cran()
   expect_no_error(
-    choose_k_GMM(sessions, 1:3)
+    sessions %>%
+      head(1000) %>%
+      choose_k_GMM(k = 1:3)
   )
 })
 
@@ -165,26 +179,35 @@ test_that("BIC plot is executed without errors", {
 test_that("Clustering iteration file is saved correctly",  {
   skip_on_cran()
   temp_file <- file.path(temp_dir, "iteration.pdf")
-  save_clustering_iterations(sessions, 2, 2, filename = temp_file)
+  sessions %>%
+    head(1000) %>%
+    save_clustering_iterations(2, 2, filename = temp_file)
   expect_true(file.exists(temp_file))
 })
 
 # In the clustering function we depend on MCLUST package
 test_that("Clusers are found correctly with log", {
-  sessions_clusters <<- cluster_sessions(sessions, k = 2, seed = 123, log = TRUE)
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
   expect_equal(names(sessions_clusters), c("sessions", "models"))
   expect_true("Cluster" %in% names(sessions_clusters$sessions))
   expect_true(nrow(sessions_clusters$models) == 2) # Number of clusters == k
 })
-test_that("Clusers are found correctly", {
-  skip_on_cran()
-  sessions_clusters2 <- cluster_sessions(sessions, k = 2, seed = 123, log = FALSE)
+
+test_that("Clusers are found correctly without log", {
+  sessions_clusters2 <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = FALSE)
   expect_equal(names(sessions_clusters2), c("sessions", "models"))
   expect_true("Cluster" %in% names(sessions_clusters2$sessions))
   expect_true(nrow(sessions_clusters2$models) == 2) # Number of clusters == k
 })
 
-test_that("Clusers are plotted correctly", {
+test_that("Clusers are plotted correctly", {3
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
   plot_clusters <- plot_bivarGMM(sessions_clusters$sessions, sessions_clusters$models, log = FALSE)
   plot_clusters_log <- plot_bivarGMM(sessions_clusters$sessions, sessions_clusters$models, log = TRUE)
   expect_true(is.ggplot(plot_clusters))
@@ -194,25 +217,45 @@ test_that("Clusers are plotted correctly", {
 
 # Test profiling ----------------------------------------------------------
 test_that("Profiles are identified through cluster definitions", {
-  clusters_definition <<- define_clusters(
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
     sessions_clusters$models,
     interpretations = c("Morning sessions", "Afternoon sessions"),
     profile_names = c("Morning", "Afternoon")
   )
-  sessions_profiles <<- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
+  sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
   expect_true(is.data.frame(sessions_profiles))
 })
 
 
 # Test modelling ----------------------------------------------------------
 test_that("Get the connection models", {
-  connection_GMM <<- get_connection_models(list(sessions_clusters), list(clusters_definition))
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  connection_GMM <- get_connection_models(list(sessions_clusters), list(clusters_definition))
   expect_true(is.data.frame(connection_GMM))
   expect_true(all.equal(c("profile", "ratio", "connection_models"), names(connection_GMM)))
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(connection_GMM$connection_models[[1]])))
 })
 
 test_that("Tables and plot of connection GMM are generated without errors", {
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  connection_GMM <- get_connection_models(list(sessions_clusters), list(clusters_definition))
   expect_no_error(
     print_connection_models_table(connection_GMM, full_width = TRUE, label = "tab:conn", caption = "connection GMM")
   )
@@ -223,8 +266,16 @@ test_that("Tables and plot of connection GMM are generated without errors", {
 
 
 test_that("Get and plot the energy models with `by_power = FALSE`", {
-  skip_on_cran()
-  energy_GMM <<- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
+  energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
   expect_true(is.data.frame(energy_GMM))
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
   expect_true(all.equal(c("charging_rate", "energy_models", "mclust"), names(energy_GMM$energy_models[[1]])))
@@ -232,7 +283,16 @@ test_that("Get and plot the energy models with `by_power = FALSE`", {
 })
 
 test_that("Tables and plot of energy GMM are generated without errors", {
-  skip_on_cran()
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
+  energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
   expect_no_error(
     print_user_profile_energy_models_table(energy_GMM$energy_models[[1]], full_width = TRUE, label = "tab:en", caption = "energy GMM")
   )
@@ -243,12 +303,20 @@ test_that("Tables and plot of energy GMM are generated without errors", {
 
 
 test_that("Get and plot the energy models with `by_power = TRUE`", {
-  skip_on_cran()
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
   sessions_profiles <- sessions_profiles %>%
     mutate(Power = round_to_interval(Power, 3.7)) %>%
     filter(Power < 11)
   sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
-  # sessions_profiles %>% get_charging_rates_distribution()
+
   energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
   expect_true(is.data.frame(energy_GMM))
   expect_true(all.equal(c("profile", "energy_models"), names(energy_GMM)))
@@ -259,9 +327,22 @@ test_that("Get and plot the energy models with `by_power = TRUE`", {
   expect_true(is.ggplot(energy_plot))
 })
 
-test_that("Model file is saved correctly",  {
+test_that("Model file is created and saved correctly",  {
   skip_on_cran()
-  evmodel <<- get_ev_model(
+  sessions_clusters <- sessions %>%
+    head(1000) %>%
+    cluster_sessions(k = 2, seed = 123, log = TRUE)
+  clusters_definition <- define_clusters(
+    sessions_clusters$models,
+    interpretations = c("Morning sessions", "Afternoon sessions"),
+    profile_names = c("Morning", "Afternoon")
+  )
+  sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
+
+  connection_GMM <- get_connection_models(list(sessions_clusters), list(clusters_definition))
+  energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
+
+  evmodel <- get_ev_model(
     names = c("Weekday", "Weekend"),
     months_lst = list(1:12),
     wdays_lst = list(1:5, 6:7),
@@ -273,6 +354,7 @@ test_that("Model file is saved correctly",  {
 
   temp_model_file <- file.path(temp_dir, "model.json")
   save_ev_model(evmodel, file = temp_model_file)
+
   expect_true(file.exists(temp_model_file))
 })
 
@@ -280,6 +362,7 @@ test_that("Model file is read correctly",  {
   skip_on_cran()
   temp_model_file <- file.path(temp_dir, "model.json")
   evmodel <- read_ev_model(file = temp_model_file)
+
   expect_true(class(evmodel) == "evmodel")
 })
 

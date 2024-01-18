@@ -7,9 +7,9 @@
 save_clustering_iterations(
   sessions,
   k,
+  filename,
   it = 12,
   seeds = round(runif(it, min = 1, max = 1000)),
-  filename = paste0("iteration_", k, "_clusters.pdf"),
   plot_scale = 2,
   points_size = 0.25,
   mclust_tol = 1e-08,
@@ -24,11 +24,11 @@ save_clustering_iterations(
 
 \item{k}{number of clusters}
 
+\item{filename}{string defining the PDF output file path (with extension .pdf)}
+
 \item{it}{number of iterations}
 
 \item{seeds}{seed for each iteration}
-
-\item{filename}{PDF output file (with extension .pdf)}
 
 \item{plot_scale}{scale of each iteration plot for a good visualization in pdf file}
 

@@ -134,9 +134,10 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime labs theme_light
 #'
 #' @examples
-#' plot_points(california_ev_sessions)
-#' plot_points(california_ev_sessions, start = 3)
-#' plot_points(california_ev_sessions, log = TRUE)
+#' library(dplyr)
+#' california_ev_sessions %>% head(3000) %>% plot_points()
+#' california_ev_sessions %>% head(3000) %>% plot_points(start = 3)
+#' california_ev_sessions %>% head(3000) %>% plot_points(log = TRUE)
 #'
 plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FALSE, ...) {
   if (!log) {

@@ -534,7 +534,7 @@ get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(
 #'
 #' save_ev_model(ev_model, file = file.path(tempdir(), "evmodel.json"))
 #'
-save_ev_model <- function(evmodel, file = 'evmodel.json') {
+save_ev_model <- function(evmodel, file) {
   evmodel_lst <- list(
     metadata = evmodel$metadata,
     models = evmodel$models
@@ -639,7 +639,7 @@ print.evmodel <- function(x, ...) {
 #' @param label character, e.g. "tab:gmm"
 #' @param caption character, table caption
 #' @param full_width logical, if true the "*" will be added next to the "table" tag
-#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
+#' @param filename character, file path to write the latex table to. Is must have ".tex" extension.
 #' If it is NULL, then the character string is returned instead of writing a file.
 #'
 #' @returns character, LaTeX code
@@ -665,7 +665,7 @@ print.evmodel <- function(x, ...) {
 #' )
 #'
 #'
-print_connection_models_table <- function(GMM, label, caption, full_width, path = NULL) {
+print_connection_models_table <- function(GMM, label, caption, full_width, filename = NULL) {
   latex_table <- paste(
     sep = "\n",
     paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
@@ -685,10 +685,10 @@ print_connection_models_table <- function(GMM, label, caption, full_width, path 
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
-  if (is.null(path)) {
+  if (is.null(filename)) {
     return( latex_table )
   } else {
-    writeLines(latex_table, path)
+    writeLines(latex_table, filename)
   }
 }
 
@@ -743,7 +743,7 @@ print_biGMM_mu_matrix <- function(mu) {
 #' @param label character, e.g. "tab:gmm"
 #' @param caption character, table caption
 #' @param full_width logical, if true the "*" will be added next to the "table" tag
-#' @param path character, file path to write the latex table to. Is must have ".tex" extension.
+#' @param filename character, file path to write the latex table to. Is must have ".tex" extension.
 #' If it is NULL, then the character string is returned instead of writing a file.
 #'
 #' @returns character, LaTeX code
@@ -770,7 +770,7 @@ print_biGMM_mu_matrix <- function(mu) {
 #'
 #'
 #'
-print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, path = NULL) {
+print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, filename = NULL) {
   latex_table <- paste(
     sep = "\n",
     paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
@@ -790,10 +790,10 @@ print_user_profile_energy_models_table <- function(user_profile_GMM, label, capt
     paste0("\\caption{\\label{", label, "}", caption, "}"),
     paste0("\\end{table", ifelse(full_width, "*", ""), "}")
   )
-  if (is.null(path)) {
+  if (is.null(filename)) {
     return( latex_table )
   } else {
-    writeLines(latex_table, path)
+    writeLines(latex_table, filename)
   }
 }
 

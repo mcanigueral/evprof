@@ -25,8 +25,9 @@ ggplot scatter plot
 Scatter plot of sessions
 }
 \examples{
-plot_points(california_ev_sessions)
-plot_points(california_ev_sessions, start = 3)
-plot_points(california_ev_sessions, log = TRUE)
+library(dplyr)
+california_ev_sessions \%>\% head(3000) \%>\% plot_points()
+california_ev_sessions \%>\% head(3000) \%>\% plot_points(start = 3)
+california_ev_sessions \%>\% head(3000) \%>\% plot_points(log = TRUE)
 
 }

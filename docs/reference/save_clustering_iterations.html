@@ -74,9 +74,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save_clustering_iterations</span><span class="op">(</span></span>
 <span>  <span class="va">sessions</span>,</span>
 <span>  <span class="va">k</span>,</span>
+<span>  <span class="va">filename</span>,</span>
 <span>  it <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  seeds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">it</span>, min <span class="op">=</span> <span class="fl">1</span>, max <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"iteration_"</span>, <span class="va">k</span>, <span class="st">"_clusters.pdf"</span><span class="op">)</span>,</span>
 <span>  plot_scale <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  points_size <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  mclust_tol <span class="op">=</span> <span class="fl">1e-08</span>,</span>
@@ -97,16 +97,16 @@
 <dd><p>number of clusters</p></dd>
 
 
+<dt>filename</dt>
+<dd><p>string defining the PDF output file path (with extension .pdf)</p></dd>
+
+
 <dt>it</dt>
 <dd><p>number of iterations</p></dd>
 
 
 <dt>seeds</dt>
 <dd><p>seed for each iteration</p></dd>
-
-
-<dt>filename</dt>
-<dd><p>PDF output file (with extension .pdf)</p></dd>
 
 
 <dt>plot_scale</dt>
