@@ -1,3 +1,7 @@
+# evprof 1.1.0
+
+* Energy GMM inside of `evmodel` also contain the `ratio` of every `charging_rate`
+
 
 # evprof 1.0.0
 
