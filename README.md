@@ -87,6 +87,7 @@ GitHub:
 install.packages("evprof")
 
 # Latest development version
+# install.packages("devtools")
 devtools::install_github("mcanigueral/evprof")
 ```
 

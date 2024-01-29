@@ -231,13 +231,15 @@ get_energy_models <- function(sessions_profiles, log = TRUE, by_power = FALSE) {
     group_by(profile = .data$Profile, charging_rate = .data$ChargingRate) %>%
     filter(n() > 1) %>% # At least more than one observation per group
     summarise(
-      energy = list(.data$Energy)
+      energy = list(.data$Energy),
+      n_sessions = n(),
     ) %>%
     mutate(
+      ratio = .data$n_sessions/sum(.data$n_sessions),
       mclust = map(.data$energy, ~ get_energy_model_mclust_object(.x, log)),
       energy_models = map(.data$mclust, ~ get_energy_model_parameters(.x))
     ) %>%
-    select(all_of(c("profile", "charging_rate", "energy_models", "mclust"))) %>%
+    select(all_of(c("profile", "charging_rate", "ratio", "energy_models", "mclust"))) %>%
     group_by(.data$profile) %>%
     nest() %>%
     rename(energy_models = "data") %>%
@@ -481,8 +483,7 @@ plot_model_clusters <- function(subsets_clustering = list(), clusters_definition
 #'
 #'
 get_ev_model <- function(names, months_lst = list(1:12, 1:12), wdays_lst = list(1:5, 6:7),
-                         connection_GMM, energy_GMM, connection_log, energy_log,
-                         data_tz = getOption("evprof.tzone", "Europe/Amsterdam")) {
+                         connection_GMM, energy_GMM, connection_log, energy_log, data_tz) {
 
   # Remove `mclust` component from energy models tibble
   energy_GMM <- map(
@@ -629,195 +630,4 @@ print.evmodel <- function(x, ...) {
   }
 }
 
-
-
-#  Print Model tables -----------------------------------------------------
-
-#' Get LaTeX code for the connection bivariate GMM features (mu and sigma)
-#'
-#' @param GMM Gaussian Mixture Models obtained from function `get_connection_models`
-#' @param label character, e.g. "tab:gmm"
-#' @param caption character, table caption
-#' @param full_width logical, if true the "*" will be added next to the "table" tag
-#' @param filename character, file path to write the latex table to. Is must have ".tex" extension.
-#' If it is NULL, then the character string is returned instead of writing a file.
-#'
-#' @returns character, LaTeX code
-#' @export
-#'
-#' @importFrom purrr pmap_chr
-#'
-#' @examples
-#' # The package evprof provides example objects of connection and energy
-#' # Gaussian Mixture Models obtained from California's open data set
-#' # (see California article in package website) created with functions
-#' # `get_connection models` and `get_energy models`.
-#'
-#' # Get the working days connection models
-#' connection_models <- evprof::california_GMM$workdays$connection_models
-#'
-#' # Print connection GMM tables
-#' print_connection_models_table(
-#'   GMM = connection_models,
-#'   label = "tab:con-gmm",
-#'   caption = "Connection GMM",
-#'   full_width = TRUE
-#' )
-#'
-#'
-print_connection_models_table <- function(GMM, label, caption, full_width, filename = NULL) {
-  latex_table <- paste(
-    sep = "\n",
-    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
-    "\\resizebox{\\linewidth}{!} {",
-    "\\begin{tabular}{l|c|c|c}",
-    "\\hline",
-    "User profile & Centroid ($\\mu$) & Covariance ($\\Sigma$) & Share (\\%) \\\\",
-    "\\hline",
-    paste(
-      collapse = "\n",
-      pmap_chr(
-        GMM,
-        ~ print_profile_connection_models(..1, ..3)
-      )
-    ),
-    "\\end{tabular}}",
-    paste0("\\caption{\\label{", label, "}", caption, "}"),
-    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
-  )
-  if (is.null(filename)) {
-    return( latex_table )
-  } else {
-    writeLines(latex_table, filename)
-  }
-}
-
-print_profile_connection_models <- function(profile_name, connection_models) {
-  paste(
-    paste0("\\multirow{", nrow(connection_models), "}{*}{", profile_name, "}&"),
-    paste(
-      collapse = "\\\\ \\cline{2-4} & ",
-      purrr::map_chr(
-        connection_models %>%
-          split(seq_len(nrow(connection_models))),
-        print_cluster_features
-      )
-    ),
-    "\\\\ \\hline"
-  )
-}
-
-print_cluster_features <- function(cluster) {
-  paste(
-    sep = "&",
-    print_biGMM_mu_matrix(round(cluster$mu[[1]], 6)),
-    print_biGMM_sigma_matrix(round(cluster$sigma[[1]], 6)),
-    round(cluster$ratio*100)
-  )
-}
-
-print_biGMM_sigma_matrix <- function(sigma) {
-  paste(
-    "$\\begin{array}{cc}",
-    sigma[1, 1], "&",
-    sigma[1, 2], "\\\\",
-    sigma[2, 1], "&",
-    sigma[2, 2],
-    "\\end{array}$"
-  )
-}
-
-print_biGMM_mu_matrix <- function(mu) {
-  paste(
-    "$\\begin{array}{cc}",
-    mu[1], "\\\\",
-    mu[2],
-    "\\end{array}$"
-  )
-}
-
-
-#' Get LaTeX code for the energy GMM features OF A SINGLE USER PROFILE (mu and sigma)
-#'
-#' @param user_profile_GMM Gaussian Mixture Models obtained from function `get_energy_models`
-#' @param label character, e.g. "tab:gmm"
-#' @param caption character, table caption
-#' @param full_width logical, if true the "*" will be added next to the "table" tag
-#' @param filename character, file path to write the latex table to. Is must have ".tex" extension.
-#' If it is NULL, then the character string is returned instead of writing a file.
-#'
-#' @returns character, LaTeX code
-#' @export
-#'
-#' @importFrom purrr pmap_chr
-#'
-#' @examples
-#' # The package evprof provides example objects of connection and energy
-#' # Gaussian Mixture Models obtained from California's open data set
-#' # (see California article in package website) created with functions
-#' # `get_connection models` and `get_energy models`.
-#'
-#' # Get the working days energy models
-#' energy_models <- evprof::california_GMM$workdays$energy_models
-#'
-#' # Print energy GMM table
-#' print_user_profile_energy_models_table(
-#'   user_profile_GMM = energy_models$energy_models[[1]], # GMM from user profile 1
-#'   label = "tab:energy-gmm-profile-1",
-#'   caption = "Energy GMM from user profile 1",
-#'   full_width = TRUE
-#' )
-#'
-#'
-#'
-print_user_profile_energy_models_table <- function(user_profile_GMM, label, caption, full_width, filename = NULL) {
-  latex_table <- paste(
-    sep = "\n",
-    paste0("\\begin{table", ifelse(full_width, "*", ""), "}"),
-    "\\resizebox{\\linewidth}{!} {",
-    "\\begin{tabular}{l|c|c|c}",
-    "\\hline",
-    "Charging rate (kW) & Mean ($\\mu$) & Std. deviation ($\\sigma$) & Share (\\%) \\\\",
-    "\\hline",
-    paste(
-      collapse = "\n",
-      pmap_chr(
-        user_profile_GMM,
-        ~ print_profile_energy_models(..1, ..2)
-      )
-    ),
-    "\\end{tabular}}",
-    paste0("\\caption{\\label{", label, "}", caption, "}"),
-    paste0("\\end{table", ifelse(full_width, "*", ""), "}")
-  )
-  if (is.null(filename)) {
-    return( latex_table )
-  } else {
-    writeLines(latex_table, filename)
-  }
-}
-
-print_profile_energy_models <- function(profile_name, energy_models) {
-  paste(
-    paste0("\\multirow{", nrow(energy_models), "}{*}{", profile_name, "}&"),
-    paste(
-      collapse = "\\\\ \\cline{2-4} & ",
-      purrr::map_chr(
-        energy_models %>%
-          split(seq_len(nrow(energy_models))),
-        print_gaussian_features
-      )
-    ),
-    "\\\\ \\hline"
-  )
-}
-
-print_gaussian_features <- function(gaussian) {
-  paste(
-    sep = "&",
-    round(gaussian$mu, 6),
-    round(gaussian$sigma, 6),
-    round(gaussian$ratio*100)
-  )
-}
 

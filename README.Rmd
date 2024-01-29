@@ -62,6 +62,7 @@ You can install the package from CRAN or the development version from GitHub:
 install.packages("evprof")
 
 # Latest development version
+# install.packages("devtools")
 devtools::install_github("mcanigueral/evprof")
 ```
 

@@ -12,7 +12,7 @@ get_ev_model(
   energy_GMM,
   connection_log,
   energy_log,
-  data_tz = getOption("evprof.tzone", "Europe/Amsterdam")
+  data_tz
 )
 }
 \arguments{
