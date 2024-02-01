@@ -49,13 +49,14 @@
 #' More information about the development of the model in the evprof website:
 #' <https://mcanigueral.github.io/evprof/articles/california.html>
 #'
-#' @format list of two tibbles
+#' @format list
 #' \describe{
 #'   \item{connection_models}{Tibble with the parameters of the bi-variate
-#'   (connection start time and connection duration) GMM from the working days
-#'   sessions of the California data set}
+#'   (connection start time and connection duration) GMM from the working/weekend days
+#'   sessions of the California data set obtained from `get_connection_models`}
 #'   \item{energy_models}{Tibble with the parameters of the uni-variate
-#'   (energy) GMM from the working days sessions of the California data set}
+#'   (energy) GMM from the working/weekend days sessions of the California data set
+#'    obtained from `get_energy_models`}
 #' }
 #' @source <https://mcanigueral.github.io/evprof/articles/california.html>
 #' @keywords internal

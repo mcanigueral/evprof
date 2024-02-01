@@ -5,13 +5,14 @@
 \alias{california_GMM}
 \title{Gaussian Mixture Models examples}
 \format{
-list of two tibbles
+list
 \describe{
 \item{connection_models}{Tibble with the parameters of the bi-variate
-(connection start time and connection duration) GMM from the working days
-sessions of the California data set}
+(connection start time and connection duration) GMM from the working/weekend days
+sessions of the California data set obtained from \code{get_connection_models}}
 \item{energy_models}{Tibble with the parameters of the uni-variate
-(energy) GMM from the working days sessions of the California data set}
+(energy) GMM from the working/weekend days sessions of the California data set
+obtained from \code{get_energy_models}}
 }
 }
 \source{
