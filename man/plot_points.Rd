@@ -10,8 +10,7 @@ plot_points(sessions, start = getOption("evprof.start.hour"), log = FALSE, ...)
 \item{sessions}{tibble, sessions data set in evprof
 \href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 
 \item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
 \code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}

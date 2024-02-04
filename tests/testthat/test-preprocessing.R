@@ -1,10 +1,7 @@
-library(testthat)        # load testthat package
-library(evprof)
-library(dplyr)
-library(tibble)
-library(lubridate)
-library(purrr)
-library(ggplot2)
+
+options(
+  evprof.start.hour = 3
+)
 
 # Get the example `evmodel` and `sessions` included in the package
 ev_model <- evprof::california_ev_model
@@ -17,19 +14,16 @@ temp_dir <- tempdir()
 # Cut outlying sessions from threshold
 test_that("The outliers are removed by cutting", {
 
-  sessions2 <- cut_sessions(sessions, connection_start_min = 3, log = FALSE)
-  expect_true(nrow(sessions2) < nrow(sessions))
-
-  sessions2 <- cut_sessions(sessions, connection_start_max = 24, log = FALSE, start = 3)
+  sessions2 <- cut_sessions(sessions, connection_start_max = 24, log = FALSE)
   expect_true(nrow(sessions2) < nrow(sessions))
 
   sessions2 <- cut_sessions(sessions, connection_hours_max = 20, log = FALSE)
   expect_true(nrow(sessions2) < nrow(sessions))
 
-  sessions2_log <- cut_sessions(sessions, connection_start_min = 1, log = TRUE)
+  sessions2_log <- cut_sessions(sessions, connection_start_min = 1.5, log = TRUE)
   expect_true(nrow(sessions2_log) < nrow(sessions))
 
-  sessions2_log <- cut_sessions(sessions, connection_hours_min = -2, log = TRUE)
+  sessions2_log <- cut_sessions(sessions, connection_hours_min = -1, log = TRUE)
   expect_true(nrow(sessions2_log) < nrow(sessions))
 
 })
@@ -37,10 +31,10 @@ test_that("The outliers are removed by cutting", {
 
 # kNN plot
 test_that("kNN plots", {
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_kNNdist(sessions, log = FALSE)
   ))
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_kNNdist(sessions, log = TRUE)
   ))
 })
@@ -65,10 +59,10 @@ test_that("Outliers plots", {
   sessions_outliers <- sessions %>%
     head(1000) %>%
     detect_outliers(noise_th = 1, log = TRUE, MinPts = 200, eps = 0.66)
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_outliers(sessions_outliers, log = TRUE)
   ))
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_outliers(sessions_outliers, log = FALSE)
   ))
 })
@@ -84,7 +78,7 @@ test_that("The outliers are removed by filtering", {
 
 # Disconnection day division lines
 test_that("Disconnection day division lines plot", {
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     sessions %>%
       head(1000) %>%
       plot_points() %>%

@@ -4,10 +4,12 @@
 \alias{mutate_to_log}
 \title{Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables}
 \usage{
-mutate_to_log(sessions, base = exp(1))
+mutate_to_log(sessions, start = getOption("evprof.start.hour"), base = exp(1))
 }
 \arguments{
 \item{sessions}{sessions data set in standard format.}
+
+\item{start}{integer, start hour in the x axis of the plot.}
 
 \item{base}{logarithmic base}
 }

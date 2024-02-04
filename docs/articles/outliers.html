@@ -115,6 +115,19 @@ of functions, setting the <code>log</code> argument to
 <p>Here we have a set of sessions of example,
 <code>noisy_set</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">noisy_set</span> <span class="op">&lt;-</span> <span class="va">sessions_divided</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Obtained from the "Get started" article</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Disconnection</span> <span class="op">==</span> <span class="st">"Home"</span>, <span class="va">Timecycle</span> <span class="op">==</span> <span class="st">"Friday"</span><span class="op">)</span> <span class="co"># Friday Home</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">noisy_set</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="outliers_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p>We set the <code>start</code> parameter at 06:00:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
+<span>  evprof.start.hour <span class="op">=</span> <span class="fl">6</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>And we can plot it in logarithmic scale to visualize the areas of the
+plot where outliers are:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">noisy_set</span>, size <span class="op">=</span> <span class="fl">0.2</span>, log <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p><img src="outliers_files/figure-html/divisions%20density%20plot-1.png" width="700"></p>
 <div class="section level2">
@@ -130,10 +143,10 @@ function lets to configure the Connection Duration limits
 <code>connection_start_max</code>). If we want to make the division in
 logarithmic scale it is important to set the argument
 <code>log = TRUE</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">noisy_set</span> <span class="op">&lt;-</span> <span class="va">noisy_set</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/cut_sessions.html">cut_sessions</a></span><span class="op">(</span>connection_hours_min <span class="op">=</span> <span class="fl">1.5</span>, connection_start_min <span class="op">=</span> <span class="fl">2.5</span>, log <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">noisy_set</span>, size <span class="op">=</span> <span class="fl">0.2</span>, log <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p><img src="outliers_files/figure-html/cut%20plot-1.png" width="700"></p>
 </div>
@@ -148,21 +161,29 @@ density zones. Package <a href="https://github.com/mcanigueral/evprof/" class="e
 <code>detect_outliers</code> with the purpose of classify a certain
 <em>noise threshold</em> of noise. The main arguments of this function
 are <code>MinPts</code>, <code>eps</code> (DBSCAN parameters) and
-<code>noise_th</code> (noise threshold, in %).</p>
-<p>The plot area of sessions detected under this noise threshold depends
-highly on the <code>MinPts</code> values. Our recommendation is to
-compare different values of <code>MinPts</code> and
-<code>noise_th</code> with the corresponding plots obtained with
-function <code>plot_outliers</code>. Following you can find a possible
-code for this iteration (using <code><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">purrr::pmap</a></code> function):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code>noise_th</code> (noise threshold, in %). The function
+<code>detect_outliers</code> allows you to configure just the
+<code>MinPts</code> and <code>noise_th</code> to automatically find the
+<code>eps</code> value.</p>
+<p>Usually values around of <code>MinPts = 200</code> and
+<code>noise_th = 2</code> are recommended, but you could configure an
+iteration to find the best combination according to the plot obtained
+with function <code>plot_outliers</code>. First, let’s create a table
+with all combinations of <code>MinPts</code> and <code>noise_th</code>
+values you want:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">.MinPts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">.noise_th</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="va">dbscan_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  MinPts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">.MinPts</span>, each <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">.noise_th</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  noise_th <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">.noise_th</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">.MinPts</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">plots_list</span> <span class="op">&lt;-</span> <span class="fu">pmap</span><span class="op">(</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dbscan_params</span><span class="op">)</span></span></code></pre></div>
+<p>Now let’s run the iteration to create a plot for every combination
+(using <code><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">purrr::pmap</a></code> function):</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plots_list</span> <span class="op">&lt;-</span> <span class="fu">pmap</span><span class="op">(</span></span>
 <span>  <span class="va">dbscan_params</span>,</span>
 <span>  <span class="op">~</span> <span class="va">noisy_set</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/detect_outliers.html">detect_outliers</a></span><span class="op">(</span>MinPts <span class="op">=</span> <span class="va">..1</span>, noise_th <span class="op">=</span> <span class="va">..2</span>, log <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -171,7 +192,7 @@ code for this iteration (using <code><a href="https://purrr.tidyverse.org/refere
 <span><span class="op">)</span></span></code></pre></div>
 <p>You can save the plots in a pdf for a proper visualization, using
 <code><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">cowplot::plot_grid</a></code> function.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
 <span>  filename <span class="op">=</span> <span class="st">'my_noise_detection.pdf'</span>, </span>
 <span>  plot <span class="op">=</span> <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
@@ -186,9 +207,9 @@ cluster. This is not a valid approach for all data sets, so the value of
 case, we decide that a good compromise solution is a value of
 <code>MinPts</code> of <strong>200</strong> and a noise threshold of
 <strong>5%</strong>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots_list</span><span class="op">[[</span><span class="fl">15</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="outliers_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="outliers_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

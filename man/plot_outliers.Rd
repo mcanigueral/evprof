@@ -4,11 +4,18 @@
 \alias{plot_outliers}
 \title{Plot outlying sessions}
 \usage{
-plot_outliers(sessions, log = FALSE, ...)
+plot_outliers(
+  sessions,
+  start = getOption("evprof.start.hour"),
+  log = FALSE,
+  ...
+)
 }
 \arguments{
 \item{sessions}{tibble, sessions data set in evprof
 \href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+
+\item{start}{integer, start hour in the x axis of the plot.}
 
 \item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
 \code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
@@ -22,10 +29,11 @@ ggplot2 plot
 Plot outlying sessions
 }
 \examples{
-\donttest{
-sessions_outliers <- detect_outliers(california_ev_sessions, noise_th = 5)
-plot_outliers(sessions_outliers)
-plot_outliers(sessions_outliers, log = TRUE)
-}
+library(dplyr)
+sessions_outliers <- california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  detect_outliers(start = 3, noise_th = 5, eps = 2.5)
+plot_outliers(sessions_outliers, start = 3)
+plot_outliers(sessions_outliers, start = 3, log = TRUE)
 
 }

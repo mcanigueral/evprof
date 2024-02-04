@@ -30,16 +30,6 @@ round_to_interval <- function(dbl, interval) {
 
 # Time conversion functions -----------------------------------------------
 
-#' Convert datetime value to numeric (hour-based)
-#'
-#' @param time_dt Datetime value
-#'
-#' @importFrom lubridate hour minute second
-#'
-convert_time_dt_to_num <- function(time_dt) {
-  hour(time_dt) + minute(time_dt)/60 + second(time_dt)/3600
-}
-
 #' Convert numeric time value (hour-based) to character hour in %H:%M format
 #'
 #' @param time_num Numeric time value (hour-based)
@@ -68,15 +58,6 @@ convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.ho
   time_dt
 }
 
-#' Modify numeric time value according to a time sequence start time
-#'
-#' @param time_num Numeric time value (hour-based)
-#' @param start Start hour (int)
-#'
-convert_time_num_to_plot_num <- function(time_num, start=getOption("evprof.start.hour")) {
-  time_num[time_num <= start] <- time_num[time_num <= start] + 24
-  time_num
-}
 
 #' Convert numeric time value to a datetime period (hour-based)
 #'
@@ -96,8 +77,12 @@ convert_time_num_to_period <- function(time_num) {
 #' @param time_dt Datetime value
 #' @param start Start hour (int)
 #'
+#' @importFrom lubridate date hour minute second
+#'
 convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.hour")) {
-  convert_time_num_to_plot_num(convert_time_dt_to_num(time_dt), start)
+  time_plot_dt <- convert_time_dt_to_plot_dt(time_dt, start)
+  day_shift <- as.numeric(date(time_plot_dt) - Sys.Date(), unit = "hours")
+  day_shift + hour(time_plot_dt) + minute(time_plot_dt)/60 + second(time_plot_dt)/3600
 }
 
 
@@ -107,11 +92,21 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
 #' Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables
 #'
 #' @param sessions sessions data set in standard format.
+#' @param start integer, start hour in the x axis of the plot.
 #' @param base logarithmic base
 #'
-mutate_to_log <- function(sessions, base = exp(1)) {
-  sessions[["ConnectionStartDateTime"]] <- log(convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]]), base = base)
-  sessions[["ConnectionHours"]] <- log(sessions[["ConnectionHours"]], base = base)
+mutate_to_log <- function(sessions, start=getOption("evprof.start.hour"), base = exp(1)) {
+  sessions[["ConnectionStartDateTime"]] <- log(
+    convert_time_dt_to_plot_num(
+      sessions[["ConnectionStartDateTime"]],
+      start = start
+    ),
+    base = base
+  )
+  sessions[["ConnectionHours"]] <- log(
+    sessions[["ConnectionHours"]],
+    base = base
+  )
   return( sessions )
 }
 
@@ -123,7 +118,6 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #' @param sessions tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param ... arguments to `ggplot2::geom_point` function
@@ -132,6 +126,8 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_datetime labs theme_light
+#' @importFrom lubridate date
+#' @importFrom dplyr mutate %>%
 #'
 #' @examples
 #' library(dplyr)
@@ -140,10 +136,10 @@ mutate_to_log <- function(sessions, base = exp(1)) {
 #' california_ev_sessions %>% head(3000) %>% plot_points(log = TRUE)
 #'
 plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FALSE, ...) {
-  if (!log) {
-    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
+  if (log) {
+    sessions <- sessions %>% mutate_to_log(start)
   } else {
-    sessions <- mutate_to_log(sessions)
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
   }
 
   plot <- ggplot(sessions, aes(x=.data[["ConnectionStartDateTime"]], y=.data[["ConnectionHours"]])) +
@@ -151,10 +147,10 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
     labs(x='Connection start time', y='Number of connection hours') +
     theme_light()
 
-  if (!log) {
-    plot + scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour')
-  } else {
+  if (log) {
     plot
+  } else {
+    plot + scale_x_datetime(date_labels = '%H:%M', date_breaks = '4 hour')
   }
 }
 
@@ -164,7 +160,6 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param bins integer, parameter to pass to `ggplot2::stat_density_2d`
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #' @param by variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
@@ -190,7 +185,7 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
   if (!log) {
     sessions[["ConnectionStartDateTime"]] <- convert_time_dt_to_plot_dt(sessions[["ConnectionStartDateTime"]], start)
   } else {
-    sessions <- mutate_to_log(sessions)
+    sessions <- mutate_to_log(sessions, start)
   }
   density_plot <- sessions %>%
     ggplot(aes(x=.data[["ConnectionStartDateTime"]], y=.data[["ConnectionHours"]])) +
@@ -236,7 +231,6 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #' @param sessions tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #' @param eye list containing x, y and z points of view. Example: `list(x = -1.5, y = -1.5, z = 1.5)`
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
@@ -255,7 +249,7 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
   if (!log) {
     sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   } else {
-    sessions <- mutate_to_log(sessions)
+    sessions <- mutate_to_log(sessions, start)
   }
   sessions <- sessions %>%
     filter(!is.infinite(.data$ConnectionStartDateTime), !is.infinite(.data$ConnectionHours),

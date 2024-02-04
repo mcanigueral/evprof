@@ -1,15 +1,13 @@
-library(testthat)        # load testthat package
-library(evprof)
-library(dplyr)
-library(tibble)
-library(lubridate)
-library(purrr)
-library(ggplot2)
+
+options(
+  evprof.start.hour = 3
+)
 
 # Get the example `evmodel` and `sessions` included in the package
 ev_model <- evprof::california_ev_model
 sessions <- evprof::california_ev_sessions
 temp_dir <- tempdir()
+
 
 
 # Test profiling ----------------------------------------------------------

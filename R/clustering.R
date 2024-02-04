@@ -11,7 +11,6 @@
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #'
 #' @keywords internal
 #' @returns mclust object
@@ -21,9 +20,12 @@
 get_connection_model_mclust_object <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
                                                log = FALSE, start = getOption("evprof.start.hour")) {
   if (!log) {
-    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
+    sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(
+      sessions[["ConnectionStartDateTime"]],
+      start = start
+    )
   } else {
-    sessions <- mutate_to_log(sessions)
+    sessions <- mutate_to_log(sessions, start)
   }
   sessions_cluster <- sessions[,c("ConnectionStartDateTime", "ConnectionHours")]
   Mclust(sessions_cluster, G = k, control = emControl(tol = mclust_tol, itmax = mclust_itmax))
@@ -51,6 +53,13 @@ get_connection_model_params <- function(mclust_obj) {
 
 #' Visualize BIC indicator to choose the number of clusters
 #'
+#' The Baysian Information Criterion (BIC) is the value of the maximized
+#' loglikelihood with a penalty on the number of parameters in the model,
+#' and allows comparison of models with differing parameterizations and/or
+#' differing numbers of clusters. In general the larger the value of the BIC,
+#' the stronger the evidence for the model and number of clusters
+#' (see, e.g. Fraley and Raftery 2002a).
+#'
 #' @param sessions tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
 #' @param k sequence with the number of clusters, for example 1:10, for 1 to 10 clusters.
@@ -59,7 +68,6 @@ get_connection_model_params <- function(mclust_obj) {
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #'
 #' @returns BIC plot
 #' @export
@@ -94,7 +102,6 @@ choose_k_GMM <- function(sessions, k, mclust_tol = 1e-8, mclust_itmax = 1e4,
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #'
 #' @returns list with two attributes: sessions and models
 #' @export
@@ -158,7 +165,6 @@ cluster_sessions <- function(sessions, k, seed, mclust_tol = 1e-8, mclust_itmax 
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #'
 #' @export
 #' @returns nothing, but a PDF file is saved in the path specified by parameter `filename`
@@ -238,7 +244,6 @@ get_ellipse <- function(mu, sigma, alpha = 0.05, npoints = 200) {
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
 #' @param start integer, start hour in the x axis of the plot.
-#' This is only used when `log = FALSE`.
 #'
 #' @returns ggplot2 plot
 #' @export
@@ -291,7 +296,7 @@ plot_bivarGMM <- function(sessions, models, profiles_names = seq(1, nrow(models)
   if (!log) {
     sessions["ConnectionStartDateTime"] <- convert_time_dt_to_plot_num(sessions[["ConnectionStartDateTime"]], start)
   } else {
-    sessions <- mutate_to_log(sessions)
+    sessions <- mutate_to_log(sessions, start)
   }
 
   plot <- ggplot(data = sessions, aes(x = .data$ConnectionStartDateTime, y = .data$ConnectionHours)) +

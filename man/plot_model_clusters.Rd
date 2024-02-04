@@ -38,17 +38,8 @@ library(dplyr)
 
 # Select working day sessions (`Timecycle == 1`) that
 # disconnect the same day (`Disconnection == 1`)
-sessions_day <- california_ev_sessions \%>\%
-  divide_by_timecycle(
-    months_cycles = list(1:12), # Not differentiation between months
-    wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
-  ) \%>\%
-  divide_by_disconnection(
-    division_hour = 10, start = 3
-  ) \%>\%
-  filter(
-    Disconnection == 1, Timecycle == 1
-  ) \%>\%
+sessions_day <- evprof::california_ev_sessions_profiles \%>\%
+  filter(Timecycle == "Workday") \%>\%
   sample_frac(0.05)
 plot_points(sessions_day, start = 3)
 
@@ -68,10 +59,10 @@ plot_bivarGMM(
 clusters_definitions <- define_clusters(
   models = sessions_clusters$models,
   interpretations = c(
-    "Connections during working hours",
-    "Connections during all day (high variability)"
+    "Connections during all day (high variability)",
+    "Connections during working hours"#'
   ),
-  profile_names = c("Workers", "Visitors"),
+  profile_names = c("Visitors", "Workers"),
   log = TRUE
 )
 

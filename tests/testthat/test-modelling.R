@@ -1,10 +1,7 @@
-library(testthat)        # load testthat package
-library(evprof)
-library(dplyr)
-library(tibble)
-library(lubridate)
-library(purrr)
-library(ggplot2)
+
+options(
+  evprof.start.hour = 3
+)
 
 # Get the example `evmodel` and `sessions` included in the package
 ev_model <- evprof::california_ev_model
@@ -38,7 +35,7 @@ test_that("Plot of connection GMM are generated without errors", {
     profile_names = c("Morning", "Afternoon")
   )
   connection_GMM <- get_connection_models(list(sessions_clusters), list(clusters_definition))
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_model_clusters(list(sessions_clusters), list(clusters_definition), connection_GMM)
   ))
 })
@@ -72,7 +69,7 @@ test_that("Plot of energy GMM are generated without errors", {
   )
   sessions_profiles <- set_profiles(list(sessions_clusters$sessions), list(clusters_definition))
   energy_GMM <- get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
-  expect_true(is.ggplot(
+  expect_true(ggplot2::is.ggplot(
     plot_energy_models(energy_GMM)
   ))
 })
@@ -100,7 +97,7 @@ test_that("Get and plot the energy models with `by_power = TRUE`", {
   expect_true(all.equal(c("mu", "sigma", "ratio"), names(energy_GMM$energy_models[[1]]$energy_models[[1]])))
 
   energy_plot <- plot_energy_models(energy_GMM)
-  expect_true(is.ggplot(energy_plot))
+  expect_true(ggplot2::is.ggplot(energy_plot))
 })
 
 test_that("Model file is created and saved correctly",  {

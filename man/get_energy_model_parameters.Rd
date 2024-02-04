@@ -13,6 +13,8 @@ get_energy_model_parameters(mclust_obj)
 tibble
 }
 \description{
-Get energy univariate Gaussian Mixture Model
+This function outputs a similar ellipses plot than function \code{plot_bivarGMM()}
+but using a different color for each user profile instead of clusters
+(the clusters of a same profile have the same color now).
 }
 \keyword{internal}

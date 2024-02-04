@@ -116,6 +116,10 @@ get_energy_model_mclust_object <- function(energy_vct, log = TRUE) {
 
 #' Get energy univariate Gaussian Mixture Model
 #'
+#' This function outputs a similar ellipses plot than function `plot_bivarGMM()`
+#' but using a different color for each user profile instead of clusters
+#' (the clusters of a same profile have the same color now).
+#'
 #' @param mclust_obj object of class `dnstyMcl` from function `get_energy_model_mclust_object`
 #'
 #' @returns tibble
@@ -134,6 +138,11 @@ get_energy_model_parameters <- function(mclust_obj) {
 
 
 #' Get a tibble of energy GMM for every user profile
+#'
+#' This function simulates random energy values, makes the density curve and overlaps
+#' the simulated density curve with the real density curve of the user profile's energy values.
+#' This is useful to appreciate how the modeled values fit the real ones and increase
+#' or decrease the number of Gaussian components.
 #'
 #' @param sessions_profiles tibble, sessions data set in evprof
 #' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html)
@@ -154,51 +163,11 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' \donttest{
 #' library(dplyr)
 #'
-#' # Select working day sessions (`Timecycle == 1`) that
-#' # disconnect the same day (`Disconnection == 1`)
-#' sessions_day <- california_ev_sessions %>%
-#'   divide_by_timecycle(
-#'     months_cycles = list(1:12), # Not differentiation between months
-#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
-#'   ) %>%
-#'   divide_by_disconnection(
-#'     division_hour = 10, start = 3
-#'   ) %>%
-#'   filter(
-#'     Disconnection == 1, Timecycle == 1
-#'   )
-#' plot_points(sessions_day, start = 3)
-#'
-#' # Identify two clusters
-#' sessions_clusters <- cluster_sessions(
-#'   sessions_day, k=2, seed = 1234, log = TRUE
-#' )
-#'
-#' # Plot the clusters found
-#' plot_bivarGMM(
-#'   sessions = sessions_clusters$sessions,
-#'   models = sessions_clusters$models,
-#'   log = TRUE, start = 3
-#' )
-#'
-#' # Define the clusters with user profile interpretations
-#' clusters_definitions <- define_clusters(
-#'   models = sessions_clusters$models,
-#'   interpretations = c(
-#'     "Connections during working hours",
-#'     "Connections during all day (high variability)"
-#'   ),
-#'   profile_names = c("Workers", "Visitors"),
-#'   log = TRUE
-#' )
-#'
 #' # Classify each session to the corresponding user profile
-#' sessions_profiles <- set_profiles(
-#'   sessions_clustered = list(sessions_clusters$sessions),
-#'   clusters_definition = list(clusters_definitions)
-#' )
+#' sessions_profiles <- california_ev_sessions_profiles %>%
+#'   dplyr::sample_frac(0.05)
 #'
-#' # Create a table with the energy GMM parameters
+#' # Get a table with the energy GMM parameters
 #' get_energy_models(sessions_profiles, log = TRUE)
 #'
 #' # If there is a `Power` variable in the data set
@@ -209,6 +178,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #'   filter(Power < 11)
 #' sessions_profiles$Power[sessions_profiles$Power == 0] <- 3.7
 #' get_energy_models(sessions_profiles, log = TRUE, by_power = TRUE)
+#'
 #' }
 #'
 #'
@@ -361,17 +331,8 @@ plot_energy_models <- function(energy_models, nrow=2) {
 #'
 #' # Select working day sessions (`Timecycle == 1`) that
 #' # disconnect the same day (`Disconnection == 1`)
-#' sessions_day <- california_ev_sessions %>%
-#'   divide_by_timecycle(
-#'     months_cycles = list(1:12), # Not differentiation between months
-#'     wdays_cycles = list(1:5, 6:7) # Differentiation between workdays/weekends
-#'   ) %>%
-#'   divide_by_disconnection(
-#'     division_hour = 10, start = 3
-#'   ) %>%
-#'   filter(
-#'     Disconnection == 1, Timecycle == 1
-#'   ) %>%
+#' sessions_day <- evprof::california_ev_sessions_profiles %>%
+#'   filter(Timecycle == "Workday") %>%
 #'   sample_frac(0.05)
 #' plot_points(sessions_day, start = 3)
 #'
@@ -391,10 +352,10 @@ plot_energy_models <- function(energy_models, nrow=2) {
 #' clusters_definitions <- define_clusters(
 #'   models = sessions_clusters$models,
 #'   interpretations = c(
-#'     "Connections during working hours",
-#'     "Connections during all day (high variability)"
+#'     "Connections during all day (high variability)",
+#'     "Connections during working hours"#'
 #'   ),
-#'   profile_names = c("Workers", "Visitors"),
+#'   profile_names = c("Visitors", "Workers"),
 #'   log = TRUE
 #' )
 #'

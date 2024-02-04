@@ -42,9 +42,8 @@ the \code{eps} parameter in DBSCAN.
 }
 \examples{
 library(dplyr)
-
 california_ev_sessions \%>\%
-  sample_frac(0.1) \%>\%
+  dplyr::sample_frac(0.1) \%>\%
   plot_kNNdist(start = 3, log = TRUE)
 
 }
