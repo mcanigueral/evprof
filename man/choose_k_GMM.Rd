@@ -26,14 +26,18 @@ choose_k_GMM(
 \item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
 \code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 }
 \value{
 BIC plot
 }
 \description{
-Visualize BIC indicator to choose the number of clusters
+The Baysian Information Criterion (BIC) is the value of the maximized
+loglikelihood with a penalty on the number of parameters in the model,
+and allows comparison of models with differing parameterizations and/or
+differing numbers of clusters. In general the larger the value of the BIC,
+the stronger the evidence for the model and number of clusters
+(see, e.g. Fraley and Raftery 2002a).
 }
 \examples{
 \donttest{

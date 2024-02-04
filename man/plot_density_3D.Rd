@@ -15,8 +15,7 @@ plot_density_3D(
 \item{sessions}{tibble, sessions data set in evprof
 \href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 
 \item{eye}{list containing x, y and z points of view. Example: \code{list(x = -1.5, y = -1.5, z = 1.5)}}
 

@@ -19,8 +19,7 @@ divide_by_timecycle(
 
 \item{wdays_cycles}{list containing Weekdays cycles}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 }
 \value{
 same sessions data set with extra column "Timecycle"

@@ -16,8 +16,7 @@ divide_by_disconnection(
 
 \item{division_hour}{Hour to divide the groups according to disconnection time}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 }
 \value{
 same sessions data set with extra column "Disconnection"

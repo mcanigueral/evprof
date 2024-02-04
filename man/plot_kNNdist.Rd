@@ -20,8 +20,7 @@ plot_kNNdist(
 \item{log}{logical, whether to transform \code{ConnectionStartDateTime} and
 \code{ConnectionHours} variables to natural logarithmic scale (base = \code{exp(1)}).}
 
-\item{start}{integer, start hour in the x axis of the plot.
-This is only used when \code{log = FALSE}.}
+\item{start}{integer, start hour in the x axis of the plot.}
 }
 \value{
 plot
