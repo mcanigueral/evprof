@@ -14,3 +14,4 @@ convert_time_dt_to_plot_num(time_dt, start = getOption("evprof.start.hour"))
 \description{
 Convert datetime values to sorted numeric values considering a start time
 }
+\keyword{internal}

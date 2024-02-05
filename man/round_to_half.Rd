@@ -12,3 +12,4 @@ round_to_half(time_num)
 \description{
 Round numeric time value to half hour basis.
 }
+\keyword{internal}

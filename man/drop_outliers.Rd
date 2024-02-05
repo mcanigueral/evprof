@@ -19,10 +19,13 @@ Drop outliers
 \examples{
 library(dplyr)
 sessions_outliers <- california_ev_sessions \%>\%
-  dplyr::sample_frac(0.05) \%>\%
+  sample_frac(0.05) \%>\%
   detect_outliers(start = 3, noise_th = 5, eps = 2.5)
+
 plot_outliers(sessions_outliers, start = 3)
+
 sessions_clean <- drop_outliers(sessions_outliers)
+
 plot_points(sessions_clean, start = 3)
 
 

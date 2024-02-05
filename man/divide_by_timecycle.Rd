@@ -28,11 +28,13 @@ same sessions data set with extra column "Timecycle"
 Divide sessions by time-cycle
 }
 \examples{
-sessions_timecycles <- divide_by_timecycle(
-  california_ev_sessions,
-  months_cycles = list(1:12),
-  wdays_cycles = list(1:5, 6:7)
-)
+library(dplyr)
+sessions_timecycles <- california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  divide_by_timecycle(
+    months_cycles = list(1:12),
+    wdays_cycles = list(1:5, 6:7)
+  )
 
 # The column `Timecycle` has been added
 names(sessions_timecycles)

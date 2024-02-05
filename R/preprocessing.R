@@ -20,15 +20,21 @@
 #' @importFrom dplyr between
 #'
 #' @examples
+#' library(dplyr)
 #' # Localize the outlying sessions above a certain threshold
-#' plot_points(california_ev_sessions, start = 3)
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_points(start = 3)
 #'
 #' # For example sessions that start before 5 AM or that are
 #' # longer than 20 hours are considered outliers
-#' sessions_clean <- cut_sessions(
-#'   california_ev_sessions, start = 3,
-#'   connection_hours_max = 20, connection_start_min = 5,
-#' )
+#' sessions_clean <- california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   cut_sessions(
+#'     start = 3,
+#'     connection_hours_max = 20,
+#'     connection_start_min = 5
+#'   )
 #' plot_points(sessions_clean, start = 3)
 #'
 cut_sessions <- function(sessions,
@@ -97,7 +103,7 @@ cut_sessions <- function(sessions,
 #' @examples
 #' library(dplyr)
 #' california_ev_sessions %>%
-#'   dplyr::sample_frac(0.1) %>%
+#'   sample_frac(0.05) %>%
 #'   plot_kNNdist(start = 3, log = TRUE)
 #'
 plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE,
@@ -256,10 +262,13 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2,
 #' @examples
 #' library(dplyr)
 #' sessions_outliers <- california_ev_sessions %>%
-#'   dplyr::sample_frac(0.05) %>%
+#'   sample_frac(0.05) %>%
 #'   detect_outliers(start = 3, noise_th = 5, eps = 2.5)
+#'
 #' plot_outliers(sessions_outliers, start = 3)
+#'
 #' sessions_clean <- drop_outliers(sessions_outliers)
+#'
 #' plot_points(sessions_clean, start = 3)
 #'
 #'
@@ -322,7 +331,6 @@ plot_outliers <- function(sessions, start=getOption("evprof.start.hour"), log = 
 #' @param division_hour Hour to divide the groups according to disconnection time
 #'
 #' @returns ggplot2 function
-#' @export
 #' @keywords internal
 #'
 #' @importFrom ggplot2 geom_line aes
@@ -348,8 +356,10 @@ get_division_line <- function(day_n, division_hour) {
 #'
 #' @examples
 #' library(dplyr)
-#' plot_points(california_ev_sessions) %>%
-#'   plot_division_lines(n_lines = 1, division_hour = 10)
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_points(start = 3) %>%
+#'   plot_division_lines(n_lines = 1, division_hour = 5)
 #'
 plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
   ggplot_points_lines <- ggplot_points
@@ -373,15 +383,20 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 #' @importFrom lubridate days hours today
 #'
 #' @examples
-#' sessions_disconnection <- divide_by_disconnection(
-#'   california_ev_sessions, division_hour = 10
-#' )
+#' library(dplyr)
+#' sessions_disconnection <- california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   divide_by_disconnection(
+#'     start = 2, division_hour = 5
+#'   )
 #'
 #' # The column `Disconnection` has been added
 #' names(sessions_disconnection)
 #'
 #' library(ggplot2)
-#' plot_points(sessions_disconnection) +
+#' sessions_disconnection %>%
+#'   tidyr::drop_na() %>%
+#'   plot_points() +
 #'   facet_wrap(vars(Disconnection))
 #'
 divide_by_disconnection <- function(sessions, division_hour, start = getOption("evprof.start.hour")) {
@@ -418,11 +433,13 @@ divide_by_disconnection <- function(sessions, division_hour, start = getOption("
 #' @importFrom lubridate month wday
 #'
 #' @examples
-#' sessions_timecycles <- divide_by_timecycle(
-#'   california_ev_sessions,
-#'   months_cycles = list(1:12),
-#'   wdays_cycles = list(1:5, 6:7)
-#' )
+#' library(dplyr)
+#' sessions_timecycles <- california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   divide_by_timecycle(
+#'     months_cycles = list(1:12),
+#'     wdays_cycles = list(1:5, 6:7)
+#'   )
 #'
 #' # The column `Timecycle` has been added
 #' names(sessions_timecycles)

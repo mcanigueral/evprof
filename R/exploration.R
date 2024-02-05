@@ -6,6 +6,8 @@
 #'
 #' @param time_num Numeric time value (hour-based)
 #'
+#' @keywords internal
+#'
 round_to_half <- function(time_num) {
   round(time_num*2)/2
 }
@@ -36,6 +38,8 @@ round_to_interval <- function(dbl, interval) {
 #'
 #' @importFrom lubridate as_datetime hours minutes
 #'
+#' @keywords internal
+#'
 convert_time_num_to_chr <- function(time_num) {
   strftime(
     as_datetime(hours(time_num%/%1) + minutes(round(time_num%%1*60))),
@@ -51,6 +55,8 @@ convert_time_num_to_chr <- function(time_num) {
 #'
 #' @importFrom lubridate date<- date hour days
 #'
+#' @keywords internal
+#'
 convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.hour")) {
   date(time_dt) <- Sys.Date()
   next_day_idx <- seq(1, length(time_dt))[(hour(time_dt) < start)]
@@ -65,6 +71,8 @@ convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.ho
 #'
 #' @importFrom lubridate hours minutes
 #'
+#' @keywords internal
+#'
 convert_time_num_to_period <- function(time_num) {
   h <- time_num %/% 1
   m <- (time_num - h)*60 %/% 1
@@ -78,6 +86,8 @@ convert_time_num_to_period <- function(time_num) {
 #' @param start Start hour (int)
 #'
 #' @importFrom lubridate date hour minute second
+#'
+#' @keywords internal
 #'
 convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.hour")) {
   time_plot_dt <- convert_time_dt_to_plot_dt(time_dt, start)
@@ -94,6 +104,8 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
 #' @param sessions sessions data set in standard format.
 #' @param start integer, start hour in the x axis of the plot.
 #' @param base logarithmic base
+#'
+#' @keywords internal
 #'
 mutate_to_log <- function(sessions, start=getOption("evprof.start.hour"), base = exp(1)) {
   sessions[["ConnectionStartDateTime"]] <- log(
@@ -131,9 +143,15 @@ mutate_to_log <- function(sessions, start=getOption("evprof.start.hour"), base =
 #'
 #' @examples
 #' library(dplyr)
-#' california_ev_sessions %>% head(3000) %>% plot_points()
-#' california_ev_sessions %>% head(3000) %>% plot_points(start = 3)
-#' california_ev_sessions %>% head(3000) %>% plot_points(log = TRUE)
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_points()
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_points(start = 3)
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_points(log = TRUE)
 #'
 plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FALSE, ...) {
   if (log) {
@@ -175,7 +193,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 #' library(dplyr)
 #'
 #' california_ev_sessions %>%
-#'   sample_frac(0.1) %>%
+#'   sample_frac(0.05) %>%
 #'   plot_density_2D(by = "wday", start = 3, bins = 15, log = FALSE)
 #'
 plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), start=getOption("evprof.start.hour"), log = FALSE) {
@@ -243,7 +261,10 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 #' @importFrom dplyr %>% filter
 #'
 #' @examples
-#' plot_density_3D(california_ev_sessions, start = 3)
+#' library(dplyr)
+#' california_ev_sessions %>%
+#'   sample_frac(0.05) %>%
+#'   plot_density_3D(start = 3)
 #'
 plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye = list(x = -1.5, y = -1.5, z = 1.5), log = FALSE) {
   if (!log) {

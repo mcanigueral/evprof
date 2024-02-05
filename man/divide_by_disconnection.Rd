@@ -25,15 +25,20 @@ same sessions data set with extra column "Disconnection"
 Divide sessions by disconnection day
 }
 \examples{
-sessions_disconnection <- divide_by_disconnection(
-  california_ev_sessions, division_hour = 10
-)
+library(dplyr)
+sessions_disconnection <- california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  divide_by_disconnection(
+    start = 2, division_hour = 5
+  )
 
 # The column `Disconnection` has been added
 names(sessions_disconnection)
 
 library(ggplot2)
-plot_points(sessions_disconnection) +
+sessions_disconnection \%>\%
+  tidyr::drop_na() \%>\%
+  plot_points() +
   facet_wrap(vars(Disconnection))
 
 }

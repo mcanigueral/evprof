@@ -12,3 +12,4 @@ convert_time_num_to_chr(time_num)
 \description{
 Convert numeric time value (hour-based) to character hour in \%H:\%M format
 }
+\keyword{internal}

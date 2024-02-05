@@ -25,8 +25,14 @@ Scatter plot of sessions
 }
 \examples{
 library(dplyr)
-california_ev_sessions \%>\% head(3000) \%>\% plot_points()
-california_ev_sessions \%>\% head(3000) \%>\% plot_points(start = 3)
-california_ev_sessions \%>\% head(3000) \%>\% plot_points(log = TRUE)
+california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  plot_points()
+california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  plot_points(start = 3)
+california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  plot_points(log = TRUE)
 
 }

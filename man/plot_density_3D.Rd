@@ -29,6 +29,9 @@ plotly plot (html)
 Density plot in 3D, considering Start time and Connection duration as variables
 }
 \examples{
-plot_density_3D(california_ev_sessions, start = 3)
+library(dplyr)
+california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  plot_density_3D(start = 3)
 
 }

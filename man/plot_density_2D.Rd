@@ -35,7 +35,7 @@ Density plot in 2D, considering Start time and Connection duration as variables
 library(dplyr)
 
 california_ev_sessions \%>\%
-  sample_frac(0.1) \%>\%
+  sample_frac(0.05) \%>\%
   plot_density_2D(by = "wday", start = 3, bins = 15, log = FALSE)
 
 }

@@ -123,16 +123,22 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Localize the outlying sessions above a certain threshold</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">california_ev_sessions</span>, start <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Localize the outlying sessions above a certain threshold</span></span></span>
+<span class="r-in"><span><span class="va">california_ev_sessions</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_frac</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="plot_points.html">plot_points</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="cut_sessions-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># For example sessions that start before 5 AM or that are</span></span></span>
 <span class="r-in"><span><span class="co"># longer than 20 hours are considered outliers</span></span></span>
-<span class="r-in"><span><span class="va">sessions_clean</span> <span class="op">&lt;-</span> <span class="fu">cut_sessions</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">california_ev_sessions</span>, start <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  connection_hours_max <span class="op">=</span> <span class="fl">20</span>, connection_start_min <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sessions_clean</span> <span class="op">&lt;-</span> <span class="va">california_ev_sessions</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_frac</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">cut_sessions</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    start <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    connection_hours_max <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>    connection_start_min <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plot_points.html">plot_points</a></span><span class="op">(</span><span class="va">sessions_clean</span>, start <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="cut_sessions-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

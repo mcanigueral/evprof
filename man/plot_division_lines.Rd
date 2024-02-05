@@ -21,7 +21,9 @@ Iteration over evprof::plot_division_line function to plot multiple lines
 }
 \examples{
 library(dplyr)
-plot_points(california_ev_sessions) \%>\%
-  plot_division_lines(n_lines = 1, division_hour = 10)
+california_ev_sessions \%>\%
+  sample_frac(0.05) \%>\%
+  plot_points(start = 3) \%>\%
+  plot_division_lines(n_lines = 1, division_hour = 5)
 
 }

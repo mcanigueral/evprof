@@ -16,3 +16,4 @@ mutate_to_log(sessions, start = getOption("evprof.start.hour"), base = exp(1))
 \description{
 Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables
 }
+\keyword{internal}
