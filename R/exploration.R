@@ -53,14 +53,16 @@ convert_time_num_to_chr <- function(time_num) {
 #' @param time_dt Datetime value
 #' @param start Start hour (int)
 #'
-#' @importFrom lubridate date<- date hour days
+#' @importFrom lubridate date<- date hour days today
 #'
 #' @keywords internal
 #'
 convert_time_dt_to_plot_dt <- function(time_dt, start=getOption("evprof.start.hour")) {
-  date(time_dt) <- Sys.Date()
-  next_day_idx <- seq(1, length(time_dt))[(hour(time_dt) < start)]
-  date(time_dt)[next_day_idx] <- date(time_dt)[next_day_idx] + days(1)
+  date(time_dt) <- today()
+  if (any(hour(time_dt) < start)) {
+    next_day_idx <- (hour(time_dt) < start)
+    date(time_dt)[next_day_idx] <- date(time_dt)[next_day_idx] + days(1)
+  }
   time_dt
 }
 

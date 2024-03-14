@@ -1,3 +1,8 @@
+# evprof 1.1.2
+
+* Patch in function `convert_time_dt_to_plot_dt` that was causing errors in some OS
+
+
 # evprof 1.1.1
 
 * Improved the consistency of the provided example data sets
