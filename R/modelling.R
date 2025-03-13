@@ -584,7 +584,7 @@ print.evmodel <- function(x, ...) {
       '\n     Months = ', if (length(m[['months']][[n]]) == 1) m[['months']][[n]][1] else
         paste0(m[['months']][[n]][1], '-', m[['months']][[n]][length(m[['months']][[n]])]),
       ', Week days = ', if (length(m[['wdays']][[n]]) == 1) m[['wdays']][[n]][1] else
-        paste0(m[['wdays']][[n]][1], '-', m[['wdays']][[n]][length(m[['wdays']])]),
+        paste0(m[['wdays']][[n]][1], '-', m[['wdays']][[n]][length(m[['wdays']][[n]])]),
       '\n     User profiles = ', paste(m[['user_profiles']][[n]][['profile']], collapse = ", "),
       '\n', sep = ''
     )
