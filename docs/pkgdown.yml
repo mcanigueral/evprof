@@ -1,5 +1,5 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   california: california.html
@@ -7,8 +7,7 @@ articles:
   evprof: evprof.html
   outliers: outliers.html
   sessions-format: sessions-format.html
-last_built: 2024-03-14T12:13Z
+last_built: 2025-03-13T11:41Z
 urls:
-  reference: mcanigueral.github.io/evprof/reference
-  article: mcanigueral.github.io/evprof/articles
-
+  reference: https://mcanigueral.github.io/evprof/reference
+  article: https://mcanigueral.github.io/evprof/articles
