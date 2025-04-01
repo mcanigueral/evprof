@@ -145,7 +145,7 @@ get_energy_model_parameters <- function(mclust_obj) {
 #' or decrease the number of Gaussian components.
 #'
 #' @param sessions_profiles tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html)
+#' [ standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html)
 #' with user profile attribute `Profile`
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).

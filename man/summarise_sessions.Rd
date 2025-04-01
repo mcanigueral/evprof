@@ -11,9 +11,7 @@ summarise_sessions(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format standard format}
 
 \item{.funs}{A function to compute, e.g. \code{mean}, \code{max}, etc.}
 

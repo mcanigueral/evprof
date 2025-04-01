@@ -58,7 +58,7 @@
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mcanigueral/evprof/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/resourcefully-dev/evprof/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -75,7 +75,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Profiling EV users</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mcanigueral/evprof/blob/HEAD/vignettes/evprof.Rmd" class="external-link"><code>vignettes/evprof.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/resourcefully-dev/evprof/blob/HEAD/vignettes/evprof.Rmd" class="external-link"><code>vignettes/evprof.Rmd</code></a></small>
       <div class="d-none name"><code>evprof.Rmd</code></div>
     </div>
 
@@ -86,12 +86,12 @@
 </h2>
 <p>This article shows the methodology used to classify EV charging
 sessions among generic user profiles, using the R package
-<a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a>. The goal of this analysis is to define generic
+<a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a>. The goal of this analysis is to define generic
 <strong>user profiles</strong> or, in other words, <strong>EV connection
 patterns</strong> that could relate a charging sessions to a specific
 user behaviour. The most relevant variables of the data set are the
 <em>Connection Start Time</em> and the <em>Connection Hours
-(duration)</em>. Based on these two variables <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a>
+(duration)</em>. Based on these two variables <a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a>
 package aims to provide tools to analyze, cluster and model different
 user profiles with similar flexibility potential to, in a farther stage,
 exploit their flexibility in specific demand response programs.</p>
@@ -118,11 +118,11 @@ below:</p>
 </ol>
 <p>This article applies the methodology proposed to a real EV data set
 from a mid-sized Dutch city. However, the aim of package
-<a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> is to replicate the same methodology to other real
+<a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a> is to replicate the same methodology to other real
 data sets for any other country in the world, like the example data set
-of EV charging sessions provided by <code>evprof</code> (see the <a href="https://mcanigueral.github.io/evprof/articles/california.html">California
+of EV charging sessions provided by <code>evprof</code> (see the <a href="https://mcanigueral.github.io/evprof/articles/california.html" class="external-link">California
 article</a>). If you use this package don’t hesitate to comment your
-results with the authors of <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a>.</p>
+results with the authors of <a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="data-exploratory-analysis">Data exploratory analysis<a class="anchor" aria-label="anchor" href="#data-exploratory-analysis"></a>
@@ -373,7 +373,7 @@ different EV user profiles with independent distributions.</p>
 <div class="section level2">
 <h2 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
 </h2>
-<p>The clustering method used in package <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> is
+<p>The clustering method used in package <a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a> is
 Gaussian Mixture Models with Expectation-Maximization algorithm,
 wrapping functions from <a href="https://mclust-org.github.io/mclust/" class="external-link">mclust</a> package. To obtain a
 better performance in GMM clustering it is important to divide the data
@@ -417,22 +417,22 @@ over these 5 disconnection days is:</p>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
-<td align="right">107805</td>
-<td align="right">51.16</td>
+<td align="right">108109</td>
+<td align="right">51.31</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
-<td align="right">96980</td>
-<td align="right">46.03</td>
+<td align="right">96680</td>
+<td align="right">45.88</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
-<td align="right">4805</td>
+<td align="right">4802</td>
 <td align="right">2.28</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
-<td align="right">907</td>
+<td align="right">906</td>
 <td align="right">0.43</td>
 </tr>
 <tr class="odd">
@@ -543,10 +543,10 @@ the name of the corresponding weekday: <strong>Workday</strong>,
 <h3 id="outliers-cleaning">Outliers cleaning<a class="anchor" aria-label="anchor" href="#outliers-cleaning"></a>
 </h3>
 <p>As explained, the clustering method used in package
-<a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> is Gaussian Mixture Models clustering. This method
+<a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a> is Gaussian Mixture Models clustering. This method
 is sensible to outliers since it tries to explain as most as possible
 all the variance of the data. This results to wide and low-precision
-Gaussian distributions (clusters). Therefore <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a>
+Gaussian distributions (clusters). Therefore <a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a>
 package provides different functions to detect and filter outliers. At
 the same time, it is also recommended to perform the clustering process
 in a logarithmic scale, to include negative values to originally
@@ -2031,7 +2031,7 @@ in the charging infrastructure: 3.7 kW, 7.4 kW and 11 kW.</p>
 <div class="section level3">
 <h3 id="save-the-ev-model">Save the EV model<a class="anchor" aria-label="anchor" href="#save-the-ev-model"></a>
 </h3>
-<p>The package <a href="https://github.com/mcanigueral/evprof/" class="external-link">evprof</a> proposes a standard format for the
+<p>The package <a href="https://github.com/resourcefully-dev/evprof/" class="external-link">evprof</a> proposes a standard format for the
 EV model with the function <code><a href="../reference/get_ev_model.html">get_ev_model()</a></code>. This function
 returns an object of class <code>evmodel</code>, which can be used then
 as input of <a href="https://mcanigueral.github.io/evsim/" class="external-link">evsim</a> package to simulate new sessions. The
@@ -2084,7 +2084,7 @@ built the energy models in a logarithmic scale</li>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ev_model</span></span></code></pre></div>
-<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2025-03-13 </span></span>
+<pre><code><span><span class="co">## EV sessions model of class "evmodel", created on 2025-04-01 </span></span>
 <span><span class="co">## Timezone of the model: Europe/Amsterdam </span></span>
 <span><span class="co">## The Gaussian Mixture Models of EV user profiles are built in:</span></span>
 <span><span class="co">##   - Connection Models: logarithmic scale</span></span>

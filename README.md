@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# evprof <a href='https://mcanigueral.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# evprof <a href='https://resourcefully-dev.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
@@ -17,9 +17,9 @@ coverage](https://codecov.io/gh/mcanigueral/evprof/branch/master/graph/badge.svg
 evprof is part of a suite of packages to analyse, model and simulate the
 charging behavior of electric vehicle users:
 
-- [evprof](https://mcanigueral.github.io/evprof/): Electric Vehicle
-  PROFiling
-- [evsim](https://mcanigueral.github.io/evsim/): Electric Vehicle
+- [evprof](https://resourcefully-dev.github.io/evprof/): Electric
+  Vehicle PROFiling
+- [evsim](https://resourcefully-dev.github.io/evsim/): Electric Vehicle
   SIMulation
 
 evprof aims to provide tools for classifying EV charging sessions into
@@ -67,15 +67,15 @@ documentation](https://acnportal.readthedocs.io/en/latest/). Moreover,
 an example `evmodel` object (EV Gaussian Mixture Models) built with
 `evprof` functions and the California open data set (see the [California
 case
-study](https://mcanigueral.github.io/evprof/articles/california.html)
+study](https://resourcefully-dev.github.io/evprof/articles/california.html)
 article) is also provided. These two demo data objects are provided
 together with package functions for a better interactive user
 experience.
 
 If you have your own data set, the best place to start is the [Get
 started
-chapter](https://mcanigueral.github.io/evprof/articles/evprof.html) in
-the package website.
+chapter](https://resourcefully-dev.github.io/evprof/articles/evprof.html)
+in the package website.
 
 ## Installation
 
@@ -88,16 +88,14 @@ install.packages("evprof")
 
 # Latest development version
 # install.packages("devtools")
-devtools::install_github("mcanigueral/evprof")
+devtools::install_github("resourcefully-dev/evprof")
 ```
 
 ## Getting help
 
 If you encounter a clear bug, please open an issue with a minimal
 reproducible example on
-[GitHub](https://github.com/mcanigueral/evprof/issues). For questions
-and other discussion, please send me a mail to
-<marc.canigueral@udg.edu>.
+[GitHub](https://github.com/mcanigueral/evprof/issues).
 
 For further technical details, you can read the following academic
 articles about the methodology used in this paper:

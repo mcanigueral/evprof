@@ -7,7 +7,7 @@
 mutate_to_log(sessions, start = getOption("evprof.start.hour"), base = exp(1))
 }
 \arguments{
-\item{sessions}{sessions data set in standard format.}
+\item{sessions}{sessions data set in  standard format.}
 
 \item{start}{integer, start hour in the x axis of the plot.}
 

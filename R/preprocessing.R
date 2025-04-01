@@ -4,8 +4,7 @@
 
 #' Cut outliers based on minimum and maximum limits of ConnectionHours and ConnectionStartDateTime variables
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param connection_hours_min numeric, minimum of connection hours (duration). If NA the minimum value is considered.
 #' @param connection_hours_max numeric, maximum of connection hours (duration). If NA the maximum value is considered.
 #' @param connection_start_min numeric, minimum hour of connection start (hour as numeric). If NA the minimum value is considered.
@@ -76,8 +75,7 @@ cut_sessions <- function(sessions,
 #' Plot the kNN (k-nearest neighbors) distance plot to visually detect the
 #' "elbow" and define an appropriate value for `eps` DBSCAN parameter.
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param MinPts integer, DBSCAN MinPts parameter. If null, a value of 200 will be considered.
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
@@ -131,8 +129,7 @@ plot_kNNdist <- function(sessions, MinPts = NULL, log = FALSE,
 
 #' Get the minPts and eps values for DBSCAN to label only a specific percentage as noise
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param MinPts DBSCAN MinPts parameter
 #' @param eps0 DBSCAN eps parameter corresponding to the elbow of kNN dist plot
 #' @param noise_th noise threshold
@@ -190,8 +187,7 @@ get_dbscan_params <- function(sessions, MinPts, eps0, noise_th = 2,
 
 #' Detect outliers
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param MinPts MinPts parameter for DBSCAN clustering
 #' @param eps eps parameter for DBSCAN clustering
 #' @param noise_th noise threshold
@@ -250,8 +246,7 @@ detect_outliers <- function(sessions, MinPts=NULL, eps=NULL, noise_th = 2,
 
 #' Drop outliers
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #'
 #' @returns sessions without outliers nor column `Outlier`
 #' @export
@@ -281,8 +276,7 @@ drop_outliers <- function(sessions) {
 
 #' Plot outlying sessions
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param start integer, start hour in the x axis of the plot.
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
@@ -371,8 +365,7 @@ plot_division_lines <- function(ggplot_points, n_lines, division_hour) {
 
 #' Divide sessions by disconnection day
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param division_hour Hour to divide the groups according to disconnection time
 #' @param start integer, start hour in the x axis of the plot.
 #'
@@ -418,8 +411,7 @@ divide_by_disconnection <- function(sessions, division_hour, start = getOption("
 
 #' Divide sessions by time-cycle
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param months_cycles list containing Monthly cycles
 #' @param wdays_cycles list containing Weekdays cycles
 #' @param start integer, start hour in the x axis of the plot.

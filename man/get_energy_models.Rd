@@ -8,7 +8,7 @@ get_energy_models(sessions_profiles, log = TRUE, by_power = FALSE)
 }
 \arguments{
 \item{sessions_profiles}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}
+\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{ standard format}
 with user profile attribute \code{Profile}}
 
 \item{log}{logical, whether to transform \code{ConnectionStartDateTime} and

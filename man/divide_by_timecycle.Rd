@@ -12,8 +12,7 @@ divide_by_timecycle(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{months_cycles}{list containing Monthly cycles}
 

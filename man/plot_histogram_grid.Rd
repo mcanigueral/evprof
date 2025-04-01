@@ -13,8 +13,7 @@ plot_histogram_grid(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{vars}{vector of characters, variables to plot}
 

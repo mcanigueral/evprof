@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# evprof <a href='https://mcanigueral.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# evprof <a href='https://resourcefully-dev.github.io/evprof/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/evprof)](https://cran.r-project.org/package=evprof)
@@ -26,8 +26,8 @@ knitr::opts_chunk$set(
 
 evprof is part of a suite of packages to analyse, model and simulate the charging behavior of electric vehicle users:
 
-* [evprof](https://mcanigueral.github.io/evprof/): Electric Vehicle PROFiling
-* [evsim](https://mcanigueral.github.io/evsim/): Electric Vehicle SIMulation
+* [evprof](https://resourcefully-dev.github.io/evprof/): Electric Vehicle PROFiling
+* [evsim](https://resourcefully-dev.github.io/evsim/): Electric Vehicle SIMulation
 
 evprof aims to provide tools for classifying EV charging sessions into generic groups with similar connection patterns named "user profiles", using the Gaussian Mixture Models (GMM) clustering method. Moreover, functions to build stochastic models (based on GMM) for every user profile are also provided in order to simulate new EV sessions.
 
@@ -48,9 +48,9 @@ The Gaussian Mixture Models clustering technique used in this package aims to ac
 To use this package you will need a data set of EV charging sessions with at least two fundamental variables: **connection start** time and **connection duration**. 
 With these two variables you will be able to classify the sessions into different user profiles, but to generate the EV Gaussian Models you will also need the **energy** values.
 
-The package also provides an example open data set of EV charging sessions from the California Technological Institute (Caltech), which can be downloaded from the [ACN-Data website](https://ev.caltech.edu/dataset). For more information about this data set and how to use it, visit the [ACN documentation](https://acnportal.readthedocs.io/en/latest/). Moreover, an example `evmodel` object (EV Gaussian Mixture Models) built with `evprof` functions and the California open data set (see the [California case study](https://mcanigueral.github.io/evprof/articles/california.html) article) is also provided. These two demo data objects are provided together with package functions for a better interactive user experience.
+The package also provides an example open data set of EV charging sessions from the California Technological Institute (Caltech), which can be downloaded from the [ACN-Data website](https://ev.caltech.edu/dataset). For more information about this data set and how to use it, visit the [ACN documentation](https://acnportal.readthedocs.io/en/latest/). Moreover, an example `evmodel` object (EV Gaussian Mixture Models) built with `evprof` functions and the California open data set (see the [California case study](https://resourcefully-dev.github.io/evprof/articles/california.html) article) is also provided. These two demo data objects are provided together with package functions for a better interactive user experience.
 
-If you have your own data set, the best place to start is the [Get started chapter](https://mcanigueral.github.io/evprof/articles/evprof.html) in the package website. 
+If you have your own data set, the best place to start is the [Get started chapter](https://resourcefully-dev.github.io/evprof/articles/evprof.html) in the package website. 
 
 
 ## Installation
@@ -63,13 +63,13 @@ install.packages("evprof")
 
 # Latest development version
 # install.packages("devtools")
-devtools::install_github("mcanigueral/evprof")
+devtools::install_github("resourcefully-dev/evprof")
 ```
 
 
 ## Getting help
 
-If you encounter a clear bug, please open an issue with a minimal reproducible example on [GitHub](https://github.com/mcanigueral/evprof/issues). For questions and other discussion, please send me a mail to [marc.canigueral@udg.edu](mailto:marc.canigueral@udg.edu).
+If you encounter a clear bug, please open an issue with a minimal reproducible example on [GitHub](https://github.com/mcanigueral/evprof/issues).
 
 For further technical details, you can read the following academic articles about the methodology used in this paper:
 

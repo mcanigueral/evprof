@@ -14,8 +14,7 @@ get_connection_model_mclust_object(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof}
 
 \item{k}{number of clusters}
 

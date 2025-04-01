@@ -7,8 +7,7 @@
 get_daily_n_sessions(sessions, years, months, wdays)
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{years}{vector of integers, range of years to consider}
 

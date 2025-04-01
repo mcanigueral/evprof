@@ -14,8 +14,7 @@ detect_outliers(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{MinPts}{MinPts parameter for DBSCAN clustering}
 

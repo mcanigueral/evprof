@@ -19,7 +19,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Electric Vehicle Charging Sessions Profiling and Modelling">
 <meta name="description" content='Tools for modelling electric vehicle charging sessions into generic groups with similar connection patterns called "user profiles", using Gaussian Mixture Models clustering. The clustering and profiling methodology is described in Cañigueral and Meléndez (2021, ISBN:0142-0615) &lt;doi:10.1016/j.ijepes.2021.107195&gt;.'>
 <meta property="og:description" content='Tools for modelling electric vehicle charging sessions into generic groups with similar connection patterns called "user profiles", using Gaussian Mixture Models clustering. The clustering and profiling methodology is described in Cañigueral and Meléndez (2021, ISBN:0142-0615) &lt;doi:10.1016/j.ijepes.2021.107195&gt;.'>
-<meta property="og:image" content="https://mcanigueral.github.io/evprof/logo.png">
+<meta property="og:image" content="https://resourcefully-dev.github.io/evprof/logo.png">
 <!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-ZKG1YCMCDJ"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -61,7 +61,7 @@
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mcanigueral/evprof/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/resourcefully-dev/evprof/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -83,9 +83,9 @@
 <p>evprof is part of a suite of packages to analyse, model and simulate the charging behavior of electric vehicle users:</p>
 <ul>
 <li>
-<a href="https://mcanigueral.github.io/evprof/">evprof</a>: Electric Vehicle PROFiling</li>
+<a href="https://resourcefully-dev.github.io/evprof/">evprof</a>: Electric Vehicle PROFiling</li>
 <li>
-<a href="https://mcanigueral.github.io/evsim/" class="external-link">evsim</a>: Electric Vehicle SIMulation</li>
+<a href="https://resourcefully-dev.github.io/evsim/" class="external-link">evsim</a>: Electric Vehicle SIMulation</li>
 </ul>
 <p>evprof aims to provide tools for classifying EV charging sessions into generic groups with similar connection patterns named “user profiles”, using the Gaussian Mixture Models (GMM) clustering method. Moreover, functions to build stochastic models (based on GMM) for every user profile are also provided in order to simulate new EV sessions.</p>
 <p>The Gaussian Mixture Models clustering technique used in this package aims to accomplish two different tasks that can be useful for multiple purposes:</p>
@@ -110,8 +110,8 @@
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p>To use this package you will need a data set of EV charging sessions with at least two fundamental variables: <strong>connection start</strong> time and <strong>connection duration</strong>. With these two variables you will be able to classify the sessions into different user profiles, but to generate the EV Gaussian Models you will also need the <strong>energy</strong> values.</p>
-<p>The package also provides an example open data set of EV charging sessions from the California Technological Institute (Caltech), which can be downloaded from the <a href="https://ev.caltech.edu/dataset" class="external-link">ACN-Data website</a>. For more information about this data set and how to use it, visit the <a href="https://acnportal.readthedocs.io/en/latest/" class="external-link">ACN documentation</a>. Moreover, an example <code>evmodel</code> object (EV Gaussian Mixture Models) built with <code>evprof</code> functions and the California open data set (see the <a href="https://mcanigueral.github.io/evprof/articles/california.html">California case study</a> article) is also provided. These two demo data objects are provided together with package functions for a better interactive user experience.</p>
-<p>If you have your own data set, the best place to start is the <a href="https://mcanigueral.github.io/evprof/articles/evprof.html">Get started chapter</a> in the package website.</p>
+<p>The package also provides an example open data set of EV charging sessions from the California Technological Institute (Caltech), which can be downloaded from the <a href="https://ev.caltech.edu/dataset" class="external-link">ACN-Data website</a>. For more information about this data set and how to use it, visit the <a href="https://acnportal.readthedocs.io/en/latest/" class="external-link">ACN documentation</a>. Moreover, an example <code>evmodel</code> object (EV Gaussian Mixture Models) built with <code>evprof</code> functions and the California open data set (see the <a href="https://resourcefully-dev.github.io/evprof/articles/california.html">California case study</a> article) is also provided. These two demo data objects are provided together with package functions for a better interactive user experience.</p>
+<p>If you have your own data set, the best place to start is the <a href="https://resourcefully-dev.github.io/evprof/articles/evprof.html">Get started chapter</a> in the package website.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -123,12 +123,12 @@
 <span></span>
 <span><span class="co"># Latest development version</span></span>
 <span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mcanigueral/evprof"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"resourcefully-dev/evprof"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
-<p>If you encounter a clear bug, please open an issue with a minimal reproducible example on <a href="https://github.com/mcanigueral/evprof/issues" class="external-link">GitHub</a>. For questions and other discussion, please send me a mail to <a href="mailto:marc.canigueral@udg.edu" class="email">marc.canigueral@udg.edu</a>.</p>
+<p>If you encounter a clear bug, please open an issue with a minimal reproducible example on <a href="https://github.com/mcanigueral/evprof/issues" class="external-link">GitHub</a>.</p>
 <p>For further technical details, you can read the following academic articles about the methodology used in this paper:</p>
 <ul>
 <li>
@@ -153,8 +153,8 @@
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://cloud.r-project.org/package=evprof" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/mcanigueral/evprof/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/mcanigueral/evprof/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/resourcefully-dev/evprof/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/resourcefully-dev/evprof/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 

@@ -7,8 +7,7 @@
 plot_histogram(sessions, var, binwidth = 1)
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{var}{character, column name to compute the histogram for}
 

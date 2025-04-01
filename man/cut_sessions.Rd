@@ -15,8 +15,7 @@ cut_sessions(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{connection_hours_min}{numeric, minimum of connection hours (duration). If NA the minimum value is considered.}
 

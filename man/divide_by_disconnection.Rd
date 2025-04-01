@@ -11,8 +11,7 @@ divide_by_disconnection(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{division_hour}{Hour to divide the groups according to disconnection time}
 

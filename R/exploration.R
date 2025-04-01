@@ -103,7 +103,7 @@ convert_time_dt_to_plot_num <- function(time_dt, start=getOption("evprof.start.h
 
 #' Logarithmic transformation to ConnectionStartDateTime and ConnectionHours variables
 #'
-#' @param sessions sessions data set in standard format.
+#' @param sessions sessions data set in  standard format.
 #' @param start integer, start hour in the x axis of the plot.
 #' @param base logarithmic base
 #'
@@ -129,8 +129,7 @@ mutate_to_log <- function(sessions, start=getOption("evprof.start.hour"), base =
 
 #' Scatter plot of sessions
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param start integer, start hour in the x axis of the plot.
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
 #' `ConnectionHours` variables to natural logarithmic scale (base = `exp(1)`).
@@ -176,8 +175,7 @@ plot_points <- function(sessions, start=getOption("evprof.start.hour"), log = FA
 
 #' Density plot in 2D, considering Start time and Connection duration as variables
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param bins integer, parameter to pass to `ggplot2::stat_density_2d`
 #' @param start integer, start hour in the x axis of the plot.
 #' @param by variable to facet the plot. Character being "wday", "month" or "year", considering the week to start at wday=1.
@@ -248,8 +246,7 @@ plot_density_2D <- function(sessions, bins=15, by = c("wday", "month", "year"), 
 
 #' Density plot in 3D, considering Start time and Connection duration as variables
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param start integer, start hour in the x axis of the plot.
 #' @param eye list containing x, y and z points of view. Example: `list(x = -1.5, y = -1.5, z = 1.5)`
 #' @param log logical, whether to transform `ConnectionStartDateTime` and
@@ -293,9 +290,7 @@ plot_density_3D <- function(sessions, start=getOption("evprof.start.hour"), eye 
 
 #' Statistic summary of sessions features
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format standard format
 #' @param .funs A function to compute, e.g. `mean`, `max`, etc.
 #' @param vars character vector, variables to compute the histogram for
 #'
@@ -317,8 +312,7 @@ summarise_sessions <- function(sessions, .funs, vars = evprof::sessions_summary_
 
 #' Histogram of a variable from sessions data set
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param var character, column name to compute the histogram for
 #' @param binwidth integer, with of histogram bins
 #'
@@ -345,8 +339,7 @@ plot_histogram <- function(sessions, var, binwidth=1) {
 
 #' Grid of multiple variable histograms
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param vars vector of characters, variables to plot
 #' @param binwidths vector of integers, binwidths of each variable histogram.
 #' The length of the vector must correspond to the length of the `vars` parameter.
@@ -375,8 +368,7 @@ plot_histogram_grid <- function(sessions, vars=evprof::sessions_summary_feature_
 
 #' Get charging rates distribution in percentages
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param unit character, lubridate `floor_date` unit parameter
 #'
 #' @returns tibble
@@ -416,8 +408,7 @@ get_charging_rates_distribution <- function(sessions, unit="year") {
 
 #' Get daily number of sessions given a range of years, months and weekdays
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param years vector of integers, range of years to consider
 #' @param months vector of integers, range of months to consider
 #' @param wdays vector of integers, range of weekdays to consider
@@ -448,8 +439,7 @@ get_daily_n_sessions <- function(sessions, years, months, wdays) {
 
 #' Get the daily average number of sessions given a range of years, months and weekdays
 #'
-#' @param sessions tibble, sessions data set in evprof
-#' [standard format](https://mcanigueral.github.io/evprof/articles/sessions-format.html).
+#' @param sessions tibble, sessions data set in evprof standard format
 #' @param years vector of integers, range of years to consider
 #' @param months vector of integers, range of months to consider
 #' @param wdays vector of integers, range of weekdays to consider

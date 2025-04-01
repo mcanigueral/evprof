@@ -16,8 +16,7 @@ get_dbscan_params(
 )
 }
 \arguments{
-\item{sessions}{tibble, sessions data set in evprof
-\href{https://mcanigueral.github.io/evprof/articles/sessions-format.html}{standard format}.}
+\item{sessions}{tibble, sessions data set in evprof standard format}
 
 \item{MinPts}{DBSCAN MinPts parameter}
 
